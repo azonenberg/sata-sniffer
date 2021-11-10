@@ -4,12 +4,12 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 2
-Title ""
-Date ""
-Rev ""
+Sheet 2 8
+Title "SATA sniffer"
+Date "2021-11-09"
+Rev "0.1"
 Comp ""
-Comment1 ""
+Comment1 "Andrew D. Zonenberg"
 Comment2 ""
 Comment3 ""
 Comment4 ""
@@ -356,4 +356,20 @@ F 3 "" H 2250 3850 60  0000 C CNN
 	1    2250 3850
 	0    1    1    0   
 $EndComp
+Text HLabel 7600 1450 0    50   Output ~ 0
+GND
+Text HLabel 7600 1350 0    50   Output ~ 0
+1V0
+Text HLabel 7600 1250 0    50   Output ~ 0
+1V2
+Text HLabel 7600 1150 0    50   Output ~ 0
+1V35
+Text HLabel 7600 1050 0    50   Output ~ 0
+1V8
+Text HLabel 7600 950  0    50   Output ~ 0
+3V3
+Text HLabel 7600 850  0    50   Output ~ 0
+VTT
+Text HLabel 7600 750  0    50   Output ~ 0
+VREF
 $EndSCHEMATC
