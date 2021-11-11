@@ -4,9 +4,9 @@ EELAYER 30 0
 EELAYER END
 $Descr A3 16535 11693
 encoding utf-8
-Sheet 3 8
+Sheet 3 10
 Title "SATA sniffer"
-Date "2021-11-09"
+Date "2021-11-10"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -833,4 +833,625 @@ Wire Wire Line
 	13150 600  12600 600 
 Wire Wire Line
 	12600 900  13150 900 
+Text HLabel 9150 6050 0    50   Input ~ 0
+FLASH_SO
+Text HLabel 9150 5950 0    50   Output ~ 0
+FLASH_SI
+Text HLabel 9150 6950 0    50   Output ~ 0
+FLASH_CS
+$Comp
+L device:R R?
+U 1 1 61B2F824
+P 9400 5950
+F 0 "R?" V 9450 6100 50  0000 C CNN
+F 1 "33" V 9400 5950 50  0000 C CNN
+F 2 "" V 9330 5950 50  0001 C CNN
+F 3 "" H 9400 5950 50  0001 C CNN
+	1    9400 5950
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9150 5950 9250 5950
+Wire Wire Line
+	9150 6050 9650 6050
+Wire Wire Line
+	9650 5950 9550 5950
+NoConn ~ 9650 5850
+NoConn ~ 9650 6150
+NoConn ~ 9650 6250
+NoConn ~ 9650 6450
+NoConn ~ 9650 6550
+NoConn ~ 9650 6650
+NoConn ~ 9650 6750
+NoConn ~ 9650 6850
+$Comp
+L device:R R?
+U 1 1 61B7104D
+P 9400 6950
+F 0 "R?" V 9450 7100 50  0000 C CNN
+F 1 "33" V 9400 6950 50  0000 C CNN
+F 2 "" V 9330 6950 50  0001 C CNN
+F 3 "" H 9400 6950 50  0001 C CNN
+	1    9400 6950
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	9550 6950 9650 6950
+Wire Wire Line
+	9250 6950 9150 6950
+$Comp
+L device:R R?
+U 1 1 61B7E37E
+P 9400 6350
+F 0 "R?" V 9450 6500 50  0000 C CNN
+F 1 "1K" V 9400 6350 50  0000 C CNN
+F 2 "" V 9330 6350 50  0001 C CNN
+F 3 "" H 9400 6350 50  0001 C CNN
+	1    9400 6350
+	0    -1   -1   0   
+$EndComp
+Text Label 9150 6350 2    50   ~ 0
+1V35
+Wire Wire Line
+	9150 6350 9250 6350
+Wire Wire Line
+	9550 6350 9650 6350
+Text Label 3400 7050 2    50   ~ 0
+VREF
+Text Label 3400 9650 2    50   ~ 0
+VREF
+Text Label 6150 9650 2    50   ~ 0
+VREF
+Text Label 6150 7050 2    50   ~ 0
+VREF
+Text Label 9650 7050 2    50   ~ 0
+VREF
+Text Label 9650 9650 2    50   ~ 0
+VREF
+Text Label 9650 750  2    50   ~ 0
+RAM_DQS0_P
+Text Label 9650 850  2    50   ~ 0
+RAM_DQS0_N
+Text Label 9650 950  2    50   ~ 0
+RAM_DM0
+Text Label 9650 1050 2    50   ~ 0
+RAM_DQ0_0
+Text Label 9650 1150 2    50   ~ 0
+RAM_DQ0_1
+Text Label 9650 1250 2    50   ~ 0
+RAM_DQ0_2
+Text Label 9650 1350 2    50   ~ 0
+RAM_DQ0_3
+Text Label 9650 1450 2    50   ~ 0
+RAM_DQ0_4
+Text Label 9650 1550 2    50   ~ 0
+RAM_DQ0_5
+Text Label 9650 1650 2    50   ~ 0
+RAM_DQ0_6
+Text Label 9650 1750 2    50   ~ 0
+RAM_DQ0_7
+Text Label 9650 1950 2    50   ~ 0
+RAM_DQS1_P
+Text Label 9650 2050 2    50   ~ 0
+RAM_DQS1_N
+Text Label 9650 2150 2    50   ~ 0
+RAM_DM1
+Text Label 9650 2250 2    50   ~ 0
+RAM_DQ1_0
+Text Label 9650 2350 2    50   ~ 0
+RAM_DQ1_1
+Text Label 9650 2450 2    50   ~ 0
+RAM_DQ1_2
+Text Label 9650 2550 2    50   ~ 0
+RAM_DQ1_3
+Text Label 9650 2650 2    50   ~ 0
+RAM_DQ1_4
+Text Label 9650 2750 2    50   ~ 0
+RAM_DQ1_5
+Text Label 9650 2850 2    50   ~ 0
+RAM_DQ1_6
+Text Label 9650 2950 2    50   ~ 0
+RAM_DQ1_7
+Text Label 9650 3150 2    50   ~ 0
+RAM_DQS2_P
+Text Label 9650 3250 2    50   ~ 0
+RAM_DQS2_N
+Text Label 9650 3350 2    50   ~ 0
+RAM_DM2
+Text Label 9650 3450 2    50   ~ 0
+RAM_DQ2_0
+Text Label 9650 3550 2    50   ~ 0
+RAM_DQ2_1
+Text Label 9650 3650 2    50   ~ 0
+RAM_DQ2_2
+Text Label 9650 3750 2    50   ~ 0
+RAM_DQ2_3
+Text Label 9650 3850 2    50   ~ 0
+RAM_DQ2_4
+Text Label 9650 3950 2    50   ~ 0
+RAM_DQ2_5
+Text Label 9650 4050 2    50   ~ 0
+RAM_DQ2_6
+Text Label 9650 4150 2    50   ~ 0
+RAM_DQ2_7
+Text Label 9650 4450 2    50   ~ 0
+RAM_DQS3_N
+Text Label 9650 4550 2    50   ~ 0
+RAM_DM3
+Text Label 9650 4650 2    50   ~ 0
+RAM_DQ3_0
+Text Label 9650 4750 2    50   ~ 0
+RAM_DQ3_1
+Text Label 9650 4850 2    50   ~ 0
+RAM_DQ3_2
+Text Label 9650 4950 2    50   ~ 0
+RAM_DQ3_3
+Text Label 9650 5050 2    50   ~ 0
+RAM_DQ3_4
+Text Label 9650 5150 2    50   ~ 0
+RAM_DQ3_5
+Text Label 9650 5250 2    50   ~ 0
+RAM_DQ3_6
+Text Label 9650 5350 2    50   ~ 0
+RAM_DQ3_7
+Text Label 9650 4350 2    50   ~ 0
+RAM_DQS3_P
+Text Label 11050 750  0    50   ~ 0
+RAM_DQS4_P
+Text Label 11050 850  0    50   ~ 0
+RAM_DQS4_N
+Text Label 11050 950  0    50   ~ 0
+RAM_DM4
+Text Label 11050 1050 0    50   ~ 0
+RAM_DQ4_0
+Text Label 11050 1150 0    50   ~ 0
+RAM_DQ4_1
+Text Label 11050 1250 0    50   ~ 0
+RAM_DQ4_2
+Text Label 11050 1350 0    50   ~ 0
+RAM_DQ4_3
+Text Label 11050 1450 0    50   ~ 0
+RAM_DQ4_4
+Text Label 11050 1550 0    50   ~ 0
+RAM_DQ4_5
+Text Label 11050 1650 0    50   ~ 0
+RAM_DQ4_6
+Text Label 11050 1750 0    50   ~ 0
+RAM_DQ4_7
+Text Label 11050 1950 0    50   ~ 0
+RAM_DQS5_P
+Text Label 11050 2050 0    50   ~ 0
+RAM_DQS5_N
+Text Label 11050 2150 0    50   ~ 0
+RAM_DM5
+Text Label 11050 2250 0    50   ~ 0
+RAM_DQ5_0
+Text Label 11050 2350 0    50   ~ 0
+RAM_DQ5_1
+Text Label 11050 2450 0    50   ~ 0
+RAM_DQ5_2
+Text Label 11050 2550 0    50   ~ 0
+RAM_DQ5_3
+Text Label 11050 2650 0    50   ~ 0
+RAM_DQ5_4
+Text Label 11050 2750 0    50   ~ 0
+RAM_DQ5_5
+Text Label 11050 2850 0    50   ~ 0
+RAM_DQ5_6
+Text Label 11050 2950 0    50   ~ 0
+RAM_DQ5_7
+Text Label 11050 3150 0    50   ~ 0
+RAM_DQS6_P
+Text Label 11050 3250 0    50   ~ 0
+RAM_DQS6_N
+Text Label 11050 3350 0    50   ~ 0
+RAM_DM6
+Text Label 11050 3450 0    50   ~ 0
+RAM_DQ6_0
+Text Label 11050 3550 0    50   ~ 0
+RAM_DQ6_1
+Text Label 11050 3650 0    50   ~ 0
+RAM_DQ6_2
+Text Label 11050 3750 0    50   ~ 0
+RAM_DQ6_3
+Text Label 11050 3850 0    50   ~ 0
+RAM_DQ6_4
+Text Label 11050 3950 0    50   ~ 0
+RAM_DQ6_5
+Text Label 11050 4050 0    50   ~ 0
+RAM_DQ6_6
+Text Label 11050 4150 0    50   ~ 0
+RAM_DQ6_7
+Text Label 11050 4350 0    50   ~ 0
+RAM_DQS7_P
+Text Label 11050 4450 0    50   ~ 0
+RAM_DQS7_N
+Text Label 11050 4550 0    50   ~ 0
+RAM_DM7
+Text Label 11050 4650 0    50   ~ 0
+RAM_DQ7_0
+Text Label 11050 4750 0    50   ~ 0
+RAM_DQ7_1
+Text Label 11050 4850 0    50   ~ 0
+RAM_DQ7_2
+Text Label 11050 4950 0    50   ~ 0
+RAM_DQ7_3
+Text Label 11050 5050 0    50   ~ 0
+RAM_DQ7_4
+Text Label 11050 5150 0    50   ~ 0
+RAM_DQ7_5
+Text Label 11050 5250 0    50   ~ 0
+RAM_DQ7_6
+Text Label 11050 5350 0    50   ~ 0
+RAM_DQ7_7
+Text Label 3400 6350 2    50   ~ 0
+RAM_DQS0_P
+Text Label 3400 6450 2    50   ~ 0
+RAM_DQS0_N
+Text Label 3400 5950 2    50   ~ 0
+RAM_DM0
+Text Label 3400 6050 2    50   ~ 0
+RAM_DQ0_0
+Text Label 3400 6150 2    50   ~ 0
+RAM_DQ0_1
+Text Label 3400 6250 2    50   ~ 0
+RAM_DQ0_2
+Text Label 3400 6550 2    50   ~ 0
+RAM_DQ0_3
+Text Label 3400 6650 2    50   ~ 0
+RAM_DQ0_4
+Text Label 3400 6750 2    50   ~ 0
+RAM_DQ0_5
+Text Label 3400 6850 2    50   ~ 0
+RAM_DQ0_6
+Text Label 3400 6950 2    50   ~ 0
+RAM_DQ0_7
+Text Label 3400 7550 2    50   ~ 0
+RAM_DQS1_P
+Text Label 3400 7650 2    50   ~ 0
+RAM_DQS1_N
+Text Label 3400 7150 2    50   ~ 0
+RAM_DM1
+Text Label 3400 7250 2    50   ~ 0
+RAM_DQ1_0
+Text Label 3400 7350 2    50   ~ 0
+RAM_DQ1_1
+Text Label 3400 7450 2    50   ~ 0
+RAM_DQ1_2
+Text Label 3400 7750 2    50   ~ 0
+RAM_DQ1_3
+Text Label 3400 7850 2    50   ~ 0
+RAM_DQ1_4
+Text Label 3400 7950 2    50   ~ 0
+RAM_DQ1_5
+Text Label 3400 8050 2    50   ~ 0
+RAM_DQ1_6
+Text Label 3400 8150 2    50   ~ 0
+RAM_DQ1_7
+Text Label 3400 8750 2    50   ~ 0
+RAM_DQS2_P
+Text Label 3400 8850 2    50   ~ 0
+RAM_DQS2_N
+Text Label 3400 8350 2    50   ~ 0
+RAM_DM2
+Text Label 3400 8450 2    50   ~ 0
+RAM_DQ2_0
+Text Label 3400 8550 2    50   ~ 0
+RAM_DQ2_1
+Text Label 3400 8650 2    50   ~ 0
+RAM_DQ2_2
+Text Label 3400 8950 2    50   ~ 0
+RAM_DQ2_3
+Text Label 3400 9050 2    50   ~ 0
+RAM_DQ2_4
+Text Label 3400 9150 2    50   ~ 0
+RAM_DQ2_5
+Text Label 3400 9250 2    50   ~ 0
+RAM_DQ2_6
+Text Label 3400 9350 2    50   ~ 0
+RAM_DQ2_7
+Text Label 3400 10050 2    50   ~ 0
+RAM_DQS3_N
+Text Label 3400 9550 2    50   ~ 0
+RAM_DM3
+Text Label 3400 9750 2    50   ~ 0
+RAM_DQ3_0
+Text Label 3400 9850 2    50   ~ 0
+RAM_DQ3_1
+Text Label 3400 10150 2    50   ~ 0
+RAM_DQ3_2
+Text Label 3400 10250 2    50   ~ 0
+RAM_DQ3_3
+Text Label 3400 10350 2    50   ~ 0
+RAM_DQ3_4
+Text Label 3400 10450 2    50   ~ 0
+RAM_DQ3_5
+Text Label 3400 10550 2    50   ~ 0
+RAM_DQ3_6
+Text Label 3400 10650 2    50   ~ 0
+RAM_DQ3_7
+Text Label 3400 9950 2    50   ~ 0
+RAM_DQS3_P
+Text Label 6150 6350 2    50   ~ 0
+RAM_DQS4_P
+Text Label 6150 6450 2    50   ~ 0
+RAM_DQS4_N
+Text Label 6150 5950 2    50   ~ 0
+RAM_DM4
+Text Label 6150 6050 2    50   ~ 0
+RAM_DQ4_0
+Text Label 6150 6150 2    50   ~ 0
+RAM_DQ4_1
+Text Label 6150 6250 2    50   ~ 0
+RAM_DQ4_2
+Text Label 6150 6550 2    50   ~ 0
+RAM_DQ4_3
+Text Label 6150 6650 2    50   ~ 0
+RAM_DQ4_4
+Text Label 6150 6750 2    50   ~ 0
+RAM_DQ4_5
+Text Label 6150 6850 2    50   ~ 0
+RAM_DQ4_6
+Text Label 6150 6950 2    50   ~ 0
+RAM_DQ4_7
+Text Label 6150 7550 2    50   ~ 0
+RAM_DQS5_P
+Text Label 6150 7650 2    50   ~ 0
+RAM_DQS5_N
+Text Label 6150 7150 2    50   ~ 0
+RAM_DM5
+Text Label 6150 7250 2    50   ~ 0
+RAM_DQ5_0
+Text Label 6150 7350 2    50   ~ 0
+RAM_DQ5_1
+Text Label 6150 7450 2    50   ~ 0
+RAM_DQ5_2
+Text Label 6150 7750 2    50   ~ 0
+RAM_DQ5_3
+Text Label 6150 7850 2    50   ~ 0
+RAM_DQ5_4
+Text Label 6150 7950 2    50   ~ 0
+RAM_DQ5_5
+Text Label 6150 8050 2    50   ~ 0
+RAM_DQ5_6
+Text Label 6150 8150 2    50   ~ 0
+RAM_DQ5_7
+Text Label 6150 8750 2    50   ~ 0
+RAM_DQS6_P
+Text Label 6150 8850 2    50   ~ 0
+RAM_DQS6_N
+Text Label 6150 8350 2    50   ~ 0
+RAM_DM6
+Text Label 6150 8450 2    50   ~ 0
+RAM_DQ6_0
+Text Label 6150 8550 2    50   ~ 0
+RAM_DQ6_1
+Text Label 6150 8650 2    50   ~ 0
+RAM_DQ6_2
+Text Label 6150 8950 2    50   ~ 0
+RAM_DQ6_3
+Text Label 6150 9050 2    50   ~ 0
+RAM_DQ6_4
+Text Label 6150 9150 2    50   ~ 0
+RAM_DQ6_5
+Text Label 6150 9250 2    50   ~ 0
+RAM_DQ6_6
+Text Label 6150 9350 2    50   ~ 0
+RAM_DQ6_7
+Text Label 6150 9950 2    50   ~ 0
+RAM_DQS7_P
+Text Label 6150 10050 2    50   ~ 0
+RAM_DQS7_N
+Text Label 6150 9550 2    50   ~ 0
+RAM_DM7
+Text Label 6150 9750 2    50   ~ 0
+RAM_DQ7_0
+Text Label 6150 9850 2    50   ~ 0
+RAM_DQ7_1
+Text Label 6150 10150 2    50   ~ 0
+RAM_DQ7_2
+Text Label 6150 10250 2    50   ~ 0
+RAM_DQ7_3
+Text Label 6150 10350 2    50   ~ 0
+RAM_DQ7_4
+Text Label 6150 10450 2    50   ~ 0
+RAM_DQ7_5
+Text Label 6150 10550 2    50   ~ 0
+RAM_DQ7_6
+Text Label 6150 10650 2    50   ~ 0
+RAM_DQ7_7
+NoConn ~ 3400 5850
+NoConn ~ 3400 8250
+NoConn ~ 3400 9450
+NoConn ~ 3400 10750
+NoConn ~ 6150 5850
+NoConn ~ 6150 8250
+NoConn ~ 6150 9450
+NoConn ~ 6150 10750
+Text Label 5350 1750 0    50   ~ 0
+RAM_BA0
+Text Label 5350 1850 0    50   ~ 0
+RAM_BA1
+Text Label 5350 1950 0    50   ~ 0
+RAM_BA2
+Text Label 5350 2150 0    50   ~ 0
+RAM_A0
+Text Label 5350 2250 0    50   ~ 0
+RAM_A1
+Text Label 5350 2350 0    50   ~ 0
+RAM_A2
+Text Label 5350 2450 0    50   ~ 0
+RAM_A3
+Text Label 5350 2550 0    50   ~ 0
+RAM_A4
+Text Label 5350 2650 0    50   ~ 0
+RAM_A5
+Text Label 5350 2750 0    50   ~ 0
+RAM_A6
+Text Label 5350 2850 0    50   ~ 0
+RAM_A7
+Text Label 5350 2950 0    50   ~ 0
+RAM_A8
+Text Label 5350 3050 0    50   ~ 0
+RAM_A9
+Text Label 5350 3150 0    50   ~ 0
+RAM_A10
+Text Label 5350 3250 0    50   ~ 0
+RAM_A11
+Text Label 5350 3350 0    50   ~ 0
+RAM_A12
+Text Label 5350 3450 0    50   ~ 0
+RAM_A13
+Text Label 5350 3550 0    50   ~ 0
+RAM_A14
+Text Label 5350 3650 0    50   ~ 0
+RAM_A15
+Text Label 9650 7150 2    50   ~ 0
+RAM_A0
+Text Label 9650 7250 2    50   ~ 0
+RAM_A1
+Text Label 9650 7350 2    50   ~ 0
+RAM_A2
+Text Label 9650 7450 2    50   ~ 0
+RAM_A3
+Text Label 9650 7550 2    50   ~ 0
+RAM_A4
+Text Label 9650 7650 2    50   ~ 0
+RAM_A5
+Text Label 9650 7750 2    50   ~ 0
+RAM_A6
+Text Label 9650 7850 2    50   ~ 0
+RAM_A7
+Text Label 9650 7950 2    50   ~ 0
+RAM_A8
+Text Label 9650 8050 2    50   ~ 0
+RAM_A9
+Text Label 9650 8150 2    50   ~ 0
+RAM_A10
+Text Label 9650 8250 2    50   ~ 0
+RAM_A11
+Text Label 9650 8350 2    50   ~ 0
+RAM_A12
+Text Label 9650 8450 2    50   ~ 0
+RAM_A13
+Text Label 9650 8550 2    50   ~ 0
+RAM_A14
+Text Label 9650 8650 2    50   ~ 0
+RAM_A15
+Text Label 9650 8950 2    50   ~ 0
+RAM_BA0
+Text Label 9650 8850 2    50   ~ 0
+RAM_BA1
+Text Label 9650 8750 2    50   ~ 0
+RAM_BA2
+Text HLabel 3950 1250 0    50   BiDi ~ 0
+RAM_SDA
+Text HLabel 3950 1350 0    50   Input ~ 0
+RAM_SCL
+Text Label 3950 1450 2    50   ~ 0
+GND
+Text Label 3950 1550 2    50   ~ 0
+GND
+Text Notes 4150 3800 0    50   ~ 0
+SPD EEPROM strap to 2'b00
+$Comp
+L device:R R?
+U 1 1 61CAE11F
+P 4300 800
+F 0 "R?" V 4350 650 50  0000 C CNN
+F 1 "DNP" V 4300 800 50  0000 C CNN
+F 2 "" V 4230 800 50  0001 C CNN
+F 3 "" H 4300 800 50  0001 C CNN
+	1    4300 800 
+	0    -1   -1   0   
+$EndComp
+Text Label 4150 800  2    50   ~ 0
+1V35
+$Comp
+L device:R R?
+U 1 1 61CAFEFC
+P 4300 900
+F 0 "R?" V 4350 750 50  0000 C CNN
+F 1 "DNP" V 4300 900 50  0000 C CNN
+F 2 "" V 4230 900 50  0001 C CNN
+F 3 "" H 4300 900 50  0001 C CNN
+	1    4300 900 
+	0    -1   -1   0   
+$EndComp
+Text Label 4150 900  2    50   ~ 0
+GND
+Text Label 4600 800  0    50   ~ 0
+RAM_TEST
+Wire Wire Line
+	4600 800  4550 800 
+Wire Wire Line
+	4450 900  4550 900 
+Wire Wire Line
+	4550 900  4550 800 
+Connection ~ 4550 800 
+Wire Wire Line
+	4550 800  4450 800 
+Text Label 3950 1750 2    50   ~ 0
+RAM_TEST
+Text Label 3950 1850 2    50   ~ 0
+RAM_RESET_N
+Text Label 9650 9050 2    50   ~ 0
+RAM_RESET_N
+Text Label 3950 2050 2    50   ~ 0
+RAM_CKE0
+Text Label 3950 2150 2    50   ~ 0
+RAM_CK0_P
+Text Label 3950 2250 2    50   ~ 0
+RAM_CK0_N
+Text Label 3950 2450 2    50   ~ 0
+RAM_CKE1
+Text Label 3950 2550 2    50   ~ 0
+RAM_CK1_P
+Text Label 3950 2650 2    50   ~ 0
+RAM_CK1_N
+Text Label 3950 2850 2    50   ~ 0
+RAM_CS0_N
+Text Label 3950 2950 2    50   ~ 0
+RAM_CS1_N
+Text Label 3950 3150 2    50   ~ 0
+RAM_ODT0
+Text Label 3950 3250 2    50   ~ 0
+RAM_ODT1
+Text Label 3950 3450 2    50   ~ 0
+RAM_WE_N
+Text Label 3950 3550 2    50   ~ 0
+RAM_CAS_N
+Text Label 3950 3650 2    50   ~ 0
+RAM_RAS_N
+Text Label 9650 9150 2    50   ~ 0
+RAM_CKE0
+Text Label 9650 9250 2    50   ~ 0
+RAM_CK0_P
+Text Label 9650 9350 2    50   ~ 0
+RAM_CK0_N
+Text Label 9650 9750 2    50   ~ 0
+RAM_CKE1
+Text Label 9650 9450 2    50   ~ 0
+RAM_CK1_P
+Text Label 9650 9550 2    50   ~ 0
+RAM_CK1_N
+Text Label 9650 9850 2    50   ~ 0
+RAM_CS0_N
+Text Label 9650 9950 2    50   ~ 0
+RAM_CS1_N
+Text Label 9650 10050 2    50   ~ 0
+RAM_ODT0
+Text Label 9650 10150 2    50   ~ 0
+RAM_ODT1
+Text Label 9650 10250 2    50   ~ 0
+RAM_WE_N
+Text Label 9650 10350 2    50   ~ 0
+RAM_CAS_N
+Text Label 9650 10450 2    50   ~ 0
+RAM_RAS_N
+Text Notes 12950 5750 0    50   ~ 0
+TODO: test points and Vref resistors
+NoConn ~ 9650 10550
+NoConn ~ 9650 10650
+NoConn ~ 9650 10750
 $EndSCHEMATC

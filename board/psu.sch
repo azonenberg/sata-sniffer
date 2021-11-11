@@ -4,9 +4,9 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 8
+Sheet 2 10
 Title "SATA sniffer"
-Date "2021-11-09"
+Date "2021-11-10"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"

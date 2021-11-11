@@ -2,11 +2,11 @@ EESchema Schematic File Version 4
 LIBS:sniffer-cache
 EELAYER 30 0
 EELAYER END
-$Descr A4 11693 8268
+$Descr A3 16535 11693
 encoding utf-8
-Sheet 4 8
+Sheet 4 10
 Title "SATA sniffer"
-Date "2021-11-09"
+Date "2021-11-10"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -17,15 +17,321 @@ $EndDescr
 $Comp
 L xilinx-azonenberg:XC7KxT-FBG484 U?
 U 9 1 61930307
-P 4300 5650
+P 5300 5600
 AR Path="/618C589A/61930307" Ref="U?"  Part="3" 
 AR Path="/61909AE6/61930307" Ref="U?"  Part="6" 
 AR Path="/618C593E/61930307" Ref="U?"  Part="9" 
-F 0 "U?" H 4300 5550 60  0000 L CNN
-F 1 "XC7K70T-2FBG484" H 4300 5450 60  0000 L CNN
-F 2 "" H 4300 5350 60  0000 C CNN
-F 3 "" H 4300 5350 60  0000 C CNN
-	9    4300 5650
+F 0 "U?" H 5300 5500 60  0000 L CNN
+F 1 "XC7K70T-2FBG484" H 5300 5400 60  0000 L CNN
+F 2 "" H 5300 5300 60  0000 C CNN
+F 3 "" H 5300 5300 60  0000 C CNN
+	9    5300 5600
 	1    0    0    -1  
 $EndComp
+$Comp
+L osc-azonenberg:OSC_LVDS_NOPAD U?
+U 1 1 61D42587
+P 12850 1400
+F 0 "U?" H 13150 1997 60  0000 C CNN
+F 1 "ECX2-LMV-7CN-156.250-TR" H 13150 1891 60  0000 C CNN
+F 2 "" H 12850 1400 60  0000 C CNN
+F 3 "" H 12850 1400 60  0000 C CNN
+	1    12850 1400
+	1    0    0    -1  
+$EndComp
+Text HLabel 12550 1050 0    50   Input ~ 0
+3V3
+Text Label 12550 1150 2    50   ~ 0
+3V3
+Text Label 12550 1250 2    50   ~ 0
+GND
+$Comp
+L device:C C?
+U 1 1 61D44088
+P 12550 1750
+F 0 "C?" H 12665 1796 50  0000 L CNN
+F 1 "4.7 uF" H 12665 1705 50  0000 L CNN
+F 2 "" H 12588 1600 50  0001 C CNN
+F 3 "" H 12550 1750 50  0001 C CNN
+	1    12550 1750
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C?
+U 1 1 61D4453B
+P 13050 1750
+F 0 "C?" H 13165 1796 50  0000 L CNN
+F 1 "0.47 uF" H 13165 1705 50  0000 L CNN
+F 2 "" H 13088 1600 50  0001 C CNN
+F 3 "" H 13050 1750 50  0001 C CNN
+	1    13050 1750
+	1    0    0    -1  
+$EndComp
+Text Label 12550 1600 2    50   ~ 0
+3V3
+Text Label 12550 1900 2    50   ~ 0
+GND
+Wire Wire Line
+	12550 1900 13050 1900
+Wire Wire Line
+	13050 1600 12550 1600
+Text Label 13750 1150 0    50   ~ 0
+REFCLK_156_P
+Text Label 13750 1250 0    50   ~ 0
+REFCLK_156_N
+$Comp
+L device:C C?
+U 1 1 61D469FD
+P 14550 1350
+F 0 "C?" V 14450 1500 50  0000 C CNN
+F 1 "0.1 uF" V 14650 1550 50  0000 C CNN
+F 2 "" H 14588 1200 50  0001 C CNN
+F 3 "" H 14550 1350 50  0001 C CNN
+	1    14550 1350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	13750 1250 14400 1250
+Wire Wire Line
+	14400 1250 14400 1350
+$Comp
+L device:C C?
+U 1 1 61D47564
+P 14550 1050
+F 0 "C?" V 14450 1200 50  0000 C CNN
+F 1 "0.1 uF" V 14650 1250 50  0000 C CNN
+F 2 "" H 14588 900 50  0001 C CNN
+F 3 "" H 14550 1050 50  0001 C CNN
+	1    14550 1050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	13750 1150 14400 1150
+Wire Wire Line
+	14400 1050 14400 1150
+Text Label 14900 1050 0    50   ~ 0
+REFCLK_156_AC_P
+Text Label 14900 1350 0    50   ~ 0
+REFCLK_156_AC_N
+Wire Wire Line
+	14900 1350 14700 1350
+Wire Wire Line
+	14700 1050 14900 1050
+Text Label 5100 3100 2    50   ~ 0
+REFCLK_156_AC_P
+Text Label 5100 3200 2    50   ~ 0
+REFCLK_156_AC_N
+$Comp
+L osc-azonenberg:OSC_LVDS_NOPAD U?
+U 1 1 61D4BD39
+P 12850 2800
+F 0 "U?" H 13150 3397 60  0000 C CNN
+F 1 "ECX2-LMV-3CN-125.000-TR" H 13150 3291 60  0000 C CNN
+F 2 "" H 12850 2800 60  0000 C CNN
+F 3 "" H 12850 2800 60  0000 C CNN
+	1    12850 2800
+	1    0    0    -1  
+$EndComp
+Text HLabel 12550 2450 0    50   Input ~ 0
+3V3
+Text Label 12550 2550 2    50   ~ 0
+3V3
+Text Label 12550 2650 2    50   ~ 0
+GND
+$Comp
+L device:C C?
+U 1 1 61D4BD46
+P 12550 3150
+F 0 "C?" H 12665 3196 50  0000 L CNN
+F 1 "4.7 uF" H 12665 3105 50  0000 L CNN
+F 2 "" H 12588 3000 50  0001 C CNN
+F 3 "" H 12550 3150 50  0001 C CNN
+	1    12550 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C?
+U 1 1 61D4BD50
+P 13050 3150
+F 0 "C?" H 13165 3196 50  0000 L CNN
+F 1 "0.47 uF" H 13165 3105 50  0000 L CNN
+F 2 "" H 13088 3000 50  0001 C CNN
+F 3 "" H 13050 3150 50  0001 C CNN
+	1    13050 3150
+	1    0    0    -1  
+$EndComp
+Text Label 12550 3000 2    50   ~ 0
+3V3
+Text Label 12550 3300 2    50   ~ 0
+GND
+Wire Wire Line
+	12550 3300 13050 3300
+Wire Wire Line
+	13050 3000 12550 3000
+Text Label 13750 2550 0    50   ~ 0
+REFCLK_125_P
+Text Label 13750 2650 0    50   ~ 0
+REFCLK_125_N
+$Comp
+L device:C C?
+U 1 1 61D4BD60
+P 14550 2750
+F 0 "C?" V 14450 2900 50  0000 C CNN
+F 1 "0.1 uF" V 14650 2950 50  0000 C CNN
+F 2 "" H 14588 2600 50  0001 C CNN
+F 3 "" H 14550 2750 50  0001 C CNN
+	1    14550 2750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	13750 2650 14400 2650
+Wire Wire Line
+	14400 2650 14400 2750
+$Comp
+L device:C C?
+U 1 1 61D4BD6C
+P 14550 2450
+F 0 "C?" V 14450 2600 50  0000 C CNN
+F 1 "0.1 uF" V 14650 2650 50  0000 C CNN
+F 2 "" H 14588 2300 50  0001 C CNN
+F 3 "" H 14550 2450 50  0001 C CNN
+	1    14550 2450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	13750 2550 14400 2550
+Wire Wire Line
+	14400 2450 14400 2550
+Text Label 14900 2450 0    50   ~ 0
+REFCLK_125_AC_P
+Text Label 14900 2750 0    50   ~ 0
+REFCLK_125_AC_N
+Wire Wire Line
+	14900 2750 14700 2750
+Wire Wire Line
+	14700 2450 14900 2450
+Text Label 5100 3400 2    50   ~ 0
+REFCLK_125_AC_P
+Text Label 5100 3500 2    50   ~ 0
+REFCLK_125_AC_N
+$Comp
+L device:R R?
+U 1 1 61D52124
+P 4600 3850
+F 0 "R?" H 4670 3896 50  0000 L CNN
+F 1 "100" H 4670 3805 50  0000 L CNN
+F 2 "" V 4530 3850 50  0001 C CNN
+F 3 "" H 4600 3850 50  0001 C CNN
+	1    4600 3850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5100 3700 4600 3700
+Wire Wire Line
+	4600 4000 5100 4000
+Wire Wire Line
+	5100 4000 5100 3900
+Text Notes 4400 6550 0    50   ~ 0
+TODO: SFP+, 2x SATA
+$Comp
+L Connector:Conn_Coaxial J?
+U 1 1 61D5F6D6
+P 1000 4000
+F 0 "J?" H 953 4238 50  0000 C CNN
+F 1 "32K243-40ML5" H 953 4147 50  0000 C CNN
+F 2 "" H 1000 4000 50  0001 C CNN
+F 3 "" H 1000 4000 50  0001 C CNN
+	1    1000 4000
+	-1   0    0    -1  
+$EndComp
+Text Label 1500 4000 0    50   ~ 0
+GTX_TX3_P
+$Comp
+L device:C C?
+U 1 1 61D61CE3
+P 4100 650
+F 0 "C?" V 4000 400 50  0000 C CNN
+F 1 "0.1 uF" V 4000 850 50  0000 C CNN
+F 2 "" H 4138 500 50  0001 C CNN
+F 3 "" H 4100 650 50  0001 C CNN
+	1    4100 650 
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C?
+U 1 1 61D635C7
+P 4100 850
+F 0 "C?" V 4000 600 50  0000 C CNN
+F 1 "0.1 uF" V 4000 1050 50  0000 C CNN
+F 2 "" H 4138 700 50  0001 C CNN
+F 3 "" H 4100 850 50  0001 C CNN
+	1    4100 850 
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4250 650  5100 650 
+Wire Wire Line
+	5100 650  5100 700 
+Wire Wire Line
+	4250 850  5100 850 
+Wire Wire Line
+	5100 850  5100 800 
+Text Label 4600 650  0    50   ~ 0
+GTX_TX3_P
+Text Label 4600 850  0    50   ~ 0
+GTX_TX3_N
+Text Label 3700 650  2    50   ~ 0
+GTX_TX3_AC_P
+Text Label 3700 850  2    50   ~ 0
+GTX_TX3_AC_N
+Wire Wire Line
+	3700 850  3950 850 
+Wire Wire Line
+	3950 650  3700 650 
+$Comp
+L device:C C?
+U 1 1 61D678BF
+P 2750 950
+F 0 "C?" V 2650 700 50  0000 C CNN
+F 1 "0.1 uF" V 2650 1150 50  0000 C CNN
+F 2 "" H 2788 800 50  0001 C CNN
+F 3 "" H 2750 950 50  0001 C CNN
+	1    2750 950 
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C?
+U 1 1 61D678C9
+P 2750 1150
+F 0 "C?" V 2650 900 50  0000 C CNN
+F 1 "0.1 uF" V 2650 1350 50  0000 C CNN
+F 2 "" H 2788 1000 50  0001 C CNN
+F 3 "" H 2750 1150 50  0001 C CNN
+	1    2750 1150
+	0    1    1    0   
+$EndComp
+Text Label 5000 1000 2    50   ~ 0
+GTX_TX3_P
+Text Label 5000 1100 2    50   ~ 0
+GTX_TX3_N
+Text Label 2350 950  2    50   ~ 0
+GTX_TX3_AC_P
+Text Label 2350 1150 2    50   ~ 0
+GTX_TX3_AC_N
+Wire Wire Line
+	2350 1150 2600 1150
+Wire Wire Line
+	2600 950  2350 950 
+Wire Wire Line
+	5100 1000 3150 1000
+Wire Wire Line
+	5100 1100 3150 1100
+Wire Wire Line
+	3150 1100 3150 1150
+Wire Wire Line
+	3150 1150 2900 1150
+Wire Wire Line
+	2900 950  3150 950 
+Wire Wire Line
+	3150 950  3150 1000
 $EndSCHEMATC

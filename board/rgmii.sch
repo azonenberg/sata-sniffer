@@ -2,11 +2,11 @@ EESchema Schematic File Version 4
 LIBS:sniffer-cache
 EELAYER 30 0
 EELAYER END
-$Descr A4 11693 8268
+$Descr A3 16535 11693
 encoding utf-8
-Sheet 7 8
+Sheet 7 10
 Title "SATA sniffer"
-Date "2021-11-09"
+Date "2021-11-10"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -17,15 +17,416 @@ $EndDescr
 $Comp
 L xilinx-azonenberg:XC7KxT-FBG484 U?
 U 7 1 619294FB
-P 1500 5950
+P 12100 7750
 AR Path="/618C589A/619294FB" Ref="U?"  Part="3" 
 AR Path="/61909AE6/619294FB" Ref="U?"  Part="6" 
 AR Path="/61923389/619294FB" Ref="U?"  Part="7" 
-F 0 "U?" H 1500 5850 60  0000 L CNN
-F 1 "XC7K70T-2FBG484" H 1500 5750 60  0000 L CNN
-F 2 "" H 1500 5650 60  0000 C CNN
-F 3 "" H 1500 5650 60  0000 C CNN
-	7    1500 5950
+F 0 "U?" H 12100 7650 60  0000 L CNN
+F 1 "XC7K70T-2FBG484" H 12100 7550 60  0000 L CNN
+F 2 "" H 12100 7450 60  0000 C CNN
+F 3 "" H 12100 7450 60  0000 C CNN
+	7    12100 7750
 	1    0    0    -1  
 $EndComp
+$Comp
+L special-azonenberg:KSZ9031RN U?
+U 1 1 61B10DC4
+P 3550 4200
+F 0 "U?" H 4375 7537 60  0000 C CNN
+F 1 "KSZ9031RN" H 4375 7431 60  0000 C CNN
+F 2 "" H 3550 4200 60  0000 C CNN
+F 3 "" H 3550 4200 60  0000 C CNN
+	1    3550 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L special-azonenberg:BEL_FUSE_0826-1G1T-23-F J?
+U 1 1 61D7E542
+P 1250 4000
+F 0 "J?" H 1317 6287 60  0000 C CNN
+F 1 "BEL_FUSE_0826-1G1T-23-F" H 1317 6181 60  0000 C CNN
+F 2 "" H 1250 4000 60  0000 C CNN
+F 3 "" H 1250 4000 60  0000 C CNN
+	1    1250 4000
+	-1   0    0    -1  
+$EndComp
+$Comp
+L osc-azonenberg:OSC_LVDS_NOPAD U?
+U 1 1 61D87E30
+P 2350 7150
+AR Path="/618C593E/61D87E30" Ref="U?"  Part="1" 
+AR Path="/61923389/61D87E30" Ref="U?"  Part="1" 
+F 0 "U?" H 2650 7747 60  0000 C CNN
+F 1 "ECX2-LMV-3CN-125.000-TR" H 2650 7641 60  0000 C CNN
+F 2 "" H 2350 7150 60  0000 C CNN
+F 3 "" H 2350 7150 60  0000 C CNN
+	1    2350 7150
+	1    0    0    -1  
+$EndComp
+Text HLabel 2050 6800 0    50   Input ~ 0
+3V3
+Text Label 2050 6900 2    50   ~ 0
+3V3
+Text Label 2050 7000 2    50   ~ 0
+GND
+$Comp
+L device:C C?
+U 1 1 61D87E39
+P 2050 7500
+AR Path="/618C593E/61D87E39" Ref="C?"  Part="1" 
+AR Path="/61923389/61D87E39" Ref="C?"  Part="1" 
+F 0 "C?" H 2165 7546 50  0000 L CNN
+F 1 "4.7 uF" H 2165 7455 50  0000 L CNN
+F 2 "" H 2088 7350 50  0001 C CNN
+F 3 "" H 2050 7500 50  0001 C CNN
+	1    2050 7500
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C?
+U 1 1 61D87E3F
+P 2550 7500
+AR Path="/618C593E/61D87E3F" Ref="C?"  Part="1" 
+AR Path="/61923389/61D87E3F" Ref="C?"  Part="1" 
+F 0 "C?" H 2665 7546 50  0000 L CNN
+F 1 "0.47 uF" H 2665 7455 50  0000 L CNN
+F 2 "" H 2588 7350 50  0001 C CNN
+F 3 "" H 2550 7500 50  0001 C CNN
+	1    2550 7500
+	1    0    0    -1  
+$EndComp
+Text Label 2050 7350 2    50   ~ 0
+3V3
+Text Label 2050 7650 2    50   ~ 0
+GND
+Wire Wire Line
+	2050 7650 2550 7650
+Wire Wire Line
+	2550 7350 2050 7350
+Text Label 3250 6900 0    50   ~ 0
+CLK_125_P
+$Comp
+L device:C C?
+U 1 1 61D87E4B
+P 4050 7100
+AR Path="/618C593E/61D87E4B" Ref="C?"  Part="1" 
+AR Path="/61923389/61D87E4B" Ref="C?"  Part="1" 
+F 0 "C?" V 3950 7250 50  0000 C CNN
+F 1 "0.1 uF" V 4150 7300 50  0000 C CNN
+F 2 "" H 4088 6950 50  0001 C CNN
+F 3 "" H 4050 7100 50  0001 C CNN
+	1    4050 7100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3250 7000 3900 7000
+Wire Wire Line
+	3900 7000 3900 7100
+$Comp
+L device:C C?
+U 1 1 61D87E53
+P 4050 6800
+AR Path="/618C593E/61D87E53" Ref="C?"  Part="1" 
+AR Path="/61923389/61D87E53" Ref="C?"  Part="1" 
+F 0 "C?" V 3950 6950 50  0000 C CNN
+F 1 "0.1 uF" V 4150 7000 50  0000 C CNN
+F 2 "" H 4088 6650 50  0001 C CNN
+F 3 "" H 4050 6800 50  0001 C CNN
+	1    4050 6800
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3250 6900 3900 6900
+Wire Wire Line
+	3900 6800 3900 6900
+Text Label 4400 6800 0    50   ~ 0
+CLK_125_AC_P
+Text Label 4400 7100 0    50   ~ 0
+CLK_125_AC_N
+Wire Wire Line
+	4400 7100 4200 7100
+Wire Wire Line
+	4200 6800 4400 6800
+Text Label 3250 7000 0    50   ~ 0
+CLK_125_N
+Text Label 11900 5550 2    50   ~ 0
+CLK_125_AC_P
+Text Label 11900 5650 2    50   ~ 0
+CLK_125_AC_N
+$Comp
+L osc-azonenberg:OSC U?
+U 1 1 61D8F215
+P 2750 8350
+F 0 "U?" H 2725 8637 60  0000 C CNN
+F 1 "SIT1602BC-72-18S-25.000000" H 2725 8531 60  0000 C CNN
+F 2 "" H 2750 8350 60  0000 C CNN
+F 3 "" H 2750 8350 60  0000 C CNN
+	1    2750 8350
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:R R?
+U 1 1 61D900AD
+P 3650 8350
+F 0 "R?" V 3550 8350 50  0000 C CNN
+F 1 "33" V 3650 8350 50  0000 C CNN
+F 2 "" V 3580 8350 50  0001 C CNN
+F 3 "" H 3650 8350 50  0001 C CNN
+	1    3650 8350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3500 8350 3400 8350
+$Comp
+L device:C C?
+U 1 1 61D90C50
+P 1550 8500
+AR Path="/618C593E/61D90C50" Ref="C?"  Part="1" 
+AR Path="/61923389/61D90C50" Ref="C?"  Part="1" 
+F 0 "C?" H 1665 8546 50  0000 L CNN
+F 1 "0.47 uF" H 1665 8455 50  0000 L CNN
+F 2 "" H 1588 8350 50  0001 C CNN
+F 3 "" H 1550 8500 50  0001 C CNN
+	1    1550 8500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1550 8350 2050 8350
+Wire Wire Line
+	2050 8350 2050 8450
+Connection ~ 2050 8350
+Wire Wire Line
+	1550 8650 2050 8650
+Wire Wire Line
+	2050 8650 2050 8550
+Text Label 1550 8350 2    50   ~ 0
+3V3
+Text Label 1550 8650 2    50   ~ 0
+GND
+Text Label 3800 8350 0    50   ~ 0
+ETH_CLK_25MHZ
+Text Label 5500 3650 0    50   ~ 0
+ETH_CLK_25MHZ
+Text HLabel 2750 1150 0    50   Input ~ 0
+3V3
+Wire Wire Line
+	2750 1150 3250 1150
+Wire Wire Line
+	3250 1150 3250 1250
+Connection ~ 3250 1150
+Connection ~ 3250 1250
+Wire Wire Line
+	3250 1250 3250 1350
+Text HLabel 2750 1950 0    50   Input ~ 0
+1V2
+Wire Wire Line
+	2750 1950 3250 1950
+Wire Wire Line
+	3250 1950 3250 2050
+Connection ~ 3250 1950
+Connection ~ 3250 2050
+Wire Wire Line
+	3250 2050 3250 2150
+Connection ~ 3250 2150
+Wire Wire Line
+	3250 2150 3250 2250
+Connection ~ 3250 2250
+Wire Wire Line
+	3250 2250 3250 2350
+Connection ~ 3250 2350
+Wire Wire Line
+	3250 2350 3250 2450
+NoConn ~ 5500 3550
+$Comp
+L device:R R?
+U 1 1 61D99BE4
+P 5800 3850
+F 0 "R?" V 5700 3900 50  0000 C CNN
+F 1 "R" V 5800 3850 50  0000 C CNN
+F 2 "" V 5730 3850 50  0001 C CNN
+F 3 "" H 5800 3850 50  0001 C CNN
+	1    5800 3850
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 3850 5500 3850
+Text Label 1550 2500 0    50   ~ 0
+ETH_A_P
+Text Label 1550 2700 0    50   ~ 0
+ETH_A_N
+Text Label 1550 2900 0    50   ~ 0
+ETH_B_P
+Text Label 1550 3100 0    50   ~ 0
+ETH_B_N
+Text Label 1550 3300 0    50   ~ 0
+ETH_C_P
+Text Label 1550 3500 0    50   ~ 0
+ETH_C_N
+Text Label 1550 3700 0    50   ~ 0
+ETH_D_P
+Text Label 1550 3900 0    50   ~ 0
+ETH_D_N
+Text Label 3250 3400 2    50   ~ 0
+ETH_A_P
+Text Label 3250 3500 2    50   ~ 0
+ETH_A_N
+Text Label 3250 3600 2    50   ~ 0
+ETH_B_P
+Text Label 3250 3700 2    50   ~ 0
+ETH_B_N
+Text Label 3250 3800 2    50   ~ 0
+ETH_C_P
+Text Label 3250 3900 2    50   ~ 0
+ETH_C_N
+Text Label 3250 4000 2    50   ~ 0
+ETH_D_P
+Text Label 3250 4100 2    50   ~ 0
+ETH_D_N
+Text Notes 4950 4650 0    50   ~ 0
+TODO: straps
+Text Label 5500 3300 0    50   ~ 0
+ETH_RST_N
+Text Label 5500 3000 0    50   ~ 0
+ETH_MDIO
+Text Label 5500 2900 0    50   ~ 0
+ETH_MDC
+Text Label 5500 1650 0    50   ~ 0
+RGMII_TXD0
+Text Label 5500 1750 0    50   ~ 0
+RGMII_TXD1
+Text Label 5500 1850 0    50   ~ 0
+RGMII_TXD2
+Text Label 5500 1950 0    50   ~ 0
+RGMII_TXD3
+Text Label 5500 2050 0    50   ~ 0
+RGMII_TX_CLK
+Text Label 5500 2150 0    50   ~ 0
+RGMII_TX_EN
+$Comp
+L device:R R?
+U 1 1 61DB7237
+P 5800 2300
+F 0 "R?" V 5750 2500 50  0000 C CNN
+F 1 "33" V 5800 2300 50  0000 C CNN
+F 2 "" V 5730 2300 50  0001 C CNN
+F 3 "" H 5800 2300 50  0001 C CNN
+	1    5800 2300
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 2300 5500 2300
+$Comp
+L device:R R?
+U 1 1 61DB871A
+P 5800 2400
+F 0 "R?" V 5750 2600 50  0000 C CNN
+F 1 "33" V 5800 2400 50  0000 C CNN
+F 2 "" V 5730 2400 50  0001 C CNN
+F 3 "" H 5800 2400 50  0001 C CNN
+	1    5800 2400
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 2400 5500 2400
+$Comp
+L device:R R?
+U 1 1 61DB9121
+P 5800 2500
+F 0 "R?" V 5750 2700 50  0000 C CNN
+F 1 "33" V 5800 2500 50  0000 C CNN
+F 2 "" V 5730 2500 50  0001 C CNN
+F 3 "" H 5800 2500 50  0001 C CNN
+	1    5800 2500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 2500 5500 2500
+$Comp
+L device:R R?
+U 1 1 61DB9B1E
+P 5800 2600
+F 0 "R?" V 5750 2800 50  0000 C CNN
+F 1 "33" V 5800 2600 50  0000 C CNN
+F 2 "" V 5730 2600 50  0001 C CNN
+F 3 "" H 5800 2600 50  0001 C CNN
+	1    5800 2600
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 2600 5500 2600
+$Comp
+L device:R R?
+U 1 1 61DBA5C6
+P 5800 2700
+F 0 "R?" V 5750 2900 50  0000 C CNN
+F 1 "33" V 5800 2700 50  0000 C CNN
+F 2 "" V 5730 2700 50  0001 C CNN
+F 3 "" H 5800 2700 50  0001 C CNN
+	1    5800 2700
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 2700 5500 2700
+$Comp
+L device:R R?
+U 1 1 61DBB3C0
+P 5800 2800
+F 0 "R?" V 5750 3000 50  0000 C CNN
+F 1 "33" V 5800 2800 50  0000 C CNN
+F 2 "" V 5730 2800 50  0001 C CNN
+F 3 "" H 5800 2800 50  0001 C CNN
+	1    5800 2800
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 2800 5500 2800
+Text Label 6200 2300 0    50   ~ 0
+ETH_RXD3
+Text Label 6200 2400 0    50   ~ 0
+ETH_RXD2
+Text Label 6200 2500 0    50   ~ 0
+ETH_RXD1
+Text Label 6200 2600 0    50   ~ 0
+ETH_RXD0
+Text Label 6200 2700 0    50   ~ 0
+ETH_RX_DV
+Text Label 6200 2800 0    50   ~ 0
+ETH_RX_CLK
+Wire Wire Line
+	6200 2800 5950 2800
+Wire Wire Line
+	5950 2700 6200 2700
+Wire Wire Line
+	6200 2600 5950 2600
+Wire Wire Line
+	5950 2500 6200 2500
+Wire Wire Line
+	6200 2400 5950 2400
+Wire Wire Line
+	5950 2300 6200 2300
+Text HLabel 2750 1450 0    50   Input ~ 0
+1V8
+Wire Wire Line
+	2750 1450 3250 1450
+Wire Wire Line
+	3250 1450 3250 1550
+Connection ~ 3250 1450
+Connection ~ 3250 1550
+Wire Wire Line
+	3250 1550 3250 1650
+Text Label 3250 2550 2    50   ~ 0
+A1V2_PLL
+Text Label 3250 1750 2    50   ~ 0
+A1V2
+Wire Wire Line
+	3250 1750 3250 1850
+Text Label 3250 3000 2    50   ~ 0
+GND
+Wire Wire Line
+	3250 3000 3250 3100
+Connection ~ 3250 3100
+Wire Wire Line
+	3250 3100 3250 3200
+NoConn ~ 3250 2800
+NoConn ~ 5500 3100
 $EndSCHEMATC
