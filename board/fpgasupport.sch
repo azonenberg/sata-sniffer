@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 10 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -198,8 +198,6 @@ Text Label 2400 6400 2    50   ~ 0
 GND
 Text Label 5750 2900 2    50   ~ 0
 JTAG_TCK
-Text Label 5750 2100 2    50   ~ 0
-1V8
 Text Label 5750 3100 2    50   ~ 0
 JTAG_TDI
 Text Label 5750 3000 2    50   ~ 0
@@ -223,4 +221,6 @@ Wire Wire Line
 	5750 2500 5750 2600
 Text HLabel 5200 5550 0    50   Input ~ 0
 GND
+Text HLabel 5750 2100 0    50   Input ~ 0
+1V8
 $EndSCHEMATC

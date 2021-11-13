@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -26,10 +26,9 @@ F6 "1V8" O R 2000 1400 50
 F7 "3V3" O R 2000 1300 50 
 F8 "VTT" O R 2000 2000 50 
 F9 "VREF" O R 2000 2100 50 
-F10 "12V0" O R 2000 1200 50 
+F10 "12V0" O R 2000 1100 50 
+F11 "5V0" O R 2000 1200 50 
 $EndSheet
-Text Notes 5700 5500 0    50   ~ 0
-Available I/O banks\n\n13, 14, 15: HR\n1.35V for DDR3.\nBoot flash lives in extra byte group of 14\nBoot flash: 5 (DQ[3:0], CS#)\nNeed level shifter\n\n16: HR (35)\nGPIO LEDs: 4\nLA pods: 10 (2x UART, present, fault, pwren)\nPMOD: 8\nSFP+: 8 (I2C, TX_DIS, TX_FAULT, RX_LOS, MOD_ABS, RS0, RS1)\nRAM: I2C\n3 unused\n\n33: HP\nLVDS for LA pods: 32 (2 pods * 8 pairs)\nRGMII: 15 (RGMII, MDIO, RST#)\nClock in: 2\n1 available\n\n34: HP\nLVDS for expansion connector
 $Sheet
 S 1000 3000 1000 1500
 U 618C589A
@@ -60,7 +59,8 @@ F7 "SFP_TX_DISABLE" I R 6600 1450 50
 F8 "SFP_TX_FAULT" O R 6600 1550 50 
 F9 "SFP_I2C_SCL" I R 6600 1650 50 
 F10 "SFP_I2C_SDA" B R 6600 1750 50 
-F11 "GND" I L 5550 1150 50 
+F11 "GND" I L 5550 1250 50 
+F12 "GTX_1V2" I L 5550 1150 50 
 $EndSheet
 $Sheet
 S 2450 1200 750  700 
@@ -73,6 +73,7 @@ F4 "1V2" I L 2450 1600 50
 F5 "1V8" I L 2450 1400 50 
 F6 "1V35" I L 2450 1500 50 
 F7 "3V3" I L 2450 1300 50 
+F8 "GTX_1V2" O R 3200 1300 50 
 $EndSheet
 $Sheet
 S 7000 1000 1200 1150
@@ -108,10 +109,12 @@ F6 "ETH_LED1_P" I L 8650 1750 50
 F7 "GND" I L 8650 1450 50 
 $EndSheet
 $Sheet
-S 8500 3000 1000 1500
+S 2450 2200 1100 250 
 U 6192A55E
 F0 "Expansion connector" 50
 F1 "expansion.sch" 50
+F2 "5V0" I L 2450 2250 50 
+F3 "GND" I L 2450 2350 50 
 $EndSheet
 Wire Wire Line
 	2000 1300 2450 1300
@@ -186,15 +189,16 @@ F0 "FPGA support" 50
 F1 "fpgasupport.sch" 50
 F2 "FLASH_SCK" O L 4000 3550 50 
 F3 "3V3" I L 4000 3050 50 
-F4 "GND" I L 4000 3150 50 
+F4 "GND" I L 4000 3250 50 
+F5 "1V8" I L 4000 3150 50 
 $EndSheet
-Text Label 4000 3150 2    50   ~ 0
+Text Label 4000 3250 2    50   ~ 0
 GND
 Text Label 4000 3050 2    50   ~ 0
 3V3
 Wire Wire Line
 	4000 3550 3550 3550
-Text Label 5550 1150 2    50   ~ 0
+Text Label 5550 1250 2    50   ~ 0
 GND
 Text Label 5550 1050 2    50   ~ 0
 3V3
@@ -240,8 +244,22 @@ Wire Wire Line
 	8650 1650 8200 1650
 Text Label 8200 1050 0    50   ~ 0
 12V0
-Text Label 2100 1200 0    50   ~ 0
+Text Label 2100 1100 0    50   ~ 0
 12V0
 Wire Wire Line
+	2100 1100 2000 1100
+Text Label 4000 3150 2    50   ~ 0
+1V8
+Text Label 2450 2250 2    50   ~ 0
+5V0
+Text Label 2450 2350 2    50   ~ 0
+GND
+Text Label 2100 1200 0    50   ~ 0
+5V0
+Wire Wire Line
 	2100 1200 2000 1200
+Text Label 5550 1150 2    50   ~ 0
+GTX_1V2
+Text Label 3200 1300 0    50   ~ 0
+GTX_1V2
 $EndSCHEMATC

@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 3 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -1448,9 +1448,167 @@ Text Label 9650 10350 2    50   ~ 0
 RAM_CAS_N
 Text Label 9650 10450 2    50   ~ 0
 RAM_RAS_N
-Text Notes 12950 5750 0    50   ~ 0
-TODO: test points and Vref resistors
 NoConn ~ 9650 10550
 NoConn ~ 9650 10650
 NoConn ~ 9650 10750
+Text Label 5800 800  2    50   ~ 0
+RAM_RESET_N
+$Comp
+L device:R R64
+U 1 1 61BAED6C
+P 5950 800
+F 0 "R64" V 6000 650 50  0000 C CNN
+F 1 "4.7K" V 5950 800 50  0000 C CNN
+F 2 "" V 5880 800 50  0001 C CNN
+F 3 "" H 5950 800 50  0001 C CNN
+	1    5950 800 
+	0    -1   -1   0   
+$EndComp
+Text Label 6300 800  0    50   ~ 0
+GND
+Wire Wire Line
+	6300 800  6100 800 
+$Comp
+L Connector:Conn_01x01 TP18
+U 1 1 61D08689
+P 12800 4850
+F 0 "TP18" H 12718 5067 50  0000 C CNN
+F 1 "TESTTRACE" H 12718 4976 50  0000 C CNN
+F 2 "" H 12800 4850 50  0001 C CNN
+F 3 "~" H 12800 4850 50  0001 C CNN
+	1    12800 4850
+	-1   0    0    -1  
+$EndComp
+$Comp
+L device:R R67
+U 1 1 61D0A248
+P 14150 4700
+F 0 "R67" H 14220 4746 50  0000 L CNN
+F 1 "1K" H 14220 4655 50  0000 L CNN
+F 2 "" V 14080 4700 50  0001 C CNN
+F 3 "" H 14150 4700 50  0001 C CNN
+	1    14150 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:R R68
+U 1 1 61D0A5DA
+P 14150 5000
+F 0 "R68" H 14220 5046 50  0000 L CNN
+F 1 "1K" H 14220 4955 50  0000 L CNN
+F 2 "" V 14080 5000 50  0001 C CNN
+F 3 "" H 14150 5000 50  0001 C CNN
+	1    14150 5000
+	1    0    0    -1  
+$EndComp
+Text Label 14350 4850 0    50   ~ 0
+TP_VREF
+Connection ~ 14150 4850
+Text Label 14150 4550 0    50   ~ 0
+1V35
+Text Label 14350 5150 0    50   ~ 0
+GND
+$Comp
+L device:C C143
+U 1 1 61D2942F
+P 14750 5000
+F 0 "C143" H 14865 5046 50  0000 L CNN
+F 1 "4.7 uF" H 14865 4955 50  0000 L CNN
+F 2 "" H 14788 4850 50  0001 C CNN
+F 3 "" H 14750 5000 50  0001 C CNN
+	1    14750 5000
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C144
+U 1 1 61D29D43
+P 15250 5000
+F 0 "C144" H 15365 5046 50  0000 L CNN
+F 1 "0.47 uF" H 15365 4955 50  0000 L CNN
+F 2 "" H 15288 4850 50  0001 C CNN
+F 3 "" H 15250 5000 50  0001 C CNN
+	1    15250 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	14150 4850 14750 4850
+Connection ~ 14750 4850
+Wire Wire Line
+	14750 4850 15250 4850
+Wire Wire Line
+	14150 5150 14750 5150
+Connection ~ 14750 5150
+Wire Wire Line
+	14750 5150 15250 5150
+Text Label 13000 4850 0    50   ~ 0
+TP_VREF
+$Comp
+L Connector:Conn_01x01 TP19
+U 1 1 61D3E579
+P 12800 5200
+F 0 "TP19" H 12718 5417 50  0000 C CNN
+F 1 "TESTTRACE" H 12718 5326 50  0000 C CNN
+F 2 "" H 12800 5200 50  0001 C CNN
+F 3 "~" H 12800 5200 50  0001 C CNN
+	1    12800 5200
+	-1   0    0    -1  
+$EndComp
+Text Label 13000 5200 0    50   ~ 0
+TP_VREF
+$Comp
+L Connector:Conn_01x01 TP20
+U 1 1 61D450D1
+P 12800 5550
+F 0 "TP20" H 12718 5767 50  0000 C CNN
+F 1 "TESTTRACE" H 12718 5676 50  0000 C CNN
+F 2 "" H 12800 5550 50  0001 C CNN
+F 3 "~" H 12800 5550 50  0001 C CNN
+	1    12800 5550
+	-1   0    0    -1  
+$EndComp
+Text Label 13000 5550 0    50   ~ 0
+TP_VREF
+$Comp
+L Connector:Conn_01x01 TP21
+U 1 1 61D4BA99
+P 12800 5950
+F 0 "TP21" H 12718 6167 50  0000 C CNN
+F 1 "TESTTRACE" H 12718 6076 50  0000 C CNN
+F 2 "" H 12800 5950 50  0001 C CNN
+F 3 "~" H 12800 5950 50  0001 C CNN
+	1    12800 5950
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x01 TP22
+U 1 1 61D4CED3
+P 12800 6300
+F 0 "TP22" H 12718 6517 50  0000 C CNN
+F 1 "TESTTRACE" H 12718 6426 50  0000 C CNN
+F 2 "" H 12800 6300 50  0001 C CNN
+F 3 "~" H 12800 6300 50  0001 C CNN
+	1    12800 6300
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Connector:Conn_01x01 TP23
+U 1 1 61D4CEDD
+P 12800 6650
+F 0 "TP23" H 12718 6867 50  0000 C CNN
+F 1 "TESTTRACE" H 12718 6776 50  0000 C CNN
+F 2 "" H 12800 6650 50  0001 C CNN
+F 3 "~" H 12800 6650 50  0001 C CNN
+	1    12800 6650
+	-1   0    0    -1  
+$EndComp
+Text Label 13000 5950 0    50   ~ 0
+GND
+Text Label 13000 6300 0    50   ~ 0
+GND
+Text Label 13000 6650 0    50   ~ 0
+GND
+Text Notes 14450 6550 0    50   ~ 0
+We want test points on:\n* CLK x2\n* RAS\n* CAS\n* All BA??\n* A10\n* A12\n* WE\n* CS\n* A few random DQ pins\n* DQS for those DQ
+Text Notes 13350 7300 0    50   ~ 0
+CLK, DQS - diff, no ref needed\nDQ - two ref to each\nCommand bus: ground
 $EndSCHEMATC

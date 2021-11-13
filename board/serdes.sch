@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 4 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -230,20 +230,18 @@ Wire Wire Line
 	4600 4000 5100 4000
 Wire Wire Line
 	5100 4000 5100 3900
-Text Notes 7800 4200 0    50   ~ 0
-TODO: SATA connectors
 $Comp
 L Connector:Conn_Coaxial J2
 U 1 1 61D5F6D6
-P 1400 1950
-F 0 "J2" H 1353 2188 50  0000 C CNN
-F 1 "32K243-40ML5" H 1353 2097 50  0000 C CNN
-F 2 "" H 1400 1950 50  0001 C CNN
-F 3 "" H 1400 1950 50  0001 C CNN
-	1    1400 1950
+P 8100 1250
+F 0 "J2" H 8053 1488 50  0000 C CNN
+F 1 "32K243-40ML5" H 8053 1397 50  0000 C CNN
+F 2 "" H 8100 1250 50  0001 C CNN
+F 3 "" H 8100 1250 50  0001 C CNN
+	1    8100 1250
 	-1   0    0    -1  
 $EndComp
-Text Label 1700 1950 0    50   ~ 0
+Text Label 8400 1250 0    50   ~ 0
 GTX_TX3_P
 $Comp
 L device:C C36
@@ -310,9 +308,9 @@ F 3 "" H 2750 1150 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Text Label 5000 1000 2    50   ~ 0
-GTX_TX3_P
+GTX_RX3_P
 Text Label 5000 1100 2    50   ~ 0
-GTX_TX3_N
+GTX_RX3_N
 Text Label 2350 950  2    50   ~ 0
 GTX_TX3_AC_P
 Text Label 2350 1150 2    50   ~ 0
@@ -334,99 +332,99 @@ Wire Wire Line
 Wire Wire Line
 	3150 950  3150 1000
 Wire Wire Line
-	1700 1950 1550 1950
-Text Label 1700 2150 0    50   ~ 0
+	8400 1250 8250 1250
+Text Label 8400 1450 0    50   ~ 0
 GND
 Wire Wire Line
-	1700 2150 1400 2150
+	8400 1450 8100 1450
 $Comp
 L Connector:Conn_Coaxial J5
 U 1 1 619C73C6
-P 1400 2550
-F 0 "J5" H 1353 2788 50  0000 C CNN
-F 1 "32K243-40ML5" H 1353 2697 50  0000 C CNN
-F 2 "" H 1400 2550 50  0001 C CNN
-F 3 "" H 1400 2550 50  0001 C CNN
-	1    1400 2550
+P 8100 1850
+F 0 "J5" H 8053 2088 50  0000 C CNN
+F 1 "32K243-40ML5" H 8053 1997 50  0000 C CNN
+F 2 "" H 8100 1850 50  0001 C CNN
+F 3 "" H 8100 1850 50  0001 C CNN
+	1    8100 1850
 	-1   0    0    -1  
 $EndComp
-Text Label 1700 2550 0    50   ~ 0
+Text Label 8400 1850 0    50   ~ 0
 GTX_TX3_N
 Wire Wire Line
-	1700 2550 1550 2550
-Text Label 1700 2750 0    50   ~ 0
+	8400 1850 8250 1850
+Text Label 8400 2050 0    50   ~ 0
 GND
 Wire Wire Line
-	1700 2750 1400 2750
+	8400 2050 8100 2050
 $Comp
 L Connector:Conn_Coaxial J6
 U 1 1 619C88BB
-P 1400 3150
-F 0 "J6" H 1353 3388 50  0000 C CNN
-F 1 "32K243-40ML5" H 1353 3297 50  0000 C CNN
-F 2 "" H 1400 3150 50  0001 C CNN
-F 3 "" H 1400 3150 50  0001 C CNN
-	1    1400 3150
+P 8100 2450
+F 0 "J6" H 8053 2688 50  0000 C CNN
+F 1 "32K243-40ML5" H 8053 2597 50  0000 C CNN
+F 2 "" H 8100 2450 50  0001 C CNN
+F 3 "" H 8100 2450 50  0001 C CNN
+	1    8100 2450
 	-1   0    0    -1  
 $EndComp
-Text Label 1700 3150 0    50   ~ 0
+Text Label 8400 2450 0    50   ~ 0
 GTX_RX3_P
 Wire Wire Line
-	1700 3150 1550 3150
-Text Label 1700 3350 0    50   ~ 0
+	8400 2450 8250 2450
+Text Label 8400 2650 0    50   ~ 0
 GND
 Wire Wire Line
-	1700 3350 1400 3350
+	8400 2650 8100 2650
 $Comp
 L Connector:Conn_Coaxial J7
 U 1 1 619C8E35
-P 1400 3750
-F 0 "J7" H 1353 3988 50  0000 C CNN
-F 1 "32K243-40ML5" H 1353 3897 50  0000 C CNN
-F 2 "" H 1400 3750 50  0001 C CNN
-F 3 "" H 1400 3750 50  0001 C CNN
-	1    1400 3750
+P 8100 3050
+F 0 "J7" H 8053 3288 50  0000 C CNN
+F 1 "32K243-40ML5" H 8053 3197 50  0000 C CNN
+F 2 "" H 8100 3050 50  0001 C CNN
+F 3 "" H 8100 3050 50  0001 C CNN
+	1    8100 3050
 	-1   0    0    -1  
 $EndComp
-Text Label 1700 3750 0    50   ~ 0
+Text Label 8400 3050 0    50   ~ 0
 GTX_RX3_N
 Wire Wire Line
-	1700 3750 1550 3750
-Text Label 1700 3950 0    50   ~ 0
+	8400 3050 8250 3050
+Text Label 8400 3250 0    50   ~ 0
 GND
 Wire Wire Line
-	1700 3950 1400 3950
-Text Label 5100 1300 2    50   ~ 0
+	8400 3250 8100 3250
+Text Label 3950 1250 2    50   ~ 0
 SATA_HOST_TX_P
-Text Label 5100 1400 2    50   ~ 0
+Text Label 3950 1450 2    50   ~ 0
 SATA_HOST_TX_N
-Text Label 5100 1600 2    50   ~ 0
+Text Label 2400 1550 2    50   ~ 0
 SATA_HOST_RX_P
-Text Label 5100 1700 2    50   ~ 0
+Text Label 2400 1750 2    50   ~ 0
 SATA_HOST_RX_N
-Text Label 5100 1900 2    50   ~ 0
+Text Label 3950 1850 2    50   ~ 0
 SATA_DEV_TX_P
-Text Label 5100 2000 2    50   ~ 0
+Text Label 3950 2050 2    50   ~ 0
 SATA_DEV_TX_N
-Text Label 5100 2200 2    50   ~ 0
+Text Label 2400 2150 2    50   ~ 0
 SATA_DEV_RX_P
-Text Label 5100 2300 2    50   ~ 0
+Text Label 2400 2350 2    50   ~ 0
 SATA_DEV_RX_N
-Text Label 11000 4350 2    50   ~ 0
+Text Label 6600 7500 2    50   ~ 0
 SATA_HOST_TX_P
-Text Label 11000 4450 2    50   ~ 0
+Text Label 6600 7600 2    50   ~ 0
 SATA_HOST_TX_N
-Text Label 11000 4650 2    50   ~ 0
+Text Label 6600 7800 2    50   ~ 0
 SATA_HOST_RX_P
-Text Label 11000 4750 2    50   ~ 0
+Text Label 6600 7900 2    50   ~ 0
 SATA_HOST_RX_N
-Text Label 11000 4950 2    50   ~ 0
+Text Label 6600 6450 2    50   ~ 0
 SATA_DEV_TX_P
-Text Label 11000 5050 2    50   ~ 0
+Text Label 6600 6550 2    50   ~ 0
 SATA_DEV_TX_N
-Text Label 11000 5250 2    50   ~ 0
+Text Label 6600 6150 2    50   ~ 0
 SATA_DEV_RX_P
-Text Label 11000 5350 2    50   ~ 0
+Text Label 6600 6250 2    50   ~ 0
 SATA_DEV_RX_N
 Text Label 5100 2500 2    50   ~ 0
 SFP_TX_P
@@ -444,7 +442,7 @@ Text Label 1300 7050 2    50   ~ 0
 SFP_RX_P
 Text Label 1300 7150 2    50   ~ 0
 SFP_RX_N
-Text Notes 1400 4050 0    50   ~ 0
+Text Notes 8100 3350 0    50   ~ 0
 SMA SERDES
 $Comp
 L special-azonenberg:CONN_SFP_HOST J10
@@ -753,4 +751,194 @@ Text Label 4450 9800 0    50   ~ 0
 SFP_VDD_TX
 Text HLabel 3150 10400 0    50   Input ~ 0
 GND
+$Comp
+L special-azonenberg:CONN_SATA_DEVICE J13
+U 1 1 61D6F9FA
+P 6750 7000
+F 0 "J13" H 6750 6950 50  0000 L CNN
+F 1 "CONN_SATA_DEVICE" H 6750 6850 50  0000 L CNN
+F 2 "" H 6750 7000 50  0001 C CNN
+F 3 "" H 6750 7000 50  0001 C CNN
+	1    6750 7000
+	1    0    0    -1  
+$EndComp
+$Comp
+L special-azonenberg:CONN_SATA_HOST J14
+U 1 1 61D72A82
+P 6750 8350
+F 0 "J14" H 6750 8300 50  0000 L CNN
+F 1 "CONN_SATA_HOST" H 6750 8200 50  0000 L CNN
+F 2 "" H 6750 8350 50  0001 C CNN
+F 3 "" H 6750 8350 50  0001 C CNN
+	1    6750 8350
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C149
+U 1 1 61D775E4
+P 4100 1250
+F 0 "C149" V 4000 1000 50  0000 C CNN
+F 1 "0.1 uF" V 4000 1450 50  0000 C CNN
+F 2 "" H 4138 1100 50  0001 C CNN
+F 3 "" H 4100 1250 50  0001 C CNN
+	1    4100 1250
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C150
+U 1 1 61D77D41
+P 4100 1450
+F 0 "C150" V 4000 1200 50  0000 C CNN
+F 1 "0.1 uF" V 4000 1650 50  0000 C CNN
+F 2 "" H 4138 1300 50  0001 C CNN
+F 3 "" H 4100 1450 50  0001 C CNN
+	1    4100 1450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4250 1450 5100 1450
+Wire Wire Line
+	5100 1450 5100 1400
+Wire Wire Line
+	4250 1250 5100 1250
+Wire Wire Line
+	5100 1250 5100 1300
+Text Label 5000 1250 2    50   ~ 0
+GTX_TX2_P
+Text Label 5000 1450 2    50   ~ 0
+GTX_TX2_N
+$Comp
+L device:C C145
+U 1 1 61D7EF69
+P 2800 1550
+F 0 "C145" V 2700 1300 50  0000 C CNN
+F 1 "0.1 uF" V 2700 1750 50  0000 C CNN
+F 2 "" H 2838 1400 50  0001 C CNN
+F 3 "" H 2800 1550 50  0001 C CNN
+	1    2800 1550
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C146
+U 1 1 61D7F6C1
+P 2800 1750
+F 0 "C146" V 2700 1500 50  0000 C CNN
+F 1 "0.1 uF" V 2700 1950 50  0000 C CNN
+F 2 "" H 2838 1600 50  0001 C CNN
+F 3 "" H 2800 1750 50  0001 C CNN
+	1    2800 1750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2400 1750 2650 1750
+Wire Wire Line
+	2650 1550 2400 1550
+Wire Wire Line
+	3200 1750 2950 1750
+Wire Wire Line
+	2950 1550 3200 1550
+Wire Wire Line
+	3200 1550 3200 1600
+Wire Wire Line
+	3200 1600 5100 1600
+Wire Wire Line
+	5100 1700 3200 1700
+Wire Wire Line
+	3200 1700 3200 1750
+Text Label 5000 1600 2    50   ~ 0
+GTX_RX2_P
+Text Label 5000 1700 2    50   ~ 0
+GTX_RX2_N
+$Comp
+L device:C C151
+U 1 1 61D8C0F7
+P 4100 1850
+F 0 "C151" V 4000 1600 50  0000 C CNN
+F 1 "0.1 uF" V 4000 2050 50  0000 C CNN
+F 2 "" H 4138 1700 50  0001 C CNN
+F 3 "" H 4100 1850 50  0001 C CNN
+	1    4100 1850
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C152
+U 1 1 61D8C873
+P 4100 2050
+F 0 "C152" V 4000 1800 50  0000 C CNN
+F 1 "0.1 uF" V 4000 2250 50  0000 C CNN
+F 2 "" H 4138 1900 50  0001 C CNN
+F 3 "" H 4100 2050 50  0001 C CNN
+	1    4100 2050
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4250 2050 5100 2050
+Wire Wire Line
+	5100 2050 5100 2000
+Wire Wire Line
+	4250 1850 5100 1850
+Wire Wire Line
+	5100 1850 5100 1900
+$Comp
+L device:C C147
+U 1 1 61D9641A
+P 2800 2150
+F 0 "C147" V 2700 1900 50  0000 C CNN
+F 1 "0.1 uF" V 2700 2350 50  0000 C CNN
+F 2 "" H 2838 2000 50  0001 C CNN
+F 3 "" H 2800 2150 50  0001 C CNN
+	1    2800 2150
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C148
+U 1 1 61D96BBA
+P 2800 2350
+F 0 "C148" V 2700 2100 50  0000 C CNN
+F 1 "0.1 uF" V 2700 2550 50  0000 C CNN
+F 2 "" H 2838 2200 50  0001 C CNN
+F 3 "" H 2800 2350 50  0001 C CNN
+	1    2800 2350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2400 2350 2650 2350
+Wire Wire Line
+	2650 2150 2400 2150
+Wire Wire Line
+	3200 2350 2950 2350
+Wire Wire Line
+	2950 2150 3200 2150
+Wire Wire Line
+	3200 2350 3200 2300
+Wire Wire Line
+	3200 2300 5100 2300
+Wire Wire Line
+	3200 2150 3200 2200
+Wire Wire Line
+	3200 2200 5100 2200
+Text Label 5000 1850 2    50   ~ 0
+GTX_TX1_P
+Text Label 5000 2050 2    50   ~ 0
+GTX_TX1_N
+Text Label 5000 2200 2    50   ~ 0
+GTX_RX1_P
+Text Label 5000 2300 2    50   ~ 0
+GTX_RX1_N
+Text Label 6600 6750 2    50   ~ 0
+GND
+Wire Wire Line
+	6600 6750 6600 6850
+Connection ~ 6600 6850
+Wire Wire Line
+	6600 6850 6600 6950
+Wire Wire Line
+	6600 8100 6600 8200
+Connection ~ 6600 8200
+Wire Wire Line
+	6600 8200 6600 8300
+Text Label 6600 8100 2    50   ~ 0
+GND
+Text HLabel 4600 3700 0    50   Input ~ 0
+GTX_1V2
 $EndSCHEMATC

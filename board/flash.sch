@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 9 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -104,10 +104,8 @@ Text Label 6900 3600 0    50   ~ 0
 3V3
 Text Label 5400 3900 2    50   ~ 0
 GND
-Text Label 5400 3800 2    50   ~ 0
+Text Label 5100 3800 2    50   ~ 0
 3V3
-Wire Wire Line
-	6900 3700 6900 3600
 Text Label 6900 3800 0    50   ~ 0
 FLASH_SCK_SHIFT
 Text Label 6900 3900 0    50   ~ 0
@@ -350,4 +348,30 @@ Wire Wire Line
 	5400 3400 5400 3600
 Text HLabel 2550 1850 2    50   Input ~ 0
 GND
+$Comp
+L device:R R70
+U 1 1 61DEFFC0
+P 7250 3700
+F 0 "R70" V 7150 3700 50  0000 C CNN
+F 1 "10K" V 7250 3700 50  0000 C CNN
+F 2 "" V 7180 3700 50  0001 C CNN
+F 3 "" H 7250 3700 50  0001 C CNN
+	1    7250 3700
+	0    1    1    0   
+$EndComp
+Text Label 7400 3700 0    50   ~ 0
+3V3
+Wire Wire Line
+	7100 3700 6900 3700
+$Comp
+L device:R R69
+U 1 1 61DF0BC4
+P 5250 3800
+F 0 "R69" V 5200 3950 50  0000 C CNN
+F 1 "10K" V 5250 3800 50  0000 C CNN
+F 2 "" V 5180 3800 50  0001 C CNN
+F 3 "" H 5250 3800 50  0001 C CNN
+	1    5250 3800
+	0    1    1    0   
+$EndComp
 $EndSCHEMATC

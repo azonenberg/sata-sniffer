@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 6 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -464,4 +464,118 @@ Text Label 8000 5050 0    50   ~ 0
 GND
 Text Label 5400 4750 2    50   ~ 0
 12V0
+Text Label 8500 1550 2    50   ~ 0
+LED0
+Text Label 8500 1850 2    50   ~ 0
+LED1
+Text Label 8500 2150 2    50   ~ 0
+LED2
+Text Label 8500 2450 2    50   ~ 0
+LED3
+$Comp
+L device:R R71
+U 1 1 61E111CA
+P 8650 1550
+F 0 "R71" V 8550 1550 50  0000 C CNN
+F 1 "470" V 8650 1550 50  0000 C CNN
+F 2 "" V 8580 1550 50  0001 C CNN
+F 3 "" H 8650 1550 50  0001 C CNN
+	1    8650 1550
+	0    1    1    0   
+$EndComp
+$Comp
+L device:LED D2
+U 1 1 61E1216A
+P 8950 1550
+F 0 "D2" H 8800 1600 50  0000 C CNN
+F 1 "GREEN" H 8943 1386 50  0000 C CNN
+F 2 "" H 8950 1550 50  0001 C CNN
+F 3 "~" H 8950 1550 50  0001 C CNN
+	1    8950 1550
+	-1   0    0    1   
+$EndComp
+Text Label 9300 1550 0    50   ~ 0
+GND
+Wire Wire Line
+	9300 1550 9100 1550
+$Comp
+L device:R R72
+U 1 1 61E1BE4D
+P 8650 1850
+F 0 "R72" V 8550 1850 50  0000 C CNN
+F 1 "470" V 8650 1850 50  0000 C CNN
+F 2 "" V 8580 1850 50  0001 C CNN
+F 3 "" H 8650 1850 50  0001 C CNN
+	1    8650 1850
+	0    1    1    0   
+$EndComp
+$Comp
+L device:LED D3
+U 1 1 61E1C43B
+P 8950 1850
+F 0 "D3" H 8800 1900 50  0000 C CNN
+F 1 "GREEN" H 8943 1686 50  0000 C CNN
+F 2 "" H 8950 1850 50  0001 C CNN
+F 3 "~" H 8950 1850 50  0001 C CNN
+	1    8950 1850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	9300 1850 9100 1850
+$Comp
+L device:R R73
+U 1 1 61E1D2CF
+P 8650 2150
+F 0 "R73" V 8550 2150 50  0000 C CNN
+F 1 "470" V 8650 2150 50  0000 C CNN
+F 2 "" V 8580 2150 50  0001 C CNN
+F 3 "" H 8650 2150 50  0001 C CNN
+	1    8650 2150
+	0    1    1    0   
+$EndComp
+$Comp
+L device:LED D4
+U 1 1 61E1D8E5
+P 8950 2150
+F 0 "D4" H 8800 2200 50  0000 C CNN
+F 1 "GREEN" H 8943 1986 50  0000 C CNN
+F 2 "" H 8950 2150 50  0001 C CNN
+F 3 "~" H 8950 2150 50  0001 C CNN
+	1    8950 2150
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	9300 2150 9100 2150
+$Comp
+L device:R R74
+U 1 1 61E1ECF2
+P 8650 2450
+F 0 "R74" V 8550 2450 50  0000 C CNN
+F 1 "470" V 8650 2450 50  0000 C CNN
+F 2 "" V 8580 2450 50  0001 C CNN
+F 3 "" H 8650 2450 50  0001 C CNN
+	1    8650 2450
+	0    1    1    0   
+$EndComp
+$Comp
+L device:LED D5
+U 1 1 61E1F330
+P 8950 2450
+F 0 "D5" H 8800 2500 50  0000 C CNN
+F 1 "GREEN" H 8943 2286 50  0000 C CNN
+F 2 "" H 8950 2450 50  0001 C CNN
+F 3 "~" H 8950 2450 50  0001 C CNN
+	1    8950 2450
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	9300 2450 9100 2450
+Wire Wire Line
+	9300 2450 9300 2150
+Connection ~ 9300 1850
+Wire Wire Line
+	9300 1850 9300 1550
+Connection ~ 9300 2150
+Wire Wire Line
+	9300 2150 9300 1850
 $EndSCHEMATC

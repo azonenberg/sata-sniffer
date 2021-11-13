@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 5 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -45,7 +45,7 @@ Text HLabel 1650 1200 0    50   Input ~ 0
 GND
 Text HLabel 4800 1100 0    50   Input ~ 0
 1V0
-Text HLabel 10600 6450 0    50   Input ~ 0
+Text HLabel 9000 5000 0    50   Input ~ 0
 1V2
 Text HLabel 4800 4000 0    50   Input ~ 0
 1V8
@@ -368,8 +368,6 @@ Wire Wire Line
 Connection ~ 4800 3200
 Wire Wire Line
 	4800 3200 4800 3300
-Text Label 4800 3500 2    50   ~ 0
-GTX_1V2
 Wire Wire Line
 	4800 3500 4800 3600
 Connection ~ 4800 3600
@@ -649,12 +647,10 @@ Wire Wire Line
 Connection ~ 6650 5150
 Wire Wire Line
 	6650 5150 6650 5250
-Text Label 10650 6600 2    50   ~ 0
+Text Label 10200 5650 0    50   ~ 0
 GTX_1V8
-Text Label 10700 6750 2    50   ~ 0
+Text Label 10200 5000 0    50   ~ 0
 GTX_1V2
-Text Label 10700 6900 2    50   ~ 0
-GTX_1V0
 $Comp
 L device:C C48
 U 1 1 619B33AF
@@ -768,6 +764,243 @@ F 3 "" H 5900 7150 50  0001 C CNN
 $EndComp
 Text Label 5900 7300 2    50   ~ 0
 GND
-Text Notes 9450 7050 0    50   ~ 0
-TODO: filtering for GTX rails to <10 mV p-p ripple
+$Comp
+L passive-azonenberg:FERRITE_SMALL2 FB5
+U 1 1 61C5A63B
+P 9350 5000
+F 0 "FB5" H 9350 5225 50  0000 C CNN
+F 1 "FERRITE_SMALL2" H 9350 5134 50  0000 C CNN
+F 2 "" H 9350 5000 60  0000 C CNN
+F 3 "" H 9350 5000 60  0000 C CNN
+	1    9350 5000
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C134
+U 1 1 61C5B4B4
+P 9000 5150
+F 0 "C134" H 9115 5196 50  0000 L CNN
+F 1 "47 uF" H 9115 5105 50  0000 L CNN
+F 2 "" H 9038 5000 50  0001 C CNN
+F 3 "" H 9000 5150 50  0001 C CNN
+	1    9000 5150
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C137
+U 1 1 61C5B925
+P 9700 5150
+F 0 "C137" H 9815 5196 50  0000 L CNN
+F 1 "47 uF" H 9815 5105 50  0000 L CNN
+F 2 "" H 9738 5000 50  0001 C CNN
+F 3 "" H 9700 5150 50  0001 C CNN
+	1    9700 5150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9150 5000 9000 5000
+Wire Wire Line
+	9550 5000 9700 5000
+Text Label 9000 5300 2    50   ~ 0
+GND
+Wire Wire Line
+	9000 5300 9700 5300
+$Comp
+L device:C C140
+U 1 1 61C761CB
+P 10200 5150
+F 0 "C140" H 10315 5196 50  0000 L CNN
+F 1 "4.7 uF" H 10315 5105 50  0000 L CNN
+F 2 "" H 10238 5000 50  0001 C CNN
+F 3 "" H 10200 5150 50  0001 C CNN
+	1    10200 5150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10200 5000 9700 5000
+Connection ~ 9700 5000
+Wire Wire Line
+	9700 5300 10200 5300
+Connection ~ 9700 5300
+$Comp
+L passive-azonenberg:FERRITE_SMALL2 FB6
+U 1 1 61C88295
+P 9350 5650
+F 0 "FB6" H 9350 5875 50  0000 C CNN
+F 1 "FERRITE_SMALL2" H 9350 5784 50  0000 C CNN
+F 2 "" H 9350 5650 60  0000 C CNN
+F 3 "" H 9350 5650 60  0000 C CNN
+	1    9350 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C135
+U 1 1 61C8829F
+P 9000 5800
+F 0 "C135" H 9115 5846 50  0000 L CNN
+F 1 "47 uF" H 9115 5755 50  0000 L CNN
+F 2 "" H 9038 5650 50  0001 C CNN
+F 3 "" H 9000 5800 50  0001 C CNN
+	1    9000 5800
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C138
+U 1 1 61C882A9
+P 9700 5800
+F 0 "C138" H 9815 5846 50  0000 L CNN
+F 1 "47 uF" H 9815 5755 50  0000 L CNN
+F 2 "" H 9738 5650 50  0001 C CNN
+F 3 "" H 9700 5800 50  0001 C CNN
+	1    9700 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9150 5650 9000 5650
+Wire Wire Line
+	9550 5650 9700 5650
+Text Label 9000 5950 2    50   ~ 0
+GND
+Wire Wire Line
+	9000 5950 9700 5950
+$Comp
+L device:C C141
+U 1 1 61C882B7
+P 10200 5800
+F 0 "C141" H 10315 5846 50  0000 L CNN
+F 1 "4.7 uF" H 10315 5755 50  0000 L CNN
+F 2 "" H 10238 5650 50  0001 C CNN
+F 3 "" H 10200 5800 50  0001 C CNN
+	1    10200 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10200 5650 9700 5650
+Connection ~ 9700 5650
+Wire Wire Line
+	9700 5950 10200 5950
+Connection ~ 9700 5950
+Text Label 9000 5650 2    50   ~ 0
+1V8
+Text Label 10200 6300 0    50   ~ 0
+GTX_1V0
+$Comp
+L passive-azonenberg:FERRITE_SMALL2 FB7
+U 1 1 61C937FB
+P 9350 6300
+F 0 "FB7" H 9350 6525 50  0000 C CNN
+F 1 "FERRITE_SMALL2" H 9350 6434 50  0000 C CNN
+F 2 "" H 9350 6300 60  0000 C CNN
+F 3 "" H 9350 6300 60  0000 C CNN
+	1    9350 6300
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C136
+U 1 1 61C93805
+P 9000 6450
+F 0 "C136" H 9115 6496 50  0000 L CNN
+F 1 "47 uF" H 9115 6405 50  0000 L CNN
+F 2 "" H 9038 6300 50  0001 C CNN
+F 3 "" H 9000 6450 50  0001 C CNN
+	1    9000 6450
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C139
+U 1 1 61C9380F
+P 9700 6450
+F 0 "C139" H 9815 6496 50  0000 L CNN
+F 1 "47 uF" H 9815 6405 50  0000 L CNN
+F 2 "" H 9738 6300 50  0001 C CNN
+F 3 "" H 9700 6450 50  0001 C CNN
+	1    9700 6450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9150 6300 9000 6300
+Wire Wire Line
+	9550 6300 9700 6300
+Text Label 9000 6600 2    50   ~ 0
+GND
+Wire Wire Line
+	9000 6600 9700 6600
+$Comp
+L device:C C142
+U 1 1 61C9381D
+P 10200 6450
+F 0 "C142" H 10315 6496 50  0000 L CNN
+F 1 "4.7 uF" H 10315 6405 50  0000 L CNN
+F 2 "" H 10238 6300 50  0001 C CNN
+F 3 "" H 10200 6450 50  0001 C CNN
+	1    10200 6450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10200 6300 9700 6300
+Connection ~ 9700 6300
+Wire Wire Line
+	9700 6600 10200 6600
+Connection ~ 9700 6600
+Text Label 9000 6300 2    50   ~ 0
+1V0
+$Comp
+L Connector:Conn_Coaxial TP15
+U 1 1 61CA7A0C
+P 10800 5000
+F 0 "TP15" H 10900 4975 50  0000 L CNN
+F 1 "U.FL" H 10900 4884 50  0000 L CNN
+F 2 "" H 10800 5000 50  0001 C CNN
+F 3 "" H 10800 5000 50  0001 C CNN
+	1    10800 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10200 5000 10650 5000
+Connection ~ 10200 5000
+Wire Wire Line
+	10200 5300 10800 5300
+Wire Wire Line
+	10800 5300 10800 5200
+Connection ~ 10200 5300
+$Comp
+L Connector:Conn_Coaxial TP16
+U 1 1 61CD1AE2
+P 10800 5650
+F 0 "TP16" H 10900 5625 50  0000 L CNN
+F 1 "U.FL" H 10900 5534 50  0000 L CNN
+F 2 "" H 10800 5650 50  0001 C CNN
+F 3 "" H 10800 5650 50  0001 C CNN
+	1    10800 5650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10650 5650 10200 5650
+Connection ~ 10200 5650
+Wire Wire Line
+	10200 5950 10800 5950
+Wire Wire Line
+	10800 5950 10800 5850
+Connection ~ 10200 5950
+$Comp
+L Connector:Conn_Coaxial TP17
+U 1 1 61CE4660
+P 10800 6300
+F 0 "TP17" H 10900 6275 50  0000 L CNN
+F 1 "U.FL" H 10900 6184 50  0000 L CNN
+F 2 "" H 10800 6300 50  0001 C CNN
+F 3 "" H 10800 6300 50  0001 C CNN
+	1    10800 6300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10650 6300 10200 6300
+Connection ~ 10200 6300
+Wire Wire Line
+	10200 6600 10800 6600
+Wire Wire Line
+	10800 6600 10800 6500
+Connection ~ 10200 6600
+Text HLabel 4800 3500 0    50   Output ~ 0
+GTX_1V2
 $EndSCHEMATC

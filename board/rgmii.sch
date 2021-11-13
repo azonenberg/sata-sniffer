@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 7 10
 Title "SATA sniffer"
-Date "2021-11-11"
+Date "2021-11-12"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -1124,4 +1124,19 @@ Text Label 11900 7650 2    50   ~ 0
 LA0_DQ7_N
 Text HLabel 3250 3000 0    50   Input ~ 0
 GND
+NoConn ~ 11900 4450
+NoConn ~ 11900 4550
+NoConn ~ 11900 4650
+NoConn ~ 11900 4750
+NoConn ~ 11900 4850
+NoConn ~ 11900 4950
+NoConn ~ 11900 5050
+NoConn ~ 11900 5250
+NoConn ~ 11900 5350
+NoConn ~ 11900 5450
+NoConn ~ 11900 5750
+NoConn ~ 11900 5850
+NoConn ~ 11900 5950
+NoConn ~ 11900 6050
+NoConn ~ 11900 7750
 $EndSCHEMATC
