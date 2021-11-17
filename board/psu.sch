@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 10
 Title "SATA sniffer"
-Date "2021-11-12"
+Date "2021-11-16"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -129,7 +129,7 @@ L power-azonenberg:FUSE_PWROUT_2 F1
 U 1 1 6189DF9C
 P 1750 900
 F 0 "F1" H 1750 1114 50  0000 C CNN
-F 1 "FUSE_PWROUT_2" H 1750 1023 50  0000 C CNN
+F 1 "2A" H 1750 1023 50  0000 C CNN
 F 2 "" H 1825 900 60  0000 C CNN
 F 3 "" H 1825 900 60  0000 C CNN
 	1    1750 900 
@@ -144,7 +144,7 @@ L passive-azonenberg:FERRITE_SMALL2 FB1
 U 1 1 6189F326
 P 2650 900
 F 0 "FB1" H 2650 1125 50  0000 C CNN
-F 1 "FERRITE_SMALL2" H 2650 1034 50  0000 C CNN
+F 1 "BLM31KN271SH1L" H 2650 1034 50  0000 C CNN
 F 2 "" H 2650 900 60  0000 C CNN
 F 3 "" H 2650 900 60  0000 C CNN
 	1    2650 900 
@@ -335,7 +335,6 @@ Text Label 4200 1800 2    50   ~ 0
 GND
 Wire Wire Line
 	4200 1800 4300 1800
-NoConn ~ 5450 900 
 Wire Wire Line
 	5450 1100 5450 1000
 Connection ~ 5450 1100
@@ -352,10 +351,6 @@ F 3 "" H 5450 1250 50  0001 C CNN
 $EndComp
 Text Label 5450 1400 0    50   ~ 0
 GND
-Text Label 1900 4250 0    50   ~ 0
-5V0
-Wire Wire Line
-	1900 4250 1900 4350
 Wire Wire Line
 	1900 4550 2050 4550
 Wire Wire Line
@@ -395,10 +390,8 @@ Text Label 1900 6950 0    50   ~ 0
 5V0
 Wire Wire Line
 	1900 4650 2300 4650
-Text Label 4900 4250 0    50   ~ 0
+Text Label 4900 4350 0    50   ~ 0
 5V0
-Wire Wire Line
-	4900 4250 4900 4350
 Text Label 4900 5100 0    50   ~ 0
 GND
 Text Label 4900 5200 0    50   ~ 0
@@ -717,10 +710,8 @@ Text Label 5200 6700 2    50   ~ 0
 GND
 Wire Wire Line
 	4900 4650 5300 4650
-Text Label 7750 4250 0    50   ~ 0
+Text Label 7750 4350 0    50   ~ 0
 5V0
-Wire Wire Line
-	7750 4250 7750 4350
 Wire Wire Line
 	7900 4550 7750 4550
 Wire Wire Line
@@ -1349,12 +1340,23 @@ Wire Wire Line
 	7750 2650 8250 2650
 Wire Wire Line
 	8250 2350 7750 2350
-Text Label 7750 3150 0    50   ~ 0
-5V0
-Wire Wire Line
-	7750 3150 7750 3250
 Text HLabel 5450 1000 2    50   Output ~ 0
 5V0
 Text Label 1700 1800 0    50   ~ 0
 GND
+Text Notes 4700 4050 0    50   ~ 0
+12, 5, 3.3, and 1.0V rails come up first\nthen everything else
+Text Label 4900 4250 0    50   ~ 0
+1V0_GOOD
+Text Label 7750 3150 0    50   ~ 0
+5V0
+Wire Wire Line
+	7750 3150 7750 3250
+Text Label 7750 4250 0    50   ~ 0
+1V0_GOOD
+Text Label 1900 4350 0    50   ~ 0
+5V0
+Text Label 1900 4250 0    50   ~ 0
+1V0_GOOD
+NoConn ~ 5450 900 
 $EndSCHEMATC
