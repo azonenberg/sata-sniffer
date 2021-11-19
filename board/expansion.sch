@@ -72,37 +72,37 @@ Text Label 9700 3150 0    50   ~ 0
 LA1_DQ7_P
 Text Label 9700 3250 0    50   ~ 0
 LA1_DQ7_N
-Text Label 2250 1650 2    50   ~ 0
+Text Label 2250 4850 2    50   ~ 0
 LA1_DQ0_P
-Text Label 2250 1750 2    50   ~ 0
+Text Label 2250 4950 2    50   ~ 0
 LA1_DQ0_N
-Text Label 2250 1850 2    50   ~ 0
+Text Label 2250 5050 2    50   ~ 0
 LA1_DQ1_P
-Text Label 2250 1950 2    50   ~ 0
+Text Label 2250 5150 2    50   ~ 0
 LA1_DQ1_N
-Text Label 2250 2050 2    50   ~ 0
+Text Label 2250 5250 2    50   ~ 0
 LA1_DQ2_P
-Text Label 2250 2150 2    50   ~ 0
+Text Label 2250 5350 2    50   ~ 0
 LA1_DQ2_N
-Text Label 2250 2250 2    50   ~ 0
+Text Label 2250 5450 2    50   ~ 0
 LA1_DQ3_P
-Text Label 2250 2350 2    50   ~ 0
+Text Label 2250 5550 2    50   ~ 0
 LA1_DQ3_N
-Text Label 2250 2450 2    50   ~ 0
+Text Label 2250 5650 2    50   ~ 0
 LA1_DQ4_P
-Text Label 2250 2550 2    50   ~ 0
+Text Label 2250 5750 2    50   ~ 0
 LA1_DQ4_N
-Text Label 2250 2650 2    50   ~ 0
+Text Label 2250 5850 2    50   ~ 0
 LA1_DQ5_P
-Text Label 2250 2750 2    50   ~ 0
+Text Label 2250 5950 2    50   ~ 0
 LA1_DQ5_N
-Text Label 2250 2850 2    50   ~ 0
+Text Label 2250 6050 2    50   ~ 0
 LA1_DQ6_P
-Text Label 2250 2950 2    50   ~ 0
+Text Label 2250 6150 2    50   ~ 0
 LA1_DQ6_N
-Text Label 2250 3050 2    50   ~ 0
+Text Label 2250 6250 2    50   ~ 0
 LA1_DQ7_P
-Text Label 2250 3150 2    50   ~ 0
+Text Label 2250 6350 2    50   ~ 0
 LA1_DQ7_N
 NoConn ~ 2250 1550
 NoConn ~ 2250 6450
@@ -176,69 +176,69 @@ Wire Wire Line
 Connection ~ 6100 3550
 Wire Wire Line
 	6100 3550 6100 3650
-Text Label 2250 3250 2    50   ~ 0
+Text Label 2250 1650 2    50   ~ 0
 LVDS0_P
-Text Label 2250 3350 2    50   ~ 0
+Text Label 2250 1750 2    50   ~ 0
 LVDS0_N
-Text Label 2250 3450 2    50   ~ 0
+Text Label 2250 1850 2    50   ~ 0
 LVDS1_P
-Text Label 2250 3550 2    50   ~ 0
+Text Label 2250 1950 2    50   ~ 0
 LVDS1_N
-Text Label 2250 3650 2    50   ~ 0
+Text Label 2250 2050 2    50   ~ 0
 LVDS2_P
-Text Label 2250 3750 2    50   ~ 0
+Text Label 2250 2150 2    50   ~ 0
 LVDS2_N
-Text Label 2250 3850 2    50   ~ 0
+Text Label 2250 2250 2    50   ~ 0
 LVDS3_P
-Text Label 2250 3950 2    50   ~ 0
+Text Label 2250 2350 2    50   ~ 0
 LVDS3_N
-Text Label 2250 4050 2    50   ~ 0
+Text Label 2250 2450 2    50   ~ 0
 LVDS4_P
-Text Label 2250 4150 2    50   ~ 0
+Text Label 2250 2550 2    50   ~ 0
 LVDS4_N
-Text Label 2250 4250 2    50   ~ 0
+Text Label 2250 2650 2    50   ~ 0
 LVDS5_P
-Text Label 2250 4350 2    50   ~ 0
+Text Label 2250 2750 2    50   ~ 0
 LVDS5_N
-Text Label 2250 4450 2    50   ~ 0
+Text Label 2250 2850 2    50   ~ 0
 LVDS6_P
-Text Label 2250 4550 2    50   ~ 0
+Text Label 2250 2950 2    50   ~ 0
 LVDS6_N
-Text Label 2250 4650 2    50   ~ 0
+Text Label 2250 3050 2    50   ~ 0
 LVDS7_P
-Text Label 2250 4750 2    50   ~ 0
+Text Label 2250 3150 2    50   ~ 0
 LVDS7_N
-Text Label 2250 4850 2    50   ~ 0
+Text Label 2250 3250 2    50   ~ 0
 LVDS8_P
-Text Label 2250 4950 2    50   ~ 0
+Text Label 2250 3350 2    50   ~ 0
 LVDS8_N
-Text Label 2250 5050 2    50   ~ 0
+Text Label 2250 3450 2    50   ~ 0
 LVDS9_P
-Text Label 2250 5150 2    50   ~ 0
+Text Label 2250 3550 2    50   ~ 0
 LVDS9_N
-Text Label 2250 5250 2    50   ~ 0
+Text Label 2250 3650 2    50   ~ 0
 LVDS10_P
-Text Label 2250 5350 2    50   ~ 0
+Text Label 2250 3750 2    50   ~ 0
 LVDS10_N
-Text Label 2250 5450 2    50   ~ 0
+Text Label 2250 3850 2    50   ~ 0
 LVDS11_P
-Text Label 2250 5550 2    50   ~ 0
+Text Label 2250 3950 2    50   ~ 0
 LVDS11_N
-Text Label 2250 5650 2    50   ~ 0
+Text Label 2250 4050 2    50   ~ 0
 LVDS12_P
-Text Label 2250 5750 2    50   ~ 0
+Text Label 2250 4150 2    50   ~ 0
 LVDS12_N
-Text Label 2250 5850 2    50   ~ 0
+Text Label 2250 4250 2    50   ~ 0
 LVDS13_P
-Text Label 2250 5950 2    50   ~ 0
+Text Label 2250 4350 2    50   ~ 0
 LVDS13_N
-Text Label 2250 6050 2    50   ~ 0
+Text Label 2250 4450 2    50   ~ 0
 LVDS14_P
-Text Label 2250 6150 2    50   ~ 0
+Text Label 2250 4550 2    50   ~ 0
 LVDS14_N
-Text Label 2250 6250 2    50   ~ 0
+Text Label 2250 4650 2    50   ~ 0
 LVDS15_P
-Text Label 2250 6350 2    50   ~ 0
+Text Label 2250 4750 2    50   ~ 0
 LVDS15_N
 Text Label 4900 1550 2    50   ~ 0
 LVDS0_P
