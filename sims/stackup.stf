@@ -16,13 +16,16 @@
         <params erel="3.5" tane="0.025"/>
       </dielectric>
       <dielectric name="Panasonic_R-5775(K)">
-        <params erel="3.41" tane="0.004"/>
+        <params erel="3.58" tane="0.004"/>
       </dielectric>
       <dielectric name="Panasonic_R-5670(K)">
-        <params erel="3.56" tane="0.004"/>
+        <params erel="3.39" tane="0.004"/>
       </dielectric>
       <conductor name="Copper_1oz_thin" condspec="cond" cond="5.8e7"/>
       <conductor name="Copper_1oz_thick" condspec="cond" cond="5.8e7"/>
+      <conductor name="Copper_0.5oz_thin" condspec="cond" cond="5.8e7"/>
+      <conductor name="Copper_0.5oz_thick" condspec="cond" cond="5.8e7"/>
+      <conductor name="Copper_0.5oz_thick_down" condspec="cond" cond="5.8e7"/>
       <conductor name="Copper_1oz_thick_down" condspec="cond" cond="5.8e7"/>
     </materials>
     <mesh_defs>
@@ -78,27 +81,29 @@
         <metal_techlayer name="F.Cu_thin" layer_name="F.Cu_thin" thickness="0.035" material="Copper_1oz_thin" model="F.Cu_thin_model" color_pattern="1" mesh="F.Cu_thin_mesh"/>
         <metal_techlayer name="F.Cu_thick" layer_name="F.Cu_thick" thickness="0.035" material="Copper_1oz_thick" model="F.Cu_thick_model" color_pattern="2" mesh="F.Cu_thick_mesh"/>
       </diel>
-      <diel name="Panasonic_R-5775(K)" dielectric="Panasonic_R-5775(K)" thickness="0.075">
+      <diel name="Panasonic_R-5775(K)" dielectric="Panasonic_R-5775(K)" thickness="0.065">
         <metal_techlayer name="In1.Cu" layer_name="In1.Cu" thickness="0.035" material="Copper_1oz_thin" model="In1.Cu_model" color_pattern="1" mesh="In1.Cu_mesh"/>
       </diel>
-      <diel name="Panasonic_R-5670(K)" dielectric="Panasonic_R-5670(K)" thickness="0.106">
-        <metal_techlayer name="In2.Cu_thin" layer_name="In2.Cu" thickness="0.035" material="Copper_1oz_thin" model="In2.Cu_thin_model" color_pattern="1" mesh="In2.Cu_thin_mesh"/>
-        <metal_techlayer name="In2.Cu_thick" layer_name="In2.Cu_thick" thickness="0.035" material="Copper_1oz_thick" model="In2.Cu_thick_model" color_pattern="2" mesh="In2.Cu_thick_mesh"/>
+      <diel name="Panasonic_R-5670(K)" dielectric="Panasonic_R-5670(K)" thickness="0.077">
+        <metal_techlayer name="In2.Cu_thin" layer_name="In2.Cu" thickness="0.017" material="Copper_0.5oz_thin" model="In2.Cu_thin_model" color_pattern="4" mesh="In2.Cu_thin_mesh"/>
+        <metal_techlayer name="In2.Cu_thick" layer_name="In2.Cu_thick" thickness="0.017" material="Copper_0.5oz_thick" model="In2.Cu_thick_model" color_pattern="12" mesh="In2.Cu_thick_mesh"/>
       </diel>
       <diel name="Panasonic_R-5775(K)" dielectric="Panasonic_R-5775(K)" thickness="0.3">
         <metal_techlayer name="In3.Cu" layer_name="In3.Cu" thickness="0.035" material="Copper_1oz_thin" model="In3.Cu_model" color_pattern="1" mesh="In3.Cu_mesh"/>
       </diel>
-      <diel name="Panasonic_R-5670(K)" dielectric="Panasonic_R-5670(K)" thickness="0.318">
+      <diel name="Panasonic_R-5670(K)" dielectric="Panasonic_R-5670(K)" thickness="0.106"/>
+      <diel name="Panasonic_R-5775(K)" dielectric="Panasonic_R-5775(K)" thickness="0.25"/>
+      <diel name="Panasonic_R-5670(K)" dielectric="Panasonic_R-5670(K)" thickness="0.106">
         <metal_techlayer name="In4.Cu" layer_name="In4.Cu" thickness="0.035" material="Copper_1oz_thin" model="In4.Cu_model" color_pattern="1" mesh="In4.Cu_mesh"/>
       </diel>
       <diel name="Panasonic_R-5775(K)" dielectric="Panasonic_R-5775(K)" thickness="0.3">
-        <metal_techlayer name="In5.Cu_thin" layer_name="In5.Cu" thickness="0.035" material="Copper_1oz_thin" model="In5.Cu_thin_model" color_pattern="1" mesh="In5.Cu_thin_mesh"/>
-        <metal_techlayer name="In5.Cu_thick" layer_name="In5.Cu_thick" thickness="0.035" material="Copper_1oz_thick_down" model="In5.Cu_thick_model" color_pattern="3" mesh="In5.Cu_thick_mesh" direction="Down"/>
+        <metal_techlayer name="In5.Cu_thin" layer_name="In5.Cu" thickness="0.017" material="Copper_0.5oz_thin" model="In5.Cu_thin_model" color_pattern="4" mesh="In5.Cu_thin_mesh"/>
+        <metal_techlayer name="In5.Cu_thick" layer_name="In5.Cu_thick" thickness="0.017" material="Copper_0.5oz_thick_down" model="In5.Cu_thick_model" color_pattern="5" mesh="In5.Cu_thick_mesh" direction="Down"/>
       </diel>
-      <diel name="Panasonic_R-5670(K)" dielectric="Panasonic_R-5670(K)" thickness="0.106">
+      <diel name="Panasonic_R-5670(K)" dielectric="Panasonic_R-5670(K)" thickness="0.077">
         <metal_techlayer name="In6.Cu" layer_name="In6.Cu" thickness="0.035" material="Copper_1oz_thin" model="In6.Cu_model" color_pattern="1" mesh="In6.Cu_mesh"/>
       </diel>
-      <diel name="Panasonic_R-5775(K)" dielectric="Panasonic_R-5775(K)" thickness="0.075">
+      <diel name="Panasonic_R-5775(K)" dielectric="Panasonic_R-5775(K)" thickness="0.065">
         <metal_techlayer name="B.Cu_thin" layer_name="B.Cu_thin" thickness="0.035" material="Copper_1oz_thin" model="B.Cu_thin_model" color_pattern="1" mesh="B.Cu_thin_mesh"/>
         <metal_techlayer name="B.Cu_thick" layer_name="B.Cu_thick" thickness="0.035" material="Copper_1oz_thick_down" model="B.Cu_thick_model" color_pattern="3" mesh="B.Cu_thick_mesh" direction="Down"/>
       </diel>
