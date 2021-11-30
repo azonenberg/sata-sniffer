@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 6 10
 Title "SATA sniffer"
-Date "2021-11-16"
+Date "2021-11-29"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -52,9 +52,9 @@ F 3 "" H 7050 3150 50  0001 C CNN
 	1    7050 3150
 	1    0    0    -1  
 $EndComp
-Text HLabel 1800 1150 0    50   Output ~ 0
+Text HLabel 1800 1750 0    50   Output ~ 0
 SFP_RS0
-Text HLabel 1800 1250 0    50   Output ~ 0
+Text HLabel 1800 2350 0    50   Output ~ 0
 SFP_RS1
 Text HLabel 6150 3100 2    50   Output ~ 0
 GND
@@ -188,7 +188,7 @@ Text Label 1800 3750 2    50   ~ 0
 LA1_12V0_FAULT
 Text Label 1800 3650 2    50   ~ 0
 LA0_12V0_FAULT
-Text HLabel 1800 1350 0    50   Input ~ 0
+Text HLabel 1800 2050 0    50   Input ~ 0
 SFP_RX_LOS
 Text HLabel 1800 1450 0    50   Input ~ 0
 SFP_MOD_ABS
@@ -220,19 +220,19 @@ Text Label 2000 7100 2    50   ~ 0
 3V3
 Text Label 2300 7100 0    50   ~ 0
 LA1_PRESENCE_DETECT
-Text HLabel 1800 1550 0    50   BiDi ~ 0
+Text HLabel 1800 1150 0    50   BiDi ~ 0
 RAM_SDA
 Text HLabel 1800 1650 0    50   Output ~ 0
 RAM_SCL
 Text HLabel 1800 1850 0    50   Output ~ 0
 SFP_SCL
-Text HLabel 1800 1750 0    50   BiDi ~ 0
+Text HLabel 1800 1550 0    50   BiDi ~ 0
 SFP_SDA
 Text HLabel 2000 6750 0    50   Input ~ 0
 3V3
 Text HLabel 1800 1950 0    50   Input ~ 0
 SFP_TX_FAULT
-Text HLabel 1800 2050 0    50   Output ~ 0
+Text HLabel 1800 2250 0    50   Output ~ 0
 SFP_TX_DISABLE
 Text Label 1800 3250 2    50   ~ 0
 LED0
@@ -260,9 +260,9 @@ Text Label 4150 7100 2    50   ~ 0
 PMOD_DQ7
 Text Label 1800 2150 2    50   ~ 0
 PMOD_DQ0
-Text Label 1800 2250 2    50   ~ 0
+Text Label 1800 1350 2    50   ~ 0
 PMOD_DQ1
-Text Label 1800 2350 2    50   ~ 0
+Text Label 1800 1250 2    50   ~ 0
 PMOD_DQ2
 Text Label 1800 2450 2    50   ~ 0
 PMOD_DQ3

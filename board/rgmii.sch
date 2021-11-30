@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 7 10
 Title "SATA sniffer"
-Date "2021-11-16"
+Date "2021-11-29"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -519,31 +519,27 @@ Text Label 11900 3950 2    50   ~ 0
 ETH_RXD3
 Text Label 11900 4050 2    50   ~ 0
 ETH_RXD2
-Text Label 11900 4150 2    50   ~ 0
+Text Label 11900 7350 2    50   ~ 0
 ETH_RXD1
-Text Label 11900 4250 2    50   ~ 0
+Text Label 11900 7450 2    50   ~ 0
 ETH_RXD0
-Text Label 11900 4350 2    50   ~ 0
+Text Label 11900 5450 2    50   ~ 0
 ETH_RX_DV
 Text Label 11900 5150 2    50   ~ 0
 ETH_RX_CLK
-Text Label 11900 2850 2    50   ~ 0
+Text Label 11900 5350 2    50   ~ 0
 RGMII_TXD0
-Text Label 11900 2950 2    50   ~ 0
-RGMII_TXD1
-Text Label 11900 3050 2    50   ~ 0
-RGMII_TXD2
-Text Label 11900 3150 2    50   ~ 0
+Text Label 11900 7150 2    50   ~ 0
 RGMII_TXD3
-Text Label 11900 3250 2    50   ~ 0
+Text Label 11900 7250 2    50   ~ 0
 RGMII_TX_CLK
-Text Label 11900 3350 2    50   ~ 0
+Text Label 11900 6950 2    50   ~ 0
 RGMII_TX_EN
-Text Label 11900 3750 2    50   ~ 0
+Text Label 11900 6150 2    50   ~ 0
 ETH_MDC
-Text Label 11900 3650 2    50   ~ 0
+Text Label 11900 7650 2    50   ~ 0
 ETH_MDIO
-Text Label 11900 3850 2    50   ~ 0
+Text Label 11900 6250 2    50   ~ 0
 ETH_RST_N
 $Comp
 L device:R R37
@@ -608,9 +604,9 @@ Text Label 6450 1350 0    50   ~ 0
 ETH_LED1_N_1V8
 Text Label 6450 1250 0    50   ~ 0
 ETH_LED2_N_1V8
-Text Label 11900 3550 2    50   ~ 0
+Text Label 11900 7550 2    50   ~ 0
 ETH_LED2_N_1V8
-Text Label 11900 3450 2    50   ~ 0
+Text Label 11900 7050 2    50   ~ 0
 ETH_LED1_N_1V8
 Text Label 1500 2100 0    50   ~ 0
 GND
@@ -1090,37 +1086,37 @@ Text Label 8450 7700 0    50   ~ 0
 LA0_DQ7_P
 Text Label 8450 7800 0    50   ~ 0
 LA0_DQ7_N
-Text Label 11900 6150 2    50   ~ 0
+Text Label 11900 3750 2    50   ~ 0
 LA0_DQ0_P
-Text Label 11900 6250 2    50   ~ 0
+Text Label 11900 3850 2    50   ~ 0
 LA0_DQ0_N
 Text Label 11900 6350 2    50   ~ 0
 LA0_DQ1_P
 Text Label 11900 6450 2    50   ~ 0
 LA0_DQ1_N
-Text Label 11900 6550 2    50   ~ 0
-LA0_DQ2_P
-Text Label 11900 6650 2    50   ~ 0
-LA0_DQ2_N
 Text Label 11900 6750 2    50   ~ 0
-LA0_DQ3_P
+LA0_DQ2_P
 Text Label 11900 6850 2    50   ~ 0
+LA0_DQ2_N
+Text Label 11900 2950 2    50   ~ 0
+LA0_DQ3_P
+Text Label 11900 3050 2    50   ~ 0
 LA0_DQ3_N
-Text Label 11900 6950 2    50   ~ 0
+Text Label 11900 3350 2    50   ~ 0
 LA0_DQ4_P
-Text Label 11900 7050 2    50   ~ 0
+Text Label 11900 3450 2    50   ~ 0
 LA0_DQ4_N
-Text Label 11900 7150 2    50   ~ 0
+Text Label 11900 3150 2    50   ~ 0
 LA0_DQ5_P
-Text Label 11900 7250 2    50   ~ 0
+Text Label 11900 3250 2    50   ~ 0
 LA0_DQ5_N
-Text Label 11900 7350 2    50   ~ 0
+Text Label 11900 4150 2    50   ~ 0
 LA0_DQ6_P
-Text Label 11900 7450 2    50   ~ 0
+Text Label 11900 4250 2    50   ~ 0
 LA0_DQ6_N
-Text Label 11900 7550 2    50   ~ 0
+Text Label 11900 3550 2    50   ~ 0
 LA0_DQ7_P
-Text Label 11900 7650 2    50   ~ 0
+Text Label 11900 3650 2    50   ~ 0
 LA0_DQ7_N
 Text HLabel 3250 3000 0    50   Input ~ 0
 GND
@@ -1132,11 +1128,15 @@ NoConn ~ 11900 4850
 NoConn ~ 11900 4950
 NoConn ~ 11900 5050
 NoConn ~ 11900 5250
-NoConn ~ 11900 5350
-NoConn ~ 11900 5450
 NoConn ~ 11900 5750
 NoConn ~ 11900 5850
 NoConn ~ 11900 5950
 NoConn ~ 11900 6050
 NoConn ~ 11900 7750
+Text Label 11900 6550 2    50   ~ 0
+RGMII_TXD1
+Text Label 11900 6650 2    50   ~ 0
+RGMII_TXD2
+NoConn ~ 11900 4350
+NoConn ~ 11900 2850
 $EndSCHEMATC

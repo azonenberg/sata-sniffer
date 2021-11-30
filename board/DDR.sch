@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 3 10
 Title "SATA sniffer"
-Date "2021-11-16"
+Date "2021-11-29"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -1422,17 +1422,17 @@ Text Label 3950 3550 2    50   ~ 0
 RAM_CAS_N
 Text Label 3950 3650 2    50   ~ 0
 RAM_RAS_N
-Text Label 9650 9150 2    50   ~ 0
+Text Label 9650 9550 2    50   ~ 0
 RAM_CKE0
-Text Label 9650 9250 2    50   ~ 0
+Text Label 9650 9150 2    50   ~ 0
 RAM_CK0_P
-Text Label 9650 9350 2    50   ~ 0
+Text Label 9650 9250 2    50   ~ 0
 RAM_CK0_N
 Text Label 9650 9750 2    50   ~ 0
 RAM_CKE1
-Text Label 9650 9450 2    50   ~ 0
+Text Label 9650 9350 2    50   ~ 0
 RAM_CK1_P
-Text Label 9650 9550 2    50   ~ 0
+Text Label 9650 9450 2    50   ~ 0
 RAM_CK1_N
 Text Label 9650 9850 2    50   ~ 0
 RAM_CS0_N

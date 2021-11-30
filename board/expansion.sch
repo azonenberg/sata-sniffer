@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 8 10
 Title "SATA sniffer"
-Date "2021-11-16"
+Date "2021-11-29"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -76,9 +76,9 @@ Text Label 2250 4850 2    50   ~ 0
 LA1_DQ0_P
 Text Label 2250 4950 2    50   ~ 0
 LA1_DQ0_N
-Text Label 2250 5050 2    50   ~ 0
+Text Label 2250 4650 2    50   ~ 0
 LA1_DQ1_P
-Text Label 2250 5150 2    50   ~ 0
+Text Label 2250 4750 2    50   ~ 0
 LA1_DQ1_N
 Text Label 2250 5250 2    50   ~ 0
 LA1_DQ2_P
@@ -236,9 +236,9 @@ Text Label 2250 4450 2    50   ~ 0
 LVDS14_P
 Text Label 2250 4550 2    50   ~ 0
 LVDS14_N
-Text Label 2250 4650 2    50   ~ 0
+Text Label 2250 5050 2    50   ~ 0
 LVDS15_P
-Text Label 2250 4750 2    50   ~ 0
+Text Label 2250 5150 2    50   ~ 0
 LVDS15_N
 Text Label 4900 1550 2    50   ~ 0
 LVDS0_P

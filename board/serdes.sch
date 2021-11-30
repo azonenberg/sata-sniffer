@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 4 10
 Title "SATA sniffer"
-Date "2021-11-16"
+Date "2021-11-29"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -116,9 +116,9 @@ Wire Wire Line
 	14900 1350 14700 1350
 Wire Wire Line
 	14700 1050 14900 1050
-Text Label 5100 3100 2    50   ~ 0
-REFCLK_156_AC_P
 Text Label 5100 3200 2    50   ~ 0
+REFCLK_156_AC_P
+Text Label 5100 3100 2    50   ~ 0
 REFCLK_156_AC_N
 $Comp
 L osc-azonenberg:OSC_LVDS_NOPAD U7
@@ -209,9 +209,9 @@ Wire Wire Line
 	14900 2750 14700 2750
 Wire Wire Line
 	14700 2450 14900 2450
-Text Label 5100 3400 2    50   ~ 0
-REFCLK_125_AC_P
 Text Label 5100 3500 2    50   ~ 0
+REFCLK_125_AC_P
+Text Label 5100 3400 2    50   ~ 0
 REFCLK_125_AC_N
 $Comp
 L device:R R16
@@ -394,21 +394,15 @@ Text Label 8400 3250 0    50   ~ 0
 GND
 Wire Wire Line
 	8400 3250 8100 3250
-Text Label 3950 1250 2    50   ~ 0
-SATA_HOST_TX_P
-Text Label 3950 1450 2    50   ~ 0
-SATA_HOST_TX_N
-Text Label 2400 1550 2    50   ~ 0
-SATA_HOST_RX_P
-Text Label 2400 1750 2    50   ~ 0
-SATA_HOST_RX_N
-Text Label 3950 1850 2    50   ~ 0
-SATA_DEV_TX_P
 Text Label 3950 2050 2    50   ~ 0
+SATA_HOST_TX_P
+Text Label 3950 2450 2    50   ~ 0
+SATA_DEV_TX_P
+Text Label 3950 2650 2    50   ~ 0
 SATA_DEV_TX_N
-Text Label 2400 2150 2    50   ~ 0
+Text Label 2400 2750 2    50   ~ 0
 SATA_DEV_RX_P
-Text Label 2400 2350 2    50   ~ 0
+Text Label 2400 2950 2    50   ~ 0
 SATA_DEV_RX_N
 Text Label 6600 7500 2    50   ~ 0
 SATA_HOST_TX_P
@@ -426,13 +420,13 @@ Text Label 6600 6150 2    50   ~ 0
 SATA_DEV_RX_P
 Text Label 6600 6250 2    50   ~ 0
 SATA_DEV_RX_N
-Text Label 5100 2500 2    50   ~ 0
+Text Label 5100 1300 2    50   ~ 0
 SFP_TX_P
-Text Label 5100 2600 2    50   ~ 0
+Text Label 5100 1400 2    50   ~ 0
 SFP_TX_N
-Text Label 5100 2800 2    50   ~ 0
+Text Label 5100 1600 2    50   ~ 0
 SFP_RX_P
-Text Label 5100 2900 2    50   ~ 0
+Text Label 5100 1700 2    50   ~ 0
 SFP_RX_N
 Text Label 1300 7350 2    50   ~ 0
 SFP_TX_P
@@ -776,154 +770,108 @@ $EndComp
 $Comp
 L device:C C149
 U 1 1 61D775E4
-P 4100 1250
-F 0 "C149" V 4000 1000 50  0000 C CNN
-F 1 "0.1 uF" V 4000 1450 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 1100 50  0001 C CNN
-F 3 "" H 4100 1250 50  0001 C CNN
-	1    4100 1250
-	0    1    1    0   
-$EndComp
-$Comp
-L device:C C150
-U 1 1 61D77D41
-P 4100 1450
-F 0 "C150" V 4000 1200 50  0000 C CNN
-F 1 "0.1 uF" V 4000 1650 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 1300 50  0001 C CNN
-F 3 "" H 4100 1450 50  0001 C CNN
-	1    4100 1450
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	4250 1450 5100 1450
-Wire Wire Line
-	5100 1450 5100 1400
-Wire Wire Line
-	4250 1250 5100 1250
-Wire Wire Line
-	5100 1250 5100 1300
-Text Label 5000 1250 2    50   ~ 0
-GTX_TX2_P
-Text Label 5000 1450 2    50   ~ 0
-GTX_TX2_N
-$Comp
-L device:C C145
-U 1 1 61D7EF69
-P 2800 1550
-F 0 "C145" V 2700 1300 50  0000 C CNN
-F 1 "0.1 uF" V 2700 1750 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 1400 50  0001 C CNN
-F 3 "" H 2800 1550 50  0001 C CNN
-	1    2800 1550
-	0    1    1    0   
-$EndComp
-$Comp
-L device:C C146
-U 1 1 61D7F6C1
-P 2800 1750
-F 0 "C146" V 2700 1500 50  0000 C CNN
-F 1 "0.1 uF" V 2700 1950 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 1600 50  0001 C CNN
-F 3 "" H 2800 1750 50  0001 C CNN
-	1    2800 1750
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	2400 1750 2650 1750
-Wire Wire Line
-	2650 1550 2400 1550
-Wire Wire Line
-	3200 1750 2950 1750
-Wire Wire Line
-	2950 1550 3200 1550
-Wire Wire Line
-	3200 1550 3200 1600
-Wire Wire Line
-	3200 1600 5100 1600
-Wire Wire Line
-	5100 1700 3200 1700
-Wire Wire Line
-	3200 1700 3200 1750
-Text Label 5000 1600 2    50   ~ 0
-GTX_RX2_P
-Text Label 5000 1700 2    50   ~ 0
-GTX_RX2_N
-$Comp
-L device:C C151
-U 1 1 61D8C0F7
-P 4100 1850
-F 0 "C151" V 4000 1600 50  0000 C CNN
-F 1 "0.1 uF" V 4000 2050 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 1700 50  0001 C CNN
-F 3 "" H 4100 1850 50  0001 C CNN
-	1    4100 1850
-	0    1    1    0   
-$EndComp
-$Comp
-L device:C C152
-U 1 1 61D8C873
 P 4100 2050
-F 0 "C152" V 4000 1800 50  0000 C CNN
+F 0 "C149" V 4000 1800 50  0000 C CNN
 F 1 "0.1 uF" V 4000 2250 50  0000 C CNN
 F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 1900 50  0001 C CNN
 F 3 "" H 4100 2050 50  0001 C CNN
 	1    4100 2050
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	4250 2050 5100 2050
-Wire Wire Line
-	5100 2050 5100 2000
+$Comp
+L device:C C150
+U 1 1 61D77D41
+P 4100 1850
+F 0 "C150" V 4000 1600 50  0000 C CNN
+F 1 "0.1 uF" V 4000 2050 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 1700 50  0001 C CNN
+F 3 "" H 4100 1850 50  0001 C CNN
+	1    4100 1850
+	0    1    1    0   
+$EndComp
 Wire Wire Line
 	4250 1850 5100 1850
 Wire Wire Line
-	5100 1850 5100 1900
+	4250 2050 5100 2050
+Text Label 5000 2050 2    50   ~ 0
+GTX_TX2_P
+Text Label 5000 1850 2    50   ~ 0
+GTX_TX2_N
+Wire Wire Line
+	2400 2350 2650 2350
+Wire Wire Line
+	3200 2350 2950 2350
+$Comp
+L device:C C151
+U 1 1 61D8C0F7
+P 4100 2450
+F 0 "C151" V 4000 2200 50  0000 C CNN
+F 1 "0.1 uF" V 4000 2650 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 2300 50  0001 C CNN
+F 3 "" H 4100 2450 50  0001 C CNN
+	1    4100 2450
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C152
+U 1 1 61D8C873
+P 4100 2650
+F 0 "C152" V 4000 2400 50  0000 C CNN
+F 1 "0.1 uF" V 4000 2850 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 2500 50  0001 C CNN
+F 3 "" H 4100 2650 50  0001 C CNN
+	1    4100 2650
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4250 2650 5100 2650
+Wire Wire Line
+	4250 2450 5100 2450
 $Comp
 L device:C C147
 U 1 1 61D9641A
-P 2800 2150
-F 0 "C147" V 2700 1900 50  0000 C CNN
-F 1 "0.1 uF" V 2700 2350 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 2000 50  0001 C CNN
-F 3 "" H 2800 2150 50  0001 C CNN
-	1    2800 2150
+P 2800 2750
+F 0 "C147" V 2700 2500 50  0000 C CNN
+F 1 "0.1 uF" V 2700 2950 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 2600 50  0001 C CNN
+F 3 "" H 2800 2750 50  0001 C CNN
+	1    2800 2750
 	0    1    1    0   
 $EndComp
 $Comp
 L device:C C148
 U 1 1 61D96BBA
-P 2800 2350
-F 0 "C148" V 2700 2100 50  0000 C CNN
-F 1 "0.1 uF" V 2700 2550 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 2200 50  0001 C CNN
-F 3 "" H 2800 2350 50  0001 C CNN
-	1    2800 2350
+P 2800 2950
+F 0 "C148" V 2700 2700 50  0000 C CNN
+F 1 "0.1 uF" V 2700 3150 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 2800 50  0001 C CNN
+F 3 "" H 2800 2950 50  0001 C CNN
+	1    2800 2950
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	2400 2350 2650 2350
+	2400 2950 2650 2950
 Wire Wire Line
-	2650 2150 2400 2150
+	2650 2750 2400 2750
 Wire Wire Line
-	3200 2350 2950 2350
+	3200 2950 2950 2950
 Wire Wire Line
-	2950 2150 3200 2150
+	2950 2750 3200 2750
 Wire Wire Line
-	3200 2350 3200 2300
+	3200 2950 3200 2900
 Wire Wire Line
-	3200 2300 5100 2300
+	3200 2900 5100 2900
 Wire Wire Line
-	3200 2150 3200 2200
+	3200 2750 3200 2800
 Wire Wire Line
-	3200 2200 5100 2200
-Text Label 5000 1850 2    50   ~ 0
+	3200 2800 5100 2800
+Text Label 5000 2450 2    50   ~ 0
 GTX_TX1_P
-Text Label 5000 2050 2    50   ~ 0
+Text Label 5000 2650 2    50   ~ 0
 GTX_TX1_N
-Text Label 5000 2200 2    50   ~ 0
+Text Label 5000 2800 2    50   ~ 0
 GTX_RX1_P
-Text Label 5000 2300 2    50   ~ 0
+Text Label 5000 2900 2    50   ~ 0
 GTX_RX1_N
 Text Label 6600 6750 2    50   ~ 0
 GND
@@ -941,6 +889,60 @@ Text Label 6600 8100 2    50   ~ 0
 GND
 Text HLabel 4600 3700 0    50   Input ~ 0
 GTX_1V2
-Text Notes 3300 2750 0    50   ~ 0
+Text Notes 3400 1400 0    50   ~ 0
 SFP+ has internal coupling caps\nNo need to include them on PCB
+Wire Wire Line
+	5100 2650 5100 2600
+Wire Wire Line
+	5100 2450 5100 2500
+Text Label 5050 2300 2    50   ~ 0
+GTX_RX2_N
+Text Label 5050 2200 2    50   ~ 0
+GTX_RX2_P
+Wire Wire Line
+	3200 2300 3200 2350
+Wire Wire Line
+	5100 2300 3200 2300
+Wire Wire Line
+	3200 2200 5100 2200
+Wire Wire Line
+	3200 2150 3200 2200
+Wire Wire Line
+	2950 2150 3200 2150
+Wire Wire Line
+	2650 2150 2400 2150
+$Comp
+L device:C C146
+U 1 1 61D7F6C1
+P 2800 2350
+F 0 "C146" V 2700 2100 50  0000 C CNN
+F 1 "0.1 uF" V 2700 2550 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 2200 50  0001 C CNN
+F 3 "" H 2800 2350 50  0001 C CNN
+	1    2800 2350
+	0    1    1    0   
+$EndComp
+$Comp
+L device:C C145
+U 1 1 61D7EF69
+P 2800 2150
+F 0 "C145" V 2700 1900 50  0000 C CNN
+F 1 "0.1 uF" V 2700 2350 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2838 2000 50  0001 C CNN
+F 3 "" H 2800 2150 50  0001 C CNN
+	1    2800 2150
+	0    1    1    0   
+$EndComp
+Text Label 2400 2350 2    50   ~ 0
+SATA_HOST_RX_N
+Text Label 2400 2150 2    50   ~ 0
+SATA_HOST_RX_P
+Text Label 3950 1850 2    50   ~ 0
+SATA_HOST_TX_N
+Wire Wire Line
+	5100 2050 5100 2000
+Wire Wire Line
+	5100 1900 5100 1850
+Text Notes 2500 3700 0    50   ~ 0
+INVERT ON:\nGTX_TX2
 $EndSCHEMATC
