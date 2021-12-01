@@ -164,29 +164,29 @@ Text Label 5250 1700 2    50   ~ 0
 LA0_UART_RX
 Text Label 6950 1700 2    50   ~ 0
 LA1_UART_RX
-Text Label 1800 4050 2    50   ~ 0
+Text Label 1800 3250 2    50   ~ 0
 LA0_PRESENCE_DETECT
-Text Label 1800 4150 2    50   ~ 0
+Text Label 1800 2850 2    50   ~ 0
 LA0_UART_TX
-Text Label 1800 4250 2    50   ~ 0
+Text Label 1800 3350 2    50   ~ 0
 LA0_UART_RX
-Text Label 1800 4350 2    50   ~ 0
+Text Label 1800 1350 2    50   ~ 0
 LA1_PRESENCE_DETECT
 Text Label 1800 4550 2    50   ~ 0
 LA1_UART_RX
-Text Label 1800 4450 2    50   ~ 0
+Text Label 1800 4150 2    50   ~ 0
 LA1_UART_TX
 Text Label 6150 3950 2    50   ~ 0
 LA0_12V0_EN
-Text Label 1800 3850 2    50   ~ 0
+Text Label 1800 3650 2    50   ~ 0
 LA0_12V0_EN
-Text Label 1800 3950 2    50   ~ 0
+Text Label 1800 3550 2    50   ~ 0
 LA1_12V0_EN
 Text Label 7150 3950 0    50   ~ 0
 LA0_12V0_FAULT
-Text Label 1800 3750 2    50   ~ 0
+Text Label 1800 4250 2    50   ~ 0
 LA1_12V0_FAULT
-Text Label 1800 3650 2    50   ~ 0
+Text Label 1800 2950 2    50   ~ 0
 LA0_12V0_FAULT
 Text HLabel 1800 2050 0    50   Input ~ 0
 SFP_RX_LOS
@@ -234,13 +234,13 @@ Text HLabel 1800 1950 0    50   Input ~ 0
 SFP_TX_FAULT
 Text HLabel 1800 2250 0    50   Output ~ 0
 SFP_TX_DISABLE
-Text Label 1800 3250 2    50   ~ 0
+Text Label 1800 4050 2    50   ~ 0
 LED0
-Text Label 1800 3350 2    50   ~ 0
+Text Label 1800 3750 2    50   ~ 0
 LED1
 Text Label 1800 3450 2    50   ~ 0
 LED2
-Text Label 1800 3550 2    50   ~ 0
+Text Label 1800 3950 2    50   ~ 0
 LED3
 Text Label 4150 6400 2    50   ~ 0
 PMOD_DQ0
@@ -260,7 +260,7 @@ Text Label 4150 7100 2    50   ~ 0
 PMOD_DQ7
 Text Label 1800 2150 2    50   ~ 0
 PMOD_DQ0
-Text Label 1800 1350 2    50   ~ 0
+Text Label 1800 4350 2    50   ~ 0
 PMOD_DQ1
 Text Label 1800 1250 2    50   ~ 0
 PMOD_DQ2
@@ -272,11 +272,11 @@ Text Label 1800 2650 2    50   ~ 0
 PMOD_DQ5
 Text Label 1800 2750 2    50   ~ 0
 PMOD_DQ6
-Text Label 1800 2850 2    50   ~ 0
+Text Label 1800 3850 2    50   ~ 0
 PMOD_DQ7
 Text HLabel 1800 3050 0    50   Output ~ 0
 ETH_LED2_P
-Text HLabel 1800 2950 0    50   Output ~ 0
+Text HLabel 1800 4450 0    50   Output ~ 0
 ETH_LED1_P
 NoConn ~ 1800 3150
 $Comp

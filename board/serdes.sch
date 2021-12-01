@@ -241,28 +241,28 @@ F 3 "" H 8100 1250 50  0001 C CNN
 	1    8100 1250
 	-1   0    0    -1  
 $EndComp
-Text Label 8400 1250 0    50   ~ 0
-GTX_TX3_P
+Text Label 8400 2450 0    50   ~ 0
+GTX_TX3_AC_P
 $Comp
 L device:C C36
 U 1 1 61D61CE3
-P 4100 650
-F 0 "C36" V 4000 400 50  0000 C CNN
-F 1 "0.1 uF" V 4000 850 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 500 50  0001 C CNN
-F 3 "" H 4100 650 50  0001 C CNN
-	1    4100 650 
+P 2750 950
+F 0 "C36" V 2650 700 50  0000 C CNN
+F 1 "0.1 uF" V 2650 1150 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2788 800 50  0001 C CNN
+F 3 "" H 2750 950 50  0001 C CNN
+	1    2750 950 
 	0    1    1    0   
 $EndComp
 $Comp
 L device:C C37
 U 1 1 61D635C7
-P 4100 850
-F 0 "C37" V 4000 600 50  0000 C CNN
-F 1 "0.1 uF" V 4000 1050 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 700 50  0001 C CNN
-F 3 "" H 4100 850 50  0001 C CNN
-	1    4100 850 
+P 2750 1150
+F 0 "C37" V 2650 900 50  0000 C CNN
+F 1 "0.1 uF" V 2650 1350 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2788 1000 50  0001 C CNN
+F 3 "" H 2750 1150 50  0001 C CNN
+	1    2750 1150
 	0    1    1    0   
 $EndComp
 Wire Wire Line
@@ -288,23 +288,23 @@ Wire Wire Line
 $Comp
 L device:C C34
 U 1 1 61D678BF
-P 2750 950
-F 0 "C34" V 2650 700 50  0000 C CNN
-F 1 "0.1 uF" V 2650 1150 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2788 800 50  0001 C CNN
-F 3 "" H 2750 950 50  0001 C CNN
-	1    2750 950 
+P 4100 650
+F 0 "C34" V 4000 400 50  0000 C CNN
+F 1 "0.1 uF" V 4000 850 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 500 50  0001 C CNN
+F 3 "" H 4100 650 50  0001 C CNN
+	1    4100 650 
 	0    1    1    0   
 $EndComp
 $Comp
 L device:C C35
 U 1 1 61D678C9
-P 2750 1150
-F 0 "C35" V 2650 900 50  0000 C CNN
-F 1 "0.1 uF" V 2650 1350 50  0000 C CNN
-F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2788 1000 50  0001 C CNN
-F 3 "" H 2750 1150 50  0001 C CNN
-	1    2750 1150
+P 4100 850
+F 0 "C35" V 4000 600 50  0000 C CNN
+F 1 "0.1 uF" V 4000 1050 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4138 700 50  0001 C CNN
+F 3 "" H 4100 850 50  0001 C CNN
+	1    4100 850 
 	0    1    1    0   
 $EndComp
 Text Label 5000 1000 2    50   ~ 0
@@ -312,9 +312,9 @@ GTX_RX3_P
 Text Label 5000 1100 2    50   ~ 0
 GTX_RX3_N
 Text Label 2350 950  2    50   ~ 0
-GTX_TX3_AC_P
+GTX_RX3_AC_P
 Text Label 2350 1150 2    50   ~ 0
-GTX_TX3_AC_N
+GTX_RX3_AC_N
 Wire Wire Line
 	2350 1150 2600 1150
 Wire Wire Line
@@ -348,8 +348,8 @@ F 3 "" H 8100 1850 50  0001 C CNN
 	1    8100 1850
 	-1   0    0    -1  
 $EndComp
-Text Label 8400 1850 0    50   ~ 0
-GTX_TX3_N
+Text Label 8400 3050 0    50   ~ 0
+GTX_TX3_AC_N
 Wire Wire Line
 	8400 1850 8250 1850
 Text Label 8400 2050 0    50   ~ 0
@@ -367,8 +367,8 @@ F 3 "" H 8100 2450 50  0001 C CNN
 	1    8100 2450
 	-1   0    0    -1  
 $EndComp
-Text Label 8400 2450 0    50   ~ 0
-GTX_RX3_P
+Text Label 8400 1250 0    50   ~ 0
+GTX_RX3_AC_P
 Wire Wire Line
 	8400 2450 8250 2450
 Text Label 8400 2650 0    50   ~ 0
@@ -386,8 +386,8 @@ F 3 "" H 8100 3050 50  0001 C CNN
 	1    8100 3050
 	-1   0    0    -1  
 $EndComp
-Text Label 8400 3050 0    50   ~ 0
-GTX_RX3_N
+Text Label 8400 1850 0    50   ~ 0
+GTX_RX3_AC_N
 Wire Wire Line
 	8400 3050 8250 3050
 Text Label 8400 3250 0    50   ~ 0

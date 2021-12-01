@@ -72,9 +72,9 @@ Text Label 9700 3150 0    50   ~ 0
 LA1_DQ7_P
 Text Label 9700 3250 0    50   ~ 0
 LA1_DQ7_N
-Text Label 2250 2250 2    50   ~ 0
+Text Label 2250 4250 2    50   ~ 0
 LA1_DQ0_P
-Text Label 2250 2350 2    50   ~ 0
+Text Label 2250 4350 2    50   ~ 0
 LA1_DQ0_N
 Text Label 2250 4650 2    50   ~ 0
 LA1_DQ1_P
@@ -84,13 +84,13 @@ Text Label 2250 5250 2    50   ~ 0
 LA1_DQ2_P
 Text Label 2250 5350 2    50   ~ 0
 LA1_DQ2_N
-Text Label 2250 3250 2    50   ~ 0
+Text Label 2250 4050 2    50   ~ 0
 LA1_DQ3_P
-Text Label 2250 3350 2    50   ~ 0
+Text Label 2250 4150 2    50   ~ 0
 LA1_DQ3_N
-Text Label 2250 2850 2    50   ~ 0
+Text Label 2250 3650 2    50   ~ 0
 LA1_DQ4_P
-Text Label 2250 2950 2    50   ~ 0
+Text Label 2250 3750 2    50   ~ 0
 LA1_DQ4_N
 Text Label 2250 5850 2    50   ~ 0
 LA1_DQ5_P
@@ -216,29 +216,29 @@ Text Label 2250 5750 2    50   ~ 0
 LVDS9_P
 Text Label 2250 5650 2    50   ~ 0
 LVDS9_N
-Text Label 2250 3650 2    50   ~ 0
-LVDS10_P
-Text Label 2250 3750 2    50   ~ 0
-LVDS10_N
-Text Label 2250 2450 2    50   ~ 0
-LVDS11_P
-Text Label 2250 2550 2    50   ~ 0
-LVDS11_N
-Text Label 2250 4050 2    50   ~ 0
-LVDS12_P
-Text Label 2250 4150 2    50   ~ 0
-LVDS12_N
-Text Label 2250 4250 2    50   ~ 0
-LVDS13_P
-Text Label 2250 4350 2    50   ~ 0
-LVDS13_N
 Text Label 2250 2650 2    50   ~ 0
-LVDS14_P
+LVDS10_P
 Text Label 2250 2750 2    50   ~ 0
-LVDS14_N
+LVDS10_N
+Text Label 2250 2250 2    50   ~ 0
+LVDS11_P
+Text Label 2250 2350 2    50   ~ 0
+LVDS11_N
+Text Label 2250 3250 2    50   ~ 0
+LVDS12_P
+Text Label 2250 3350 2    50   ~ 0
+LVDS12_N
+Text Label 2250 2450 2    50   ~ 0
+LVDS13_P
+Text Label 2250 2550 2    50   ~ 0
+LVDS13_N
 Text Label 2250 5050 2    50   ~ 0
-LVDS15_P
+LVDS14_P
 Text Label 2250 5150 2    50   ~ 0
+LVDS14_N
+Text Label 2250 2850 2    50   ~ 0
+LVDS15_P
+Text Label 2250 2950 2    50   ~ 0
 LVDS15_N
 Text Label 4900 1550 2    50   ~ 0
 LVDS0_P

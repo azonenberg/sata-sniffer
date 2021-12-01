@@ -523,15 +523,11 @@ Text Label 11900 7350 2    50   ~ 0
 ETH_RXD1
 Text Label 11900 7450 2    50   ~ 0
 ETH_RXD0
-Text Label 11900 5450 2    50   ~ 0
-ETH_RX_DV
 Text Label 11900 5150 2    50   ~ 0
 ETH_RX_CLK
-Text Label 11900 5350 2    50   ~ 0
-RGMII_TXD0
-Text Label 11900 7150 2    50   ~ 0
+Text Label 11900 6350 2    50   ~ 0
 RGMII_TXD3
-Text Label 11900 7250 2    50   ~ 0
+Text Label 11900 6450 2    50   ~ 0
 RGMII_TX_CLK
 Text Label 11900 6950 2    50   ~ 0
 RGMII_TX_EN
@@ -1090,10 +1086,6 @@ Text Label 11900 3750 2    50   ~ 0
 LA0_DQ0_P
 Text Label 11900 3850 2    50   ~ 0
 LA0_DQ0_N
-Text Label 11900 6350 2    50   ~ 0
-LA0_DQ1_P
-Text Label 11900 6450 2    50   ~ 0
-LA0_DQ1_N
 Text Label 11900 6750 2    50   ~ 0
 LA0_DQ2_P
 Text Label 11900 6850 2    50   ~ 0
@@ -1139,4 +1131,12 @@ Text Label 11900 6650 2    50   ~ 0
 RGMII_TXD2
 NoConn ~ 11900 4350
 NoConn ~ 11900 2850
+Text Label 11900 7250 2    50   ~ 0
+LA0_DQ1_N
+Text Label 11900 7150 2    50   ~ 0
+LA0_DQ1_P
+Text Label 11900 5350 2    50   ~ 0
+RGMII_TXD0
+Text Label 11900 5450 2    50   ~ 0
+ETH_RX_DV
 $EndSCHEMATC
