@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 8 10
 Title "SATA sniffer"
-Date "2021-11-29"
+Date "2021-12-01"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -32,8 +32,8 @@ L special-azonenberg:CONN_SFF8087 J?
 U 2 1 6198CEDF
 P 9600 3300
 AR Path="/61923389/6198CEDF" Ref="J?"  Part="2" 
-AR Path="/6192A55E/6198CEDF" Ref="J9"  Part="2" 
-F 0 "J9" H 9742 5775 50  0000 C CNN
+AR Path="/6192A55E/6198CEDF" Ref="J8"  Part="2" 
+F 0 "J8" H 9742 5775 50  0000 C CNN
 F 1 "CONN_SFF8087" H 9742 5684 50  0000 C CNN
 F 2 "azonenberg_pcb:CONN_SFF8087_MOLEX_75783-0140" H 9600 3300 50  0001 C CNN
 F 3 "" H 9600 3300 50  0001 C CNN
@@ -72,37 +72,37 @@ Text Label 9700 3150 0    50   ~ 0
 LA1_DQ7_P
 Text Label 9700 3250 0    50   ~ 0
 LA1_DQ7_N
-Text Label 2250 4250 2    50   ~ 0
+Text Label 2250 5850 2    50   ~ 0
 LA1_DQ0_P
-Text Label 2250 4350 2    50   ~ 0
+Text Label 2250 5950 2    50   ~ 0
 LA1_DQ0_N
-Text Label 2250 4650 2    50   ~ 0
+Text Label 2250 6150 2    50   ~ 0
 LA1_DQ1_P
-Text Label 2250 4750 2    50   ~ 0
+Text Label 2250 6050 2    50   ~ 0
 LA1_DQ1_N
-Text Label 2250 5250 2    50   ~ 0
+Text Label 2250 6350 2    50   ~ 0
 LA1_DQ2_P
-Text Label 2250 5350 2    50   ~ 0
+Text Label 2250 6250 2    50   ~ 0
 LA1_DQ2_N
-Text Label 2250 4050 2    50   ~ 0
+Text Label 2250 5250 2    50   ~ 0
 LA1_DQ3_P
-Text Label 2250 4150 2    50   ~ 0
+Text Label 2250 5350 2    50   ~ 0
 LA1_DQ3_N
 Text Label 2250 3650 2    50   ~ 0
 LA1_DQ4_P
 Text Label 2250 3750 2    50   ~ 0
 LA1_DQ4_N
-Text Label 2250 5850 2    50   ~ 0
+Text Label 2250 4050 2    50   ~ 0
 LA1_DQ5_P
-Text Label 2250 5950 2    50   ~ 0
+Text Label 2250 4150 2    50   ~ 0
 LA1_DQ5_N
-Text Label 2250 6050 2    50   ~ 0
+Text Label 2250 4650 2    50   ~ 0
 LA1_DQ6_P
-Text Label 2250 6150 2    50   ~ 0
+Text Label 2250 4750 2    50   ~ 0
 LA1_DQ6_N
-Text Label 2250 6250 2    50   ~ 0
+Text Label 2250 4250 2    50   ~ 0
 LA1_DQ7_P
-Text Label 2250 6350 2    50   ~ 0
+Text Label 2250 4350 2    50   ~ 0
 LA1_DQ7_N
 NoConn ~ 2250 1550
 NoConn ~ 2250 6450
@@ -313,5 +313,5 @@ NoConn ~ 4900 5350
 NoConn ~ 4900 5450
 NoConn ~ 4900 5550
 Text Notes 850  1150 0    50   ~ 0
-Pairs swapped for routability:\nLVDS_2\nLVDS_9
+Pairs swapped for routability:\nLVDS_2\nLVDS_9\nLA1_DQ2\nLA1_DQ1
 $EndSCHEMATC

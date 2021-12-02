@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 7 10
 Title "SATA sniffer"
-Date "2021-11-29"
+Date "2021-12-01"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -157,7 +157,7 @@ L osc-azonenberg:OSC U9
 U 1 1 61D8F215
 P 2300 10450
 F 0 "U9" H 2275 10737 60  0000 C CNN
-F 1 "SIT1602BC-72-18S-25.000000" H 2275 10631 60  0000 C CNN
+F 1 "ECS-2016MVQ-250-CN" H 2275 10631 60  0000 C CNN
 F 2 "azonenberg_pcb:OSCILLATOR_2.0x1.6" H 2300 10450 60  0001 C CNN
 F 3 "" H 2300 10450 60  0000 C CNN
 	1    2300 10450
@@ -199,7 +199,7 @@ Wire Wire Line
 Wire Wire Line
 	1600 10750 1600 10650
 Text Label 1100 10450 2    50   ~ 0
-3V3
+1V8
 Text Label 1100 10750 2    50   ~ 0
 GND
 Text Label 3350 10450 0    50   ~ 0
@@ -525,9 +525,9 @@ Text Label 11900 7450 2    50   ~ 0
 ETH_RXD0
 Text Label 11900 5150 2    50   ~ 0
 ETH_RX_CLK
-Text Label 11900 6350 2    50   ~ 0
+Text Label 11900 4650 2    50   ~ 0
 RGMII_TXD3
-Text Label 11900 6450 2    50   ~ 0
+Text Label 11900 4950 2    50   ~ 0
 RGMII_TX_CLK
 Text Label 11900 6950 2    50   ~ 0
 RGMII_TX_EN
@@ -600,7 +600,7 @@ Text Label 6450 1350 0    50   ~ 0
 ETH_LED1_N_1V8
 Text Label 6450 1250 0    50   ~ 0
 ETH_LED2_N_1V8
-Text Label 11900 7550 2    50   ~ 0
+Text Label 11900 5850 2    50   ~ 0
 ETH_LED2_N_1V8
 Text Label 11900 7050 2    50   ~ 0
 ETH_LED1_N_1V8
@@ -1040,10 +1040,10 @@ Wire Wire Line
 Text Label 1450 7600 2    50   ~ 0
 GND
 $Comp
-L special-azonenberg:CONN_SFF8087 J8
+L special-azonenberg:CONN_SFF8087 J9
 U 2 1 6197F0EA
 P 8350 7850
-F 0 "J8" H 8492 10325 50  0000 C CNN
+F 0 "J9" H 8492 10325 50  0000 C CNN
 F 1 "CONN_SFF8087" H 8492 10234 50  0000 C CNN
 F 2 "azonenberg_pcb:CONN_SFF8087_MOLEX_75783-0140" H 8350 7850 50  0001 C CNN
 F 3 "" H 8350 7850 50  0001 C CNN
@@ -1082,47 +1082,35 @@ Text Label 8450 7700 0    50   ~ 0
 LA0_DQ7_P
 Text Label 8450 7800 0    50   ~ 0
 LA0_DQ7_N
-Text Label 11900 3750 2    50   ~ 0
-LA0_DQ0_P
-Text Label 11900 3850 2    50   ~ 0
-LA0_DQ0_N
-Text Label 11900 6750 2    50   ~ 0
-LA0_DQ2_P
-Text Label 11900 6850 2    50   ~ 0
-LA0_DQ2_N
 Text Label 11900 2950 2    50   ~ 0
-LA0_DQ3_P
+LA0_DQ0_P
 Text Label 11900 3050 2    50   ~ 0
-LA0_DQ3_N
-Text Label 11900 3350 2    50   ~ 0
-LA0_DQ4_P
-Text Label 11900 3450 2    50   ~ 0
-LA0_DQ4_N
-Text Label 11900 3150 2    50   ~ 0
-LA0_DQ5_P
-Text Label 11900 3250 2    50   ~ 0
-LA0_DQ5_N
-Text Label 11900 4150 2    50   ~ 0
-LA0_DQ6_P
+LA0_DQ0_N
 Text Label 11900 4250 2    50   ~ 0
+LA0_DQ2_P
+Text Label 11900 4150 2    50   ~ 0
+LA0_DQ2_N
+Text Label 11900 3850 2    50   ~ 0
+LA0_DQ4_P
+Text Label 11900 3750 2    50   ~ 0
+LA0_DQ4_N
+Text Label 11900 6750 2    50   ~ 0
+LA0_DQ6_P
+Text Label 11900 6850 2    50   ~ 0
 LA0_DQ6_N
-Text Label 11900 3550 2    50   ~ 0
+Text Label 11900 7250 2    50   ~ 0
 LA0_DQ7_P
-Text Label 11900 3650 2    50   ~ 0
+Text Label 11900 7150 2    50   ~ 0
 LA0_DQ7_N
 Text HLabel 3250 3000 0    50   Input ~ 0
 GND
 NoConn ~ 11900 4450
 NoConn ~ 11900 4550
-NoConn ~ 11900 4650
 NoConn ~ 11900 4750
 NoConn ~ 11900 4850
-NoConn ~ 11900 4950
 NoConn ~ 11900 5050
 NoConn ~ 11900 5250
 NoConn ~ 11900 5750
-NoConn ~ 11900 5850
-NoConn ~ 11900 5950
 NoConn ~ 11900 6050
 NoConn ~ 11900 7750
 Text Label 11900 6550 2    50   ~ 0
@@ -1131,12 +1119,141 @@ Text Label 11900 6650 2    50   ~ 0
 RGMII_TXD2
 NoConn ~ 11900 4350
 NoConn ~ 11900 2850
-Text Label 11900 7250 2    50   ~ 0
+Text Label 11900 3450 2    50   ~ 0
 LA0_DQ1_N
-Text Label 11900 7150 2    50   ~ 0
+Text Label 11900 3350 2    50   ~ 0
 LA0_DQ1_P
 Text Label 11900 5350 2    50   ~ 0
 RGMII_TXD0
 Text Label 11900 5450 2    50   ~ 0
 ETH_RX_DV
+Text Label 11900 3650 2    50   ~ 0
+LA0_DQ5_N
+Text Label 11900 3550 2    50   ~ 0
+LA0_DQ5_P
+Text Label 11900 3150 2    50   ~ 0
+LA0_DQ3_N
+Text Label 11900 3250 2    50   ~ 0
+LA0_DQ3_P
+Text Notes 12100 2800 0    50   ~ 0
+Pairs swapped for layout:\nLA0_DQ2\nLA0_DQ3\nLA0_DQ4\nLA0_DQ7
+NoConn ~ 11900 7550
+NoConn ~ 11900 6350
+NoConn ~ 11900 6450
+NoConn ~ 11900 5950
+$Comp
+L device:C C153
+U 1 1 62483745
+P 1450 7950
+F 0 "C153" H 1565 7996 50  0000 L CNN
+F 1 "4.7 uF" H 1565 7905 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 1488 7800 50  0001 C CNN
+F 3 "" H 1450 7950 50  0001 C CNN
+	1    1450 7950
+	1    0    0    -1  
+$EndComp
+Text Label 1450 7800 2    50   ~ 0
+1V2
+Text Label 1450 8100 2    50   ~ 0
+GND
+$Comp
+L device:C C154
+U 1 1 62483FFD
+P 1950 7950
+F 0 "C154" H 2065 7996 50  0000 L CNN
+F 1 "0.47 uF" H 2065 7905 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 1988 7800 50  0001 C CNN
+F 3 "" H 1950 7950 50  0001 C CNN
+	1    1950 7950
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C155
+U 1 1 6248461B
+P 2500 7950
+F 0 "C155" H 2615 7996 50  0000 L CNN
+F 1 "0.47 uF" H 2615 7905 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 2538 7800 50  0001 C CNN
+F 3 "" H 2500 7950 50  0001 C CNN
+	1    2500 7950
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C156
+U 1 1 62484B1B
+P 3050 7950
+F 0 "C156" H 3165 7996 50  0000 L CNN
+F 1 "0.47 uF" H 3165 7905 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 3088 7800 50  0001 C CNN
+F 3 "" H 3050 7950 50  0001 C CNN
+	1    3050 7950
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C157
+U 1 1 62484E81
+P 3600 7950
+F 0 "C157" H 3715 7996 50  0000 L CNN
+F 1 "0.47 uF" H 3715 7905 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 3638 7800 50  0001 C CNN
+F 3 "" H 3600 7950 50  0001 C CNN
+	1    3600 7950
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C158
+U 1 1 62485328
+P 4150 7950
+F 0 "C158" H 4265 7996 50  0000 L CNN
+F 1 "0.47 uF" H 4265 7905 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4188 7800 50  0001 C CNN
+F 3 "" H 4150 7950 50  0001 C CNN
+	1    4150 7950
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C159
+U 1 1 624855E7
+P 4700 7950
+F 0 "C159" H 4815 7996 50  0000 L CNN
+F 1 "0.47 uF" H 4815 7905 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 4738 7800 50  0001 C CNN
+F 3 "" H 4700 7950 50  0001 C CNN
+	1    4700 7950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4700 7800 4150 7800
+Connection ~ 1950 7800
+Wire Wire Line
+	1950 7800 1450 7800
+Connection ~ 2500 7800
+Wire Wire Line
+	2500 7800 1950 7800
+Connection ~ 3050 7800
+Wire Wire Line
+	3050 7800 2500 7800
+Connection ~ 3600 7800
+Wire Wire Line
+	3600 7800 3050 7800
+Connection ~ 4150 7800
+Wire Wire Line
+	4150 7800 3600 7800
+Wire Wire Line
+	1450 8100 1950 8100
+Connection ~ 1950 8100
+Wire Wire Line
+	1950 8100 2500 8100
+Connection ~ 2500 8100
+Wire Wire Line
+	2500 8100 3050 8100
+Connection ~ 3050 8100
+Wire Wire Line
+	3050 8100 3600 8100
+Connection ~ 3600 8100
+Wire Wire Line
+	3600 8100 4150 8100
+Connection ~ 4150 8100
+Wire Wire Line
+	4150 8100 4700 8100
 $EndSCHEMATC
