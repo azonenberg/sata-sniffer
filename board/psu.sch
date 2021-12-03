@@ -481,7 +481,7 @@ F 3 "" H 2850 4700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 5300 4850 0    50   ~ 0
-1V35_FB
+1V2_FB
 Text Label 6000 5150 2    50   ~ 0
 GND
 $Comp
@@ -1359,4 +1359,8 @@ Text Label 1900 4350 0    50   ~ 0
 Text Label 1900 4250 0    50   ~ 0
 1V0_GOOD
 NoConn ~ 5450 900 
+Text Label 7800 4850 0    50   ~ 0
+1V8_FB
+Text Label 7800 3750 0    50   ~ 0
+3V3_FB
 $EndSCHEMATC

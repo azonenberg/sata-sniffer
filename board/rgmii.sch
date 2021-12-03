@@ -148,9 +148,9 @@ Wire Wire Line
 	3750 8900 3950 8900
 Text Label 2800 9100 0    50   ~ 0
 CLK_125_N
-Text Label 11900 5550 2    50   ~ 0
-CLK_125_AC_P
 Text Label 11900 5650 2    50   ~ 0
+CLK_125_AC_P
+Text Label 11900 5550 2    50   ~ 0
 CLK_125_AC_N
 $Comp
 L osc-azonenberg:OSC U9
@@ -515,27 +515,27 @@ Wire Wire Line
 	1800 4350 1800 4650
 Text Label 1800 4350 0    50   ~ 0
 GND
-Text Label 11900 3950 2    50   ~ 0
+Text Label 11900 6250 2    50   ~ 0
 ETH_RXD3
 Text Label 11900 4050 2    50   ~ 0
 ETH_RXD2
-Text Label 11900 7350 2    50   ~ 0
+Text Label 11900 5850 2    50   ~ 0
 ETH_RXD1
-Text Label 11900 7450 2    50   ~ 0
+Text Label 11900 3950 2    50   ~ 0
 ETH_RXD0
-Text Label 11900 5150 2    50   ~ 0
+Text Label 11900 5350 2    50   ~ 0
 ETH_RX_CLK
-Text Label 11900 4650 2    50   ~ 0
+Text Label 11900 6650 2    50   ~ 0
 RGMII_TXD3
-Text Label 11900 4950 2    50   ~ 0
+Text Label 11900 6550 2    50   ~ 0
 RGMII_TX_CLK
-Text Label 11900 6950 2    50   ~ 0
+Text Label 11900 7450 2    50   ~ 0
 RGMII_TX_EN
-Text Label 11900 6150 2    50   ~ 0
+Text Label 11900 4650 2    50   ~ 0
 ETH_MDC
-Text Label 11900 7650 2    50   ~ 0
+Text Label 11900 5150 2    50   ~ 0
 ETH_MDIO
-Text Label 11900 6250 2    50   ~ 0
+Text Label 11900 4950 2    50   ~ 0
 ETH_RST_N
 $Comp
 L device:R R37
@@ -600,9 +600,9 @@ Text Label 6450 1350 0    50   ~ 0
 ETH_LED1_N_1V8
 Text Label 6450 1250 0    50   ~ 0
 ETH_LED2_N_1V8
-Text Label 11900 5850 2    50   ~ 0
+Text Label 11900 7650 2    50   ~ 0
 ETH_LED2_N_1V8
-Text Label 11900 7050 2    50   ~ 0
+Text Label 11900 6150 2    50   ~ 0
 ETH_LED1_N_1V8
 Text Label 1500 2100 0    50   ~ 0
 GND
@@ -1113,9 +1113,9 @@ NoConn ~ 11900 5250
 NoConn ~ 11900 5750
 NoConn ~ 11900 6050
 NoConn ~ 11900 7750
-Text Label 11900 6550 2    50   ~ 0
+Text Label 11900 6950 2    50   ~ 0
 RGMII_TXD1
-Text Label 11900 6650 2    50   ~ 0
+Text Label 11900 7350 2    50   ~ 0
 RGMII_TXD2
 NoConn ~ 11900 4350
 NoConn ~ 11900 2850
@@ -1123,7 +1123,7 @@ Text Label 11900 3450 2    50   ~ 0
 LA0_DQ1_N
 Text Label 11900 3350 2    50   ~ 0
 LA0_DQ1_P
-Text Label 11900 5350 2    50   ~ 0
+Text Label 11900 7050 2    50   ~ 0
 RGMII_TXD0
 Text Label 11900 5450 2    50   ~ 0
 ETH_RX_DV

@@ -220,9 +220,9 @@ Text Label 1800 3750 2    50   ~ 0
 PMOD_DQ6
 Text Label 1800 2750 2    50   ~ 0
 PMOD_DQ7
-Text HLabel 1800 3050 0    50   Output ~ 0
-ETH_LED2_P
 Text HLabel 1800 3150 0    50   Output ~ 0
+ETH_LED2_P
+Text HLabel 1800 3050 0    50   Output ~ 0
 ETH_LED1_P
 $Comp
 L special-azonenberg:PMOD_HOST J12
