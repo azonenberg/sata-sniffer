@@ -1,0 +1,10 @@
+*.dcp
+*.veo
+*.xml
+*.v
+*.vhdl
+*.tcl
+doc
+_tmp
+*.in
+*.out
