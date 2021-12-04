@@ -1,0 +1,3 @@
+[submodule "rtl/antikernel-ipcores"]
+	path = rtl/antikernel-ipcores
+	url = ../antikernel-ipcores.git
