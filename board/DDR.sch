@@ -1293,43 +1293,43 @@ Text Label 5350 3550 0    50   ~ 0
 RAM_A14
 Text Label 5350 3650 0    50   ~ 0
 RAM_A15
-Text Label 9650 7150 2    50   ~ 0
-RAM_A0
-Text Label 9650 7250 2    50   ~ 0
-RAM_A1
-Text Label 9650 7350 2    50   ~ 0
-RAM_A2
-Text Label 9650 7450 2    50   ~ 0
-RAM_A3
-Text Label 9650 7550 2    50   ~ 0
-RAM_A4
-Text Label 9650 7650 2    50   ~ 0
-RAM_A5
-Text Label 9650 7750 2    50   ~ 0
-RAM_A6
-Text Label 9650 7850 2    50   ~ 0
-RAM_A7
-Text Label 9650 7950 2    50   ~ 0
-RAM_A8
-Text Label 9650 8050 2    50   ~ 0
-RAM_A9
-Text Label 9650 10550 2    50   ~ 0
-RAM_A10
-Text Label 9650 10650 2    50   ~ 0
-RAM_A11
-Text Label 9650 8350 2    50   ~ 0
-RAM_A12
-Text Label 9650 8450 2    50   ~ 0
-RAM_A13
 Text Label 9650 8550 2    50   ~ 0
-RAM_A14
-Text Label 9650 8650 2    50   ~ 0
-RAM_A15
+RAM_A0
+Text Label 9650 7850 2    50   ~ 0
+RAM_A1
+Text Label 9650 10650 2    50   ~ 0
+RAM_A2
+Text Label 9650 7750 2    50   ~ 0
+RAM_A3
+Text Label 9650 7950 2    50   ~ 0
+RAM_A4
+Text Label 9650 7350 2    50   ~ 0
+RAM_A5
+Text Label 9650 8050 2    50   ~ 0
+RAM_A6
+Text Label 9650 9550 2    50   ~ 0
+RAM_A7
+Text Label 9650 7450 2    50   ~ 0
+RAM_A8
+Text Label 9650 7550 2    50   ~ 0
+RAM_A9
 Text Label 9650 8950 2    50   ~ 0
+RAM_A10
+Text Label 9650 9750 2    50   ~ 0
+RAM_A11
+Text Label 9650 7650 2    50   ~ 0
+RAM_A12
+Text Label 9650 10250 2    50   ~ 0
+RAM_A13
+Text Label 9650 9850 2    50   ~ 0
+RAM_A14
+Text Label 9650 10150 2    50   ~ 0
+RAM_A15
+Text Label 9650 9050 2    50   ~ 0
 RAM_BA0
-Text Label 9650 8850 2    50   ~ 0
+Text Label 9650 10450 2    50   ~ 0
 RAM_BA1
-Text Label 9650 8750 2    50   ~ 0
+Text Label 9650 7250 2    50   ~ 0
 RAM_BA2
 Text HLabel 3950 1250 0    50   BiDi ~ 0
 RAM_SDA
@@ -1382,7 +1382,7 @@ Text Label 3950 1750 2    50   ~ 0
 RAM_TEST
 Text Label 3950 1850 2    50   ~ 0
 RAM_RESET_N
-Text Label 9650 9050 2    50   ~ 0
+Text Label 9650 8450 2    50   ~ 0
 RAM_RESET_N
 Text Label 3950 2050 2    50   ~ 0
 RAM_CKE0
@@ -1410,31 +1410,31 @@ Text Label 3950 3550 2    50   ~ 0
 RAM_CAS_N
 Text Label 3950 3650 2    50   ~ 0
 RAM_RAS_N
-Text Label 9650 9550 2    50   ~ 0
+Text Label 9650 7150 2    50   ~ 0
 RAM_CKE0
 Text Label 9650 9150 2    50   ~ 0
 RAM_CK0_P
 Text Label 9650 9250 2    50   ~ 0
 RAM_CK0_N
-Text Label 9650 9750 2    50   ~ 0
+Text Label 9650 8650 2    50   ~ 0
 RAM_CKE1
 Text Label 9650 9350 2    50   ~ 0
 RAM_CK1_P
 Text Label 9650 9450 2    50   ~ 0
 RAM_CK1_N
-Text Label 9650 9850 2    50   ~ 0
+Text Label 9650 10350 2    50   ~ 0
 RAM_CS0_N
-Text Label 9650 9950 2    50   ~ 0
+Text Label 9650 10550 2    50   ~ 0
 RAM_CS1_N
 Text Label 9650 10050 2    50   ~ 0
 RAM_ODT0
-Text Label 9650 10150 2    50   ~ 0
+Text Label 9650 9950 2    50   ~ 0
 RAM_ODT1
-Text Label 9650 10250 2    50   ~ 0
+Text Label 9650 8850 2    50   ~ 0
 RAM_WE_N
-Text Label 9650 10350 2    50   ~ 0
+Text Label 9650 8750 2    50   ~ 0
 RAM_CAS_N
-Text Label 9650 10450 2    50   ~ 0
+Text Label 9650 8350 2    50   ~ 0
 RAM_RAS_N
 NoConn ~ 9650 10750
 Text Label 5800 800  2    50   ~ 0
