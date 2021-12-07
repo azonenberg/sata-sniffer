@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 10
 Title "SATA sniffer"
-Date "2021-12-01"
+Date "2021-12-03"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -310,4 +310,6 @@ F 3 "~" H 8400 3400 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 NoConn ~ 8600 3400
+Text Notes 5700 2750 0    50   ~ 0
+TODO: MAC addr eeprom
 $EndSCHEMATC

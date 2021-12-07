@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 5 10
 Title "SATA sniffer"
-Date "2021-12-01"
+Date "2021-12-03"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -1003,4 +1003,21 @@ Wire Wire Line
 Connection ~ 10200 6600
 Text HLabel 4800 3500 0    50   Output ~ 0
 GTX_1V2
+$Comp
+L device:C C160
+U 1 1 62AAE4C9
+P 1850 9700
+F 0 "C160" H 1965 9746 50  0000 L CNN
+F 1 "DNP" H 1965 9655 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_1210_CAP_NOSILK" H 1888 9550 50  0001 C CNN
+F 3 "" H 1850 9700 50  0001 C CNN
+	1    1850 9700
+	1    0    0    -1  
+$EndComp
+Text Label 1850 9550 2    50   ~ 0
+1V0
+Text Label 1850 9850 2    50   ~ 0
+GND
+Text Notes 1850 10050 0    50   ~ 0
+For 7K160T, populate as 330 uF.\nDNP for 7K70T.
 $EndSCHEMATC

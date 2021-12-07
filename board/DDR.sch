@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 3 10
 Title "SATA sniffer"
-Date "2021-12-01"
+Date "2021-12-03"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -961,10 +961,6 @@ Text Label 9650 3450 2    50   ~ 0
 RAM_DQ2_0
 Text Label 9650 3550 2    50   ~ 0
 RAM_DQ2_1
-Text Label 9650 3650 2    50   ~ 0
-RAM_DQ2_2
-Text Label 9650 3750 2    50   ~ 0
-RAM_DQ2_3
 Text Label 9650 3850 2    50   ~ 0
 RAM_DQ2_4
 Text Label 9650 3950 2    50   ~ 0
@@ -1087,68 +1083,60 @@ Text Label 3400 6350 2    50   ~ 0
 RAM_DQS0_P
 Text Label 3400 6450 2    50   ~ 0
 RAM_DQS0_N
-Text Label 3400 5950 2    50   ~ 0
+Text Label 3400 6550 2    50   ~ 0
 RAM_DM0
-Text Label 3400 6050 2    50   ~ 0
+Text Label 3400 6250 2    50   ~ 0
 RAM_DQ0_0
 Text Label 3400 6150 2    50   ~ 0
 RAM_DQ0_1
-Text Label 3400 6250 2    50   ~ 0
-RAM_DQ0_2
-Text Label 3400 6550 2    50   ~ 0
-RAM_DQ0_3
-Text Label 3400 6650 2    50   ~ 0
-RAM_DQ0_4
-Text Label 3400 6750 2    50   ~ 0
-RAM_DQ0_5
 Text Label 3400 6850 2    50   ~ 0
+RAM_DQ0_2
+Text Label 3400 6650 2    50   ~ 0
+RAM_DQ0_3
+Text Label 3400 6050 2    50   ~ 0
+RAM_DQ0_4
+Text Label 3400 5950 2    50   ~ 0
+RAM_DQ0_5
+Text Label 3400 6750 2    50   ~ 0
 RAM_DQ0_6
-Text Label 3400 6950 2    50   ~ 0
-RAM_DQ0_7
 Text Label 3400 7550 2    50   ~ 0
 RAM_DQS1_P
 Text Label 3400 7650 2    50   ~ 0
 RAM_DQS1_N
-Text Label 3400 7150 2    50   ~ 0
+Text Label 3400 8150 2    50   ~ 0
 RAM_DM1
 Text Label 3400 7250 2    50   ~ 0
 RAM_DQ1_0
-Text Label 3400 7350 2    50   ~ 0
+Text Label 3400 7150 2    50   ~ 0
 RAM_DQ1_1
 Text Label 3400 7450 2    50   ~ 0
 RAM_DQ1_2
-Text Label 3400 7750 2    50   ~ 0
+Text Label 3400 7350 2    50   ~ 0
 RAM_DQ1_3
-Text Label 3400 7850 2    50   ~ 0
-RAM_DQ1_4
 Text Label 3400 7950 2    50   ~ 0
-RAM_DQ1_5
+RAM_DQ1_4
 Text Label 3400 8050 2    50   ~ 0
+RAM_DQ1_5
+Text Label 3400 7850 2    50   ~ 0
 RAM_DQ1_6
-Text Label 3400 8150 2    50   ~ 0
+Text Label 3400 7750 2    50   ~ 0
 RAM_DQ1_7
 Text Label 3400 8750 2    50   ~ 0
 RAM_DQS2_P
 Text Label 3400 8850 2    50   ~ 0
 RAM_DQS2_N
-Text Label 3400 8350 2    50   ~ 0
-RAM_DM2
-Text Label 3400 8450 2    50   ~ 0
-RAM_DQ2_0
-Text Label 3400 8550 2    50   ~ 0
-RAM_DQ2_1
-Text Label 3400 8650 2    50   ~ 0
-RAM_DQ2_2
-Text Label 3400 8950 2    50   ~ 0
-RAM_DQ2_3
-Text Label 3400 9050 2    50   ~ 0
-RAM_DQ2_4
-Text Label 3400 9150 2    50   ~ 0
-RAM_DQ2_5
-Text Label 3400 9250 2    50   ~ 0
-RAM_DQ2_6
 Text Label 3400 9350 2    50   ~ 0
-RAM_DQ2_7
+RAM_DM2
+Text Label 3400 9250 2    50   ~ 0
+RAM_DQ2_0
+Text Label 3400 8450 2    50   ~ 0
+RAM_DQ2_1
+Text Label 3400 8950 2    50   ~ 0
+RAM_DQ2_2
+Text Label 3400 9050 2    50   ~ 0
+RAM_DQ2_3
+Text Label 3400 8650 2    50   ~ 0
+RAM_DQ2_4
 Text Label 3400 10050 2    50   ~ 0
 RAM_DQS3_N
 Text Label 3400 9550 2    50   ~ 0
@@ -1159,15 +1147,15 @@ Text Label 3400 9850 2    50   ~ 0
 RAM_DQ3_1
 Text Label 3400 10150 2    50   ~ 0
 RAM_DQ3_2
-Text Label 3400 10250 2    50   ~ 0
-RAM_DQ3_3
-Text Label 3400 10350 2    50   ~ 0
-RAM_DQ3_4
-Text Label 3400 10450 2    50   ~ 0
-RAM_DQ3_5
 Text Label 3400 10550 2    50   ~ 0
-RAM_DQ3_6
+RAM_DQ3_3
+Text Label 3400 10250 2    50   ~ 0
+RAM_DQ3_4
 Text Label 3400 10650 2    50   ~ 0
+RAM_DQ3_5
+Text Label 3400 10350 2    50   ~ 0
+RAM_DQ3_6
+Text Label 3400 10450 2    50   ~ 0
 RAM_DQ3_7
 Text Label 3400 9950 2    50   ~ 0
 RAM_DQS3_P
@@ -1325,9 +1313,9 @@ Text Label 9650 7950 2    50   ~ 0
 RAM_A8
 Text Label 9650 8050 2    50   ~ 0
 RAM_A9
-Text Label 9650 8150 2    50   ~ 0
+Text Label 9650 10550 2    50   ~ 0
 RAM_A10
-Text Label 9650 8250 2    50   ~ 0
+Text Label 9650 10650 2    50   ~ 0
 RAM_A11
 Text Label 9650 8350 2    50   ~ 0
 RAM_A12
@@ -1448,8 +1436,6 @@ Text Label 9650 10350 2    50   ~ 0
 RAM_CAS_N
 Text Label 9650 10450 2    50   ~ 0
 RAM_RAS_N
-NoConn ~ 9650 10550
-NoConn ~ 9650 10650
 NoConn ~ 9650 10750
 Text Label 5800 800  2    50   ~ 0
 RAM_RESET_N
@@ -1611,4 +1597,143 @@ Text Notes 14450 6550 0    50   ~ 0
 We want test points on:\n* CLK x2\n* RAS\n* CAS\n* All BA??\n* A10\n* A12\n* WE\n* CS\n* A few random DQ pins\n* DQS for those DQ
 Text Notes 13350 7300 0    50   ~ 0
 CLK, DQS - diff, no ref needed\nDQ - two ref to each\nCommand bus: ground
+$Comp
+L osc-azonenberg:OSC_LVDS_NOPAD U?
+U 1 1 62AD2953
+P 12150 8800
+AR Path="/618C593E/62AD2953" Ref="U?"  Part="1" 
+AR Path="/61923389/62AD2953" Ref="U?"  Part="1" 
+AR Path="/618C589A/62AD2953" Ref="U19"  Part="1" 
+F 0 "U19" H 12450 9397 60  0000 C CNN
+F 1 "SIT9121AI-2BF-XXS200.000000G" H 12450 9291 60  0000 C CNN
+F 2 "azonenberg_pcb:OSCILLATOR_LVDS_3.2x2.5" H 12150 8800 60  0001 C CNN
+F 3 "" H 12150 8800 60  0000 C CNN
+	1    12150 8800
+	1    0    0    -1  
+$EndComp
+Text HLabel 11850 8450 0    50   Input ~ 0
+3V3
+Text Label 11850 8550 2    50   ~ 0
+3V3
+Text Label 11850 8650 2    50   ~ 0
+GND
+$Comp
+L device:C C?
+U 1 1 62AD295C
+P 11850 9150
+AR Path="/618C593E/62AD295C" Ref="C?"  Part="1" 
+AR Path="/61923389/62AD295C" Ref="C?"  Part="1" 
+AR Path="/618C589A/62AD295C" Ref="C161"  Part="1" 
+F 0 "C161" H 11965 9196 50  0000 L CNN
+F 1 "4.7 uF" H 11965 9105 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0603_CAP_NOSILK" H 11888 9000 50  0001 C CNN
+F 3 "" H 11850 9150 50  0001 C CNN
+	1    11850 9150
+	1    0    0    -1  
+$EndComp
+$Comp
+L device:C C?
+U 1 1 62AD2962
+P 12350 9150
+AR Path="/618C593E/62AD2962" Ref="C?"  Part="1" 
+AR Path="/61923389/62AD2962" Ref="C?"  Part="1" 
+AR Path="/618C589A/62AD2962" Ref="C162"  Part="1" 
+F 0 "C162" H 12465 9196 50  0000 L CNN
+F 1 "0.47 uF" H 12465 9105 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 12388 9000 50  0001 C CNN
+F 3 "" H 12350 9150 50  0001 C CNN
+	1    12350 9150
+	1    0    0    -1  
+$EndComp
+Text Label 11850 9000 2    50   ~ 0
+3V3
+Text Label 11850 9300 2    50   ~ 0
+GND
+Wire Wire Line
+	11850 9300 12350 9300
+Wire Wire Line
+	12350 9000 11850 9000
+Text Label 13050 8550 0    50   ~ 0
+CLK_200_P
+$Comp
+L device:C C?
+U 1 1 62AD296D
+P 13850 8750
+AR Path="/618C593E/62AD296D" Ref="C?"  Part="1" 
+AR Path="/61923389/62AD296D" Ref="C?"  Part="1" 
+AR Path="/618C589A/62AD296D" Ref="C164"  Part="1" 
+F 0 "C164" V 13750 8900 50  0000 C CNN
+F 1 "0.1 uF" V 13950 8950 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 13888 8600 50  0001 C CNN
+F 3 "" H 13850 8750 50  0001 C CNN
+	1    13850 8750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	13050 8650 13700 8650
+Wire Wire Line
+	13700 8650 13700 8750
+$Comp
+L device:C C?
+U 1 1 62AD2975
+P 13850 8450
+AR Path="/618C593E/62AD2975" Ref="C?"  Part="1" 
+AR Path="/61923389/62AD2975" Ref="C?"  Part="1" 
+AR Path="/618C589A/62AD2975" Ref="C163"  Part="1" 
+F 0 "C163" V 13750 8600 50  0000 C CNN
+F 1 "0.1 uF" V 13950 8650 50  0000 C CNN
+F 2 "azonenberg_pcb:EIA_0402_CAP_NOSILK" H 13888 8300 50  0001 C CNN
+F 3 "" H 13850 8450 50  0001 C CNN
+	1    13850 8450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	13050 8550 13700 8550
+Wire Wire Line
+	13700 8450 13700 8550
+Text Label 14400 8450 0    50   ~ 0
+CLK_200_AC_P
+Text Label 14400 8750 0    50   ~ 0
+CLK_200_AC_N
+Wire Wire Line
+	14200 8750 14000 8750
+Wire Wire Line
+	14000 8450 14200 8450
+Text Label 13050 8650 0    50   ~ 0
+CLK_200_N
+Text Label 9650 8150 2    50   ~ 0
+CLK_200_AC_P
+Text Label 9650 8250 2    50   ~ 0
+CLK_200_AC_N
+$Comp
+L device:R R75
+U 1 1 62AEE5C7
+P 14200 8600
+F 0 "R75" H 14270 8646 50  0000 L CNN
+F 1 "100" H 14270 8555 50  0000 L CNN
+F 2 "azonenberg_pcb:EIA_0402_RES_NOSILK" V 14130 8600 50  0001 C CNN
+F 3 "" H 14200 8600 50  0001 C CNN
+	1    14200 8600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	14400 8450 14200 8450
+Connection ~ 14200 8450
+Wire Wire Line
+	14200 8750 14400 8750
+Connection ~ 14200 8750
+Text Notes 14200 8850 0    50   ~ 0
+Place terminator by FPGA pins
+Text Label 3400 6950 2    50   ~ 0
+RAM_DQ0_7
+Text Label 9650 3750 2    50   ~ 0
+RAM_DQ2_3
+Text Label 9650 3650 2    50   ~ 0
+RAM_DQ2_2
+Text Label 3400 8550 2    50   ~ 0
+RAM_DQ2_7
+Text Label 3400 9150 2    50   ~ 0
+RAM_DQ2_6
+Text Label 3400 8350 2    50   ~ 0
+RAM_DQ2_5
 $EndSCHEMATC
