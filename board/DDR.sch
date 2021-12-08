@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 3 10
 Title "SATA sniffer"
-Date "2021-12-03"
+Date "2021-12-07"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -1164,86 +1164,74 @@ RAM_DQS4_P
 Text Label 6150 6450 2    50   ~ 0
 RAM_DQS4_N
 Text Label 6150 5950 2    50   ~ 0
-RAM_DM4
-Text Label 6150 6050 2    50   ~ 0
 RAM_DQ4_0
-Text Label 6150 6150 2    50   ~ 0
-RAM_DQ4_1
-Text Label 6150 6250 2    50   ~ 0
-RAM_DQ4_2
-Text Label 6150 6550 2    50   ~ 0
-RAM_DQ4_3
-Text Label 6150 6650 2    50   ~ 0
-RAM_DQ4_4
-Text Label 6150 6750 2    50   ~ 0
-RAM_DQ4_5
-Text Label 6150 6850 2    50   ~ 0
-RAM_DQ4_6
 Text Label 6150 6950 2    50   ~ 0
+RAM_DQ4_1
+Text Label 6150 6150 2    50   ~ 0
+RAM_DQ4_2
+Text Label 6150 6050 2    50   ~ 0
+RAM_DQ4_3
+Text Label 6150 6750 2    50   ~ 0
+RAM_DQ4_4
+Text Label 6150 6550 2    50   ~ 0
 RAM_DQ4_7
 Text Label 6150 7550 2    50   ~ 0
 RAM_DQS5_P
 Text Label 6150 7650 2    50   ~ 0
 RAM_DQS5_N
-Text Label 6150 7150 2    50   ~ 0
+Text Label 6150 7450 2    50   ~ 0
 RAM_DM5
 Text Label 6150 7250 2    50   ~ 0
 RAM_DQ5_0
-Text Label 6150 7350 2    50   ~ 0
+Text Label 6150 7150 2    50   ~ 0
 RAM_DQ5_1
-Text Label 6150 7450 2    50   ~ 0
+Text Label 6150 7350 2    50   ~ 0
 RAM_DQ5_2
-Text Label 6150 7750 2    50   ~ 0
-RAM_DQ5_3
 Text Label 6150 7850 2    50   ~ 0
-RAM_DQ5_4
+RAM_DQ5_3
 Text Label 6150 7950 2    50   ~ 0
-RAM_DQ5_5
+RAM_DQ5_4
 Text Label 6150 8050 2    50   ~ 0
-RAM_DQ5_6
-Text Label 6150 8150 2    50   ~ 0
+RAM_DQ5_5
+Text Label 6150 7750 2    50   ~ 0
 RAM_DQ5_7
 Text Label 6150 8750 2    50   ~ 0
 RAM_DQS6_P
 Text Label 6150 8850 2    50   ~ 0
 RAM_DQS6_N
-Text Label 6150 8350 2    50   ~ 0
-RAM_DM6
-Text Label 6150 8450 2    50   ~ 0
-RAM_DQ6_0
-Text Label 6150 8550 2    50   ~ 0
-RAM_DQ6_1
 Text Label 6150 8650 2    50   ~ 0
+RAM_DM6
+Text Label 6150 8350 2    50   ~ 0
+RAM_DQ6_0
+Text Label 6150 9050 2    50   ~ 0
+RAM_DQ6_1
+Text Label 6150 9150 2    50   ~ 0
 RAM_DQ6_2
 Text Label 6150 8950 2    50   ~ 0
 RAM_DQ6_3
-Text Label 6150 9050 2    50   ~ 0
+Text Label 6150 8450 2    50   ~ 0
 RAM_DQ6_4
-Text Label 6150 9150 2    50   ~ 0
+Text Label 6150 8550 2    50   ~ 0
 RAM_DQ6_5
-Text Label 6150 9250 2    50   ~ 0
-RAM_DQ6_6
 Text Label 6150 9350 2    50   ~ 0
 RAM_DQ6_7
 Text Label 6150 9950 2    50   ~ 0
 RAM_DQS7_P
 Text Label 6150 10050 2    50   ~ 0
 RAM_DQS7_N
-Text Label 6150 9550 2    50   ~ 0
-RAM_DM7
-Text Label 6150 9750 2    50   ~ 0
-RAM_DQ7_0
-Text Label 6150 9850 2    50   ~ 0
-RAM_DQ7_1
-Text Label 6150 10150 2    50   ~ 0
-RAM_DQ7_2
-Text Label 6150 10250 2    50   ~ 0
-RAM_DQ7_3
 Text Label 6150 10350 2    50   ~ 0
-RAM_DQ7_4
-Text Label 6150 10450 2    50   ~ 0
-RAM_DQ7_5
+RAM_DQ7_0
 Text Label 6150 10550 2    50   ~ 0
+RAM_DQ7_1
+Text Label 6150 10450 2    50   ~ 0
+RAM_DQ7_2
+Text Label 6150 10150 2    50   ~ 0
+RAM_DQ7_3
+Text Label 6150 9750 2    50   ~ 0
+RAM_DQ7_4
+Text Label 6150 9850 2    50   ~ 0
+RAM_DQ7_5
+Text Label 6150 9550 2    50   ~ 0
 RAM_DQ7_6
 Text Label 6150 10650 2    50   ~ 0
 RAM_DQ7_7
@@ -1736,4 +1724,16 @@ Text Label 3400 9150 2    50   ~ 0
 RAM_DQ2_6
 Text Label 3400 8350 2    50   ~ 0
 RAM_DQ2_5
+Text Label 6150 6250 2    50   ~ 0
+RAM_DM4
+Text Label 6150 6850 2    50   ~ 0
+RAM_DQ4_5
+Text Label 6150 6650 2    50   ~ 0
+RAM_DQ4_6
+Text Label 6150 8150 2    50   ~ 0
+RAM_DQ5_6
+Text Label 6150 9250 2    50   ~ 0
+RAM_DQ6_6
+Text Label 6150 10250 2    50   ~ 0
+RAM_DM7
 $EndSCHEMATC
