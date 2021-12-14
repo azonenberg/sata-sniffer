@@ -5,7 +5,7 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 3 10
 Title "SATA sniffer"
-Date "2021-12-07"
+Date "2021-12-13"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -1528,7 +1528,7 @@ F 3 "~" H 12800 5200 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 Text Label 13000 5200 0    50   ~ 0
-TP_VREF
+GND
 $Comp
 L Connector:Conn_01x01 TP20
 U 1 1 61D450D1
@@ -1540,8 +1540,6 @@ F 3 "~" H 12800 5550 50  0001 C CNN
 	1    12800 5550
 	-1   0    0    -1  
 $EndComp
-Text Label 13000 5550 0    50   ~ 0
-TP_VREF
 $Comp
 L Connector:Conn_01x01 TP21
 U 1 1 61D4BA99
@@ -1736,4 +1734,6 @@ Text Label 6150 9250 2    50   ~ 0
 RAM_DQ6_6
 Text Label 6150 10250 2    50   ~ 0
 RAM_DM7
+Text Label 13000 5550 0    50   ~ 0
+TP_VREF
 $EndSCHEMATC
