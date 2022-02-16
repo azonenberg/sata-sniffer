@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 10
 Title "SATA sniffer"
-Date "2021-12-07"
+Date "2022-02-15"
 Rev "0.1"
 Comp ""
 Comment1 "Andrew D. Zonenberg"
@@ -312,4 +312,56 @@ $EndComp
 NoConn ~ 8600 3400
 Text Notes 5700 2750 0    50   ~ 0
 TODO: MAC addr eeprom
+$Comp
+L Connector:Conn_01x01 TP24
+U 1 1 63D76BC0
+P 7800 3900
+F 0 "TP24" H 7718 4117 50  0000 C CNN
+F 1 "TESTCLIP" H 7718 4026 50  0000 C CNN
+F 2 "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" H 7800 3900 50  0001 C CNN
+F 3 "~" H 7800 3900 50  0001 C CNN
+	1    7800 3900
+	-1   0    0    -1  
+$EndComp
+Text Label 8000 3900 0    50   ~ 0
+GND
+$Comp
+L Connector:Conn_01x01 TP25
+U 1 1 63D770CF
+P 7800 4300
+F 0 "TP25" H 7718 4517 50  0000 C CNN
+F 1 "TESTCLIP" H 7718 4426 50  0000 C CNN
+F 2 "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" H 7800 4300 50  0001 C CNN
+F 3 "~" H 7800 4300 50  0001 C CNN
+	1    7800 4300
+	-1   0    0    -1  
+$EndComp
+Text Label 8000 4300 0    50   ~ 0
+GND
+$Comp
+L Connector:Conn_01x01 TP26
+U 1 1 63D77C61
+P 8350 3900
+F 0 "TP26" H 8268 4117 50  0000 C CNN
+F 1 "TESTCLIP" H 8268 4026 50  0000 C CNN
+F 2 "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" H 8350 3900 50  0001 C CNN
+F 3 "~" H 8350 3900 50  0001 C CNN
+	1    8350 3900
+	-1   0    0    -1  
+$EndComp
+Text Label 8550 3900 0    50   ~ 0
+GND
+$Comp
+L Connector:Conn_01x01 TP27
+U 1 1 63D77CD8
+P 8350 4300
+F 0 "TP27" H 8268 4517 50  0000 C CNN
+F 1 "TESTCLIP" H 8268 4426 50  0000 C CNN
+F 2 "azonenberg_pcb:TESTPOINT_SMT_KEYSTONE_5016" H 8350 4300 50  0001 C CNN
+F 3 "~" H 8350 4300 50  0001 C CNN
+	1    8350 4300
+	-1   0    0    -1  
+$EndComp
+Text Label 8550 4300 0    50   ~ 0
+GND
 $EndSCHEMATC
