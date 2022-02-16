@@ -2,11 +2,11 @@ FTYP SONPROJ 19 ! Sonnet Project File
 VER 18.52
 HEADER
 LIC antikernel2.1.51176
-DAT 12/14/2021 19:32:24
+DAT 02/16/2022 06:44:13
 BUILT_BY_CREATED dxf 18.52 12/14/2021 00:07:28
 BUILT_BY_SAVED sonnet 18.52
-MDATE 12/14/2021 19:32:24
-HDATE 12/14/2021 19:32:24
+MDATE 02/16/2022 06:44:13
+HDATE 02/16/2022 06:44:13
 ANN Created by dxfgeo, Sonnet Software Inc.
 END HEADER
 DIM
@@ -49,63 +49,59 @@ BOX 12 10 50 800 4000 20 0
       0.04 3.5 1 0.025 0 0 0 "Soldermask"
       5 1 1 0 0 0 0 "Air"
 TECHLAY METAL F.Cu_thick L1D0 -2 -65534 CAD F.Cu_thick drawing 
-1 0 1 N 6583 1 1 100 100 0 0 0 Y
+1 0 1 N 6932 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY VIA Via1 L9D0 -13 -65534 CAD Via1 drawing 
 VIA POLYGON
-1 0 -1 N 6966 1 1 100 100 0 0 0 Y
+1 0 -1 N 6997 1 1 100 100 0 0 0 Y
 TOLEVEL 10 RING NOCOVERS
 END
 END
 TECHLAY METAL F.Cu_thin <UNSPECIFIED> -1 -65534 CAD F.Cu_thin drawing 
-1 0 0 N 6587 1 1 100 100 0 0 0 Y
+1 0 0 N 6944 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In1.Cu L2D0 -3 -65534 CAD In1.Cu drawing 
-2 0 0 N 6590 1 1 100 100 0 0 0 Y
+2 0 0 N 6947 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In2.Cu_thick L3D0 -5 -65534 CAD In2.Cu_thick drawing 
-3 0 3 N 6593 1 1 100 100 0 0 0 Y
+3 0 3 N 6950 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In2.Cu_thin <UNSPECIFIED> -4 -65534 CAD In2.Cu drawing 
-3 0 2 N 6595 1 1 100 100 0 0 0 Y
+3 0 2 N 6952 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In3.Cu L4D0 -6 -65534 CAD In3.Cu drawing 
-4 0 0 N 6598 1 1 100 100 0 0 0 Y
+4 0 0 N 6955 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In4.Cu L5D0 -7 -65534 CAD In4.Cu drawing 
-7 0 0 N 6603 1 1 100 100 0 0 0 Y
+7 0 0 N 6960 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In5.Cu_thick L6D0 -9 -65534 CAD In5.Cu_thick drawing 
-8 0 4 N 6606 1 1 100 100 0 0 0 Y
+8 0 4 N 6963 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In5.Cu_thin <UNSPECIFIED> -8 -65534 CAD In5.Cu drawing 
-8 0 2 N 6608 1 1 100 100 0 0 0 Y
+8 0 2 N 6965 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL In6.Cu L7D0 -10 -65534 CAD In6.Cu drawing 
-9 0 0 N 6611 1 1 100 100 0 0 0 Y
+9 0 0 N 6968 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL B.Cu_thick L8D0 -12 -65534 CAD B.Cu_thick drawing 
-10 0 5 N 6614 1 1 100 100 0 0 0 Y
+10 0 5 N 6971 1 1 100 100 0 0 0 Y
 END
 END
 TECHLAY METAL B.Cu_thin <UNSPECIFIED> -11 -65534 CAD B.Cu_thin drawing 
-10 0 0 N 6616 1 1 100 100 0 0 0 Y
+10 0 0 N 6973 1 1 100 100 0 0 0 Y
 END
 END
-VALVAR CORE_ER NONE "table1(\"../../../../../ceph/fast/home/azonenberg/code/sata-sniffer/sims/core_er.csv\",FREQ)" "Variable set in material file"
-VALVAR CORE_DF NONE "table1(\"../../../../../ceph/fast/home/azonenberg/code/sata-sniffer/sims/core_df.csv\",FREQ)" "Variable set in material file"
-VALVAR PREPREG_DF NONE "table1(\"../../../../../ceph/fast/home/azonenberg/code/sata-sniffer/sims/prepreg_df.csv\",FREQ)" "Variable set in material file"
-VALVAR PREPREG_ER NONE "table1(\"../../../../../ceph/fast/home/azonenberg/code/sata-sniffer/sims/prepreg_er.csv\",FREQ)" "Variable set in material file"
 LORGN 0 50 U 
 POR1 CUP Auto
 GNDREF AUTO
@@ -114,7 +110,7 @@ POLY 87 1
 30
 2 80 0 0 0 2.752 2.868 
 CUPGRP "Auto" LOCAL
-ID 6962
+ID 6993
 END
 POR1 CUP Auto
 GNDREF AUTO
@@ -123,7 +119,7 @@ POLY 88 1
 30
 -2 80 0 0 0 3.352 2.868 
 CUPGRP "Auto" LOCAL
-ID 6963
+ID 6994
 END
 POR1 CUP Auto
 GNDREF AUTO
@@ -132,7 +128,7 @@ POLY 6874 1
 124
 -1 80 0 0 0 7.602 48.2 
 CUPGRP "Auto" LOCAL
-ID 6964
+ID 6995
 END
 POR1 CUP Auto
 GNDREF AUTO
@@ -141,7 +137,7 @@ POLY 6875 1
 124
 1 80 0 0 0 6.602 48.2 
 CUPGRP "Auto" LOCAL
-ID 6965
+ID 6996
 END
 NUM 35
 1 63 1 N 87 1 1 100 100 0 0 0 Y
