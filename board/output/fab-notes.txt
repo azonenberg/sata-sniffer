@@ -12,8 +12,6 @@ General fabrication notes
 
 Impedances
 
-	RECALCULATE HERE
-
 	Control to within 10%.
 
 	Layer 1 microstrip (ref to layer 2 ground).
