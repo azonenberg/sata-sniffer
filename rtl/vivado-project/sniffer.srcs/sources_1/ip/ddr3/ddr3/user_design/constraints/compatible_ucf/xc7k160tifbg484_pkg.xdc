@@ -9,7 +9,7 @@
 ##  File name :       ddr3.sd
 ##  Details :     Constraints file
 ##                    FPGA Family:       KINTEX7
-##                    FPGA Part:         XC7K160TFBG484_PKG
+##                    FPGA Part:         XC7K160TIFBG484_PKG
 ##                    Speedgrade:        -2
 ##                    Design Entry:      VERILOG
 ##                    Frequency:         333.32999999999998 MHz

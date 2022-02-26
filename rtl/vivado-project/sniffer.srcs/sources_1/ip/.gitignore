@@ -1,0 +1,11 @@
+*/doc
+*/*.v
+*/*.xdc
+*/*.xml
+*/tcl
+*/*.dcp
+*/*.veo
+*/*.vho
+*/gtwizard_*/
+*/*stub*
+*/*.vhdl

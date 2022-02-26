@@ -33,17 +33,22 @@ module ClockGeneration(
 	input wire	clk_125mhz_p,
 	input wire	clk_125mhz_n,
 
+	input wire	clk_200mhz_p,
+	input wire	clk_200mhz_n,
+
 	//Global clock outputs
-	wire	clk_125mhz,
-	wire	clk_250mhz,
-	wire	clk_625mhz_0,
-	wire	clk_625mhz_90
+	output wire	clk_125mhz,
+	output wire	clk_200mhz,
+	output wire	clk_250mhz,
+	output wire	clk_625mhz_0,
+	output wire	clk_625mhz_90
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Input buffer
+	// Input buffers
 
 	wire	clk_125mhz_in;
+	wire	clk_250mhz_in;
 
 	DifferentialInputBuffer #(
 		.WIDTH(1)
@@ -53,7 +58,15 @@ module ClockGeneration(
 		.fabric_out(clk_125mhz_in)
 	);
 
+	DifferentialInputBuffer #(
+		.WIDTH(1)
+	) clk_200_ibuf (
+		.pad_in_p(clk_200mhz_p),
+		.pad_in_n(clk_200mhz_n),
+		.fabric_out(clk_200mhz)
+	);
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Main system clock synthesis
+	// Main system clock synthesis PLL
 
 endmodule

@@ -42,18 +42,18 @@ module LogicPodDatapath #(
 ) (
 
 	//Main clocks
-	input wire			clk_250mhz,
+	input wire				clk_250mhz,
 
 	//Oversampling clocks
-	input wire			clk_625mhz_0,
-	input wire			clk_625mhz_90,
+	input wire				clk_625mhz_0,
+	input wire				clk_625mhz_90,
 
 	//LVDS input
-	input wire[7:0]		pod_data_p,
-	input wire[7:0]		pod_data_n,
+	input wire[7:0]			pod_data_p,
+	input wire[7:0]			pod_data_n,
 
 	//Parallel digitized output
-	la_sample_t[7:0]	samples
+	output la_sample_t[7:0]	samples
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

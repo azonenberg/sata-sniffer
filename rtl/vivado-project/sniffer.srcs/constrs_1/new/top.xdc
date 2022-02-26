@@ -140,3 +140,36 @@ set_property PACKAGE_PIN H13 [get_ports sfp_scl]
 set_property PACKAGE_PIN G13 [get_ports sfp_sda]
 set_property PACKAGE_PIN E13 [get_ports sfp_tx_disable]
 set_property PACKAGE_PIN F13 [get_ports sfp_tx_fault]
+
+set_property PACKAGE_PIN L16 [get_ports flash_cs_n]
+set_property PACKAGE_PIN H18 [get_ports flash_si]
+set_property PACKAGE_PIN H19 [get_ports flash_so]
+set_property SLEW FAST [get_ports flash_cs_n]
+set_property SLEW FAST [get_ports flash_si]
+set_property IOSTANDARD SSTL135 [get_ports flash_cs_n]
+set_property IOSTANDARD SSTL135 [get_ports flash_si]
+set_property IOSTANDARD SSTL135 [get_ports flash_so]
+
+set_property PACKAGE_PIN G4 [get_ports sata_device_rx_p]
+set_property PACKAGE_PIN E4 [get_ports sata_host_rx_p]
+
+set_property PACKAGE_PIN D6 [get_ports gtx_refclk_156_p]
+set_property PACKAGE_PIN F6 [get_ports gtx_refclk_200_p]
+
+set_property PACKAGE_PIN L19 [get_ports clk_200mhz_p]
+set_property IOSTANDARD LVDS_25 [get_ports clk_200mhz_p]
+set_property IOSTANDARD LVDS_25 [get_ports clk_200mhz_n]
+set_property PACKAGE_PIN C4 [get_ports sfp_rx_p]
+create_clock -period 5.000 -name gtx_refclk_200_p -waveform {0.000 2.500} [get_ports gtx_refclk_200_p]
+
+create_clock -period 5.000 -name clk_200mhz_p -waveform {0.000 2.500} [get_ports clk_200mhz_p]
+create_clock -period 8.000 -name rgmii_rxc -waveform {0.000 4.000} [get_ports rgmii_rxc]
+create_pblock pblock_ddr
+resize_pblock [get_pblocks pblock_ddr] -add {SLICE_X0Y0:SLICE_X23Y149}
+resize_pblock [get_pblocks pblock_ddr] -add {DSP48_X0Y0:DSP48_X1Y59}
+resize_pblock [get_pblocks pblock_ddr] -add {RAMB18_X0Y0:RAMB18_X1Y59}
+resize_pblock [get_pblocks pblock_ddr] -add {RAMB36_X0Y0:RAMB36_X1Y29}
+create_pblock pblock_la
+resize_pblock [get_pblocks pblock_la] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y1}
+create_pblock pblock_xg_pcs
+resize_pblock [get_pblocks pblock_xg_pcs] -add {CLOCKREGION_X1Y2:CLOCKREGION_X1Y2}
