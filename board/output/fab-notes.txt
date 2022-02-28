@@ -3,12 +3,13 @@ Part number:        SATA-SNIFFER v0.1
 General fabrication notes
 
     * Boards are be individually routed.
-    * Board material is Panasonic Megtron 6.
-    * Red solder mask on both sides of board. All vias to be filled, plated, and tented.
-    * White LPI text (Taiyo PSR-4100WL or equivalent) on both sides of board.
+    * Board material is Taiwan Union TU872 and Shengyi S1000-2M (see stackup notes)
+    * Red solder mask on both sides of board.
+    * White silkscreen text on both sides of board.
     * Pad finish is ENIG.
     * Finished board thickness is 1.6 mm.
     * Place UL mark and date code in the area marked on the "F. Fab" gerber layer.
+    * Boards to be rotated 10 degrees on to panel, to reduce fiber weave effect
 
 Impedances
 
@@ -26,51 +27,49 @@ Impedances
 
     Layer 3 stripline (ref to layer 2 ground).
     Layer 6 stripline (ref to layer 7 ground).
-        90 μm trace = 50 ohm
-        130 μm trace = 40 ohm
+        115 μm trace = 50 ohm
+        165 μm trace = 40 ohm
 
     Layer 3 differential stripline (ref to layer 2 ground).
     Layer 6 differential stripline (ref to layer 7 ground).
-        70 μm trace / 100 μm space = 100 ohm
-        110 μm trace / 100 μm space = 80 ohm
+        80 μm trace / 90 μm space = 100 ohm
+        125 μm trace / 80 μm space = 80 ohm
 
 Propagation velocities and vias (for reference only)
-    Outer SE: 5.8 ps/mm
-    Outer diff: 5.5 ps/mm
-    Inner SE: 6.3 ps/mm
-    Inner diff: 6.2 ps/mm
+    Outer SE: 6.15 ps/mm
+    Outer diff: 5.7 ps/mm
+    Inner SE: 6.5 ps/mm
+    Inner diff: 6.6 ps/mm
 
         0.45mm pad, 0.25mm drill, 0.65mm antipad (0.1mm internal plane clearance)
             stitching vias above/below as close as possible
             Good match to 50 ohm
-            L1-L3:   7.2 ps
-            L1-L6:  10.9 ps
-            L1-L8:  11.4 ps
+            L1-L3:   7.7 ps
+            L1-L6:  11.1 ps
+            L1-L8:  11.7 ps
 
         0.45mm pad, 0.25mm drill, 0.65mm antipad (0.1mm plane clearance), 0.6mm center to center via spacing
             stitching vias above/below as close as possible
             Good match to 100 ohm
-            L1-L3: 7.3 ps
-            L1-L6: 10.0 ps
-            L1-L8: 10.2 ps
+            L1-L3: 7.8 ps
+            L1-L6: 10.2 ps
+            L1-L8: 10.7 ps
 
 Suggested stackup
     1    35 μm (1 oz) copper            Signal
-         75 μm R-5775(G) core (1x 1078)
+         75 μm TU872SLK (1x 1080)
     2    35 μm (1 oz) copper            Ground
-         68 μm R-5670(G) 1078 prepreg
+        100 μm TU872SLK
     3    17 μm (0.5 oz) copper          Signal
-        130 μm R-5775(G) core
+        143 μm TU872SLK (2x 1080)
     4    35 μm (1 oz) copper            Power
-        92 μm R-5670(G) 3313 prepreg
-        609 μm R-5775(G) core
-        92 μm R-5670(G) 3313 prepreg
+		700 μm S1000-2M
     5    35 μm (1 oz) copper            Power
-        130 μm R-5775(G) core
+        143 μm TU872SLK (2x 1080)
     6    17 μm (0.5 oz) copper          Signal
-         68 μm R-5670(G) 1078 prepreg
+        100 μm TU872SLK
     7    35 μm (1 oz) copper            Ground
-         75 μm R-5775(G) core (1x 1078)
+         75 μm TU872SLK (1x 1080)
     8    35 μm (1 oz) copper            Signal
 
 File naming
