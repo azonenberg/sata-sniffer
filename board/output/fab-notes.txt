@@ -1,4 +1,4 @@
-Part number:        SATA-SNIFFER v0.1
+Part number:        SATA-SNIFFER v0.1c
 
 General fabrication notes
 
