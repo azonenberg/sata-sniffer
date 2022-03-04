@@ -63,7 +63,7 @@ Suggested stackup
     3    17 μm (0.5 oz) copper          Signal
         143 μm TU872SLK (2x 1080)
     4    35 μm (1 oz) copper            Power
-		700 μm S1000-2M
+        700 μm S1000-2M
     5    35 μm (1 oz) copper            Power
         143 μm TU872SLK (2x 1080)
     6    17 μm (0.5 oz) copper          Signal
@@ -88,3 +88,4 @@ File naming
     sniffer-B_Cu.gbr        Layer 8 copper
     sniffer-B_Mask.gbr      Back solder mask
     sniffer-B_SilkS.gbr     Back silkscreen
+    sniffer.d356            Electrical test netlist
