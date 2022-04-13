@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2021-2021 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -41,12 +41,16 @@ module LogicPodDatapath #(
 	parameter LANE_INVERT = 8'b00000000
 ) (
 
-	//Main clocks
-	input wire				clk_250mhz,
+	//Main clock
+	input wire				clk_312p5mhz,
+
+	//Reference clock for IDELAYs
+	input wire				clk_400mhz,
 
 	//Oversampling clocks
-	input wire				clk_625mhz_0,
-	input wire				clk_625mhz_90,
+	input wire				clk_625mhz_fabric,
+	input wire				clk_625mhz_io_0,
+	input wire				clk_625mhz_io_90,
 
 	//LVDS input
 	input wire[7:0]			pod_data_p,
@@ -55,6 +59,36 @@ module LogicPodDatapath #(
 	//Parallel digitized output
 	output la_sample_t[7:0]	samples
 );
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Remap pod data lines to match front panel ordering
+
+	wire[7:0]	pod_data_p_remapped;
+	wire[7:0]	pod_data_n_remapped;
+
+	assign pod_data_p_remapped[0] = pod_data_p[3];
+	assign pod_data_n_remapped[0] = pod_data_n[3];
+
+	assign pod_data_p_remapped[1] = pod_data_p[2];
+	assign pod_data_n_remapped[1] = pod_data_n[2];
+
+	assign pod_data_p_remapped[2] = pod_data_p[7];
+	assign pod_data_n_remapped[2] = pod_data_n[7];
+
+	assign pod_data_p_remapped[3] = pod_data_p[6];
+	assign pod_data_n_remapped[3] = pod_data_n[6];
+
+	assign pod_data_p_remapped[4] = pod_data_p[5];
+	assign pod_data_n_remapped[4] = pod_data_n[5];
+
+	assign pod_data_p_remapped[5] = pod_data_p[4];
+	assign pod_data_n_remapped[5] = pod_data_n[4];
+
+	assign pod_data_p_remapped[6] = pod_data_p[1];
+	assign pod_data_n_remapped[6] = pod_data_n[1];
+
+	assign pod_data_p_remapped[7] = pod_data_p[0];
+	assign pod_data_n_remapped[7] = pod_data_n[0];
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// LVDS input buffers
@@ -69,8 +103,8 @@ module LogicPodDatapath #(
 			.IBUF_LOW_PWR("FALSE"),
 			.IOSTANDARD("LVDS")
 		) ibuf (
-			.I(pod_data_p[g]),
-			.IB(pod_data_n[g]),
+			.I(pod_data_p_remapped[g]),
+			.IB(pod_data_n_remapped[g]),
 			.O(data_p[g]),
 			.OB(data_n[g])
 		);
@@ -78,9 +112,194 @@ module LogicPodDatapath #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Input deserializers
+	// Delay line calibration
+
+	IODelayCalibration cal(.refclk(clk_400mhz));
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Input delay lines
+
+	wire[7:0] data_p_delayed;
+	wire[7:0] data_n_delayed;
+
+	IODelayBlock #(
+		.WIDTH(8),
+		.CAL_FREQ(400),
+		.INPUT_DELAY(00),
+		.DIRECTION("IN"),
+		.IS_CLOCK(0)
+	) idelay_p (
+		.i_pad(data_p),
+		.i_fabric(data_p_delayed),
+
+		.o_pad(),
+		.o_fabric(),
+
+		.input_en(1'b1)
+	);
+
+	IODelayBlock #(
+		.WIDTH(8),
+		.CAL_FREQ(400),
+		.INPUT_DELAY(200),
+		.DIRECTION("IN"),
+		.IS_CLOCK(0)
+	) idelay_n (
+		.i_pad(data_n),
+		.i_fabric(data_n_delayed),
+
+		.o_pad(),
+		.o_fabric(),
+
+		.input_en(1'b1)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Initial oversampling: 4 phases of 625 MHz = 2.5 Gsps, times P and N = 5 Gsps
+
+	wire[3:0] deser_p[7:0];
+	wire[3:0] deser_n[7:0];
+
+	logic	iserdes_rst = 0;
+
+
+	//Sampling order is Q1 Q3 Q2 Q4 in oversampling mode
+	//then we interleave with negative before positive
+	wire[7:0] input_comb;
+
+	for(genvar g=0; g<8; g=g+1) begin
+		ISERDESE2 #(
+			.DATA_RATE("DDR"),
+			.DATA_WIDTH("4"),
+			.DYN_CLKDIV_INV_EN("FALSE"),
+			.DYN_CLK_INV_EN("FALSE"),
+			.INTERFACE_TYPE("OVERSAMPLE"),
+			.NUM_CE(1),
+			.OFB_USED("FALSE"),
+			.SERDES_MODE("MASTER"),
+			.IOBDELAY("BOTH")
+		) iserdes_p (
+			.Q1(deser_p[g][0]),
+			.Q2(deser_p[g][2]),
+			.Q3(deser_p[g][1]),
+			.Q4(deser_p[g][3]),
+			.Q5(),
+			.Q6(),
+			.Q7(),
+			.Q8(),
+			.O(input_comb[g]),
+			.SHIFTOUT1(),
+			.SHIFTOUT2(),
+			.D(),
+			.DDLY(data_p_delayed[g]),
+			.CLK(clk_625mhz_io_0),
+			.CLKB(!clk_625mhz_io_0),
+			.CE1(1'b1),
+			.CE2(1'b1),
+			.RST(iserdes_rst),
+			.CLKDIV(),
+			.CLKDIVP(1'b0),
+			.OCLK(clk_625mhz_io_90),
+			.OCLKB(!clk_625mhz_io_90),
+			.BITSLIP(1'b0),
+			.SHIFTIN1(),
+			.SHIFTIN2(),
+			.OFB(),
+			.DYNCLKDIVSEL(),
+			.DYNCLKSEL()
+		);
+
+		ISERDESE2 #(
+			.DATA_RATE("DDR"),
+			.DATA_WIDTH("4"),
+			.DYN_CLKDIV_INV_EN("FALSE"),
+			.DYN_CLK_INV_EN("FALSE"),
+			.INTERFACE_TYPE("OVERSAMPLE"),
+			.NUM_CE(1),
+			.OFB_USED("FALSE"),
+			.SERDES_MODE("MASTER"),
+			.IOBDELAY("BOTH")
+		) iserdes_n (
+			.Q1(deser_n[g][0]),
+			.Q2(deser_n[g][2]),
+			.Q3(deser_n[g][1]),
+			.Q4(deser_n[g][3]),
+			.Q5(),
+			.Q6(),
+			.Q7(),
+			.Q8(),
+			.O(),
+			.SHIFTOUT1(),
+			.SHIFTOUT2(),
+			.D(),
+			.DDLY(data_n_delayed[g]),
+			.CLK(clk_625mhz_io_0),
+			.CLKB(!clk_625mhz_io_0),
+			.CE1(1'b1),
+			.CE2(1'b1),
+			.RST(iserdes_rst),
+			.CLKDIV(),
+			.CLKDIVP(1'b0),
+			.OCLK(clk_625mhz_io_90),
+			.OCLKB(!clk_625mhz_io_90),
+			.BITSLIP(1'b0),
+			.SHIFTIN1(),
+			.SHIFTIN2(),
+			.OFB(),
+			.DYNCLKDIVSEL(),
+			.DYNCLKSEL()
+		);
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Capture into the slow clock domain
+
+	wire[7:0]	p_merged[7:0];
+	wire[7:0]	n_merged[7:0];
+
+	for(genvar g=0; g<8; g=g+1) begin
+		LogicPodSampling sampler (
+			.clk_625mhz_fabric(clk_625mhz_fabric),
+			.clk_312p5mhz(clk_312p5mhz),
+			.deser_p(deser_p[g]),
+			.deser_n(deser_n[g]),
+			.p_out(p_merged[g]),
+			.n_out(n_merged[g])
+		);
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Merge P/N into a single 16-bit stream, inverting as necessary
+
+	//N has a larger delay than P, so it's logically earlier in the stream
+	always_ff @(posedge clk_312p5mhz) begin
+
+		for(integer i=0; i<8; i=i+1) begin
+
+			for(integer j=0; j<8; j=j+1) begin
+				samples[i].bits[j*2 + 1]	<= !n_merged[i][j];
+				samples[i].bits[j*2]		<= p_merged[i][j];
+			end
+
+		end
+
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Output registers and inversion
+
+	ila_0 ila(
+		.clk(clk_312p5mhz),
+		.probe0(p_merged[0]),
+		.probe1(n_merged[0]),
+		.probe2(samples[0].bits),
+		.probe3(p_merged[1]),
+		.probe4(n_merged[1]),
+		.probe5(samples[1].bits),
+
+		.probe6(input_comb)
+	);
+
 
 endmodule

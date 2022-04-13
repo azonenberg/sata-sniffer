@@ -1,8 +1,10 @@
+`timescale 1ns/1ps
+`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2021-2021 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,14 +29,96 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-`ifndef LogicPod_h
-`define LogicPod_h
+module PowerControl(
+	input wire		clk_125mhz,
 
-//Each channel outputs 16 bits per clock at 312.5 MHz.
-//Bit 15 of a block is the oldest, bit 0 is the most recent.
-typedef struct packed
-{
-	logic[15:0]			bits;
-} la_sample_t;
+	input wire		pod_present_n,
+	input wire		pod_power_fault_n,
+	output logic	pod_power_en		= 0
+);
 
-`endif
+	//Synchronize presence-detect signal
+	wire	present_n;
+
+	ThreeStageSynchronizer #(
+		.INIT(0),
+		.IN_REG(0)
+	) sync_present(
+		.clk_in(clk_125mhz),
+		.din(pod_present_n),
+		.clk_out(clk_125mhz),
+		.dout(present_n)
+	);
+
+	//Wait about 530ms after mate before applying power
+	logic[25:0]	count = 0;
+
+	enum logic[2:0]
+	{
+		STATE_OFF,
+		STATE_TURNING_ON,
+		STATE_ON,
+		STATE_POWER_FAULT,
+		STATE_FAULT_CLEARING
+	} state = STATE_OFF;
+
+	//Main power control state machine
+	always_ff @(posedge clk_125mhz) begin
+
+		case(state)
+
+			STATE_OFF: begin
+
+				if(!present_n) begin
+					count	<= 1;
+					state	<= STATE_TURNING_ON;
+				end
+
+			end	//end STATE_OFF
+
+			STATE_TURNING_ON: begin
+				count	<= count + 1;
+
+				if(count == 0) begin
+					pod_power_en	<= 1;
+					state			<= STATE_ON;
+				end
+
+			end	//end STATE_TURNING_ON
+
+			STATE_ON: begin
+				if(present_n) begin
+					pod_power_en	<= 0;
+					state			<= STATE_OFF;
+				end
+
+				if(!pod_power_fault_n) begin
+					state			<= STATE_POWER_FAULT;
+					pod_power_en	<= 0;
+				end
+
+			end	//end STATE_ON
+
+			STATE_POWER_FAULT: begin
+
+				//Wait for pod to be unplugged
+				if(present_n) begin
+					count	<= 1;
+					state	<= STATE_FAULT_CLEARING;
+				end
+
+			end	//end STATE_POWER_FAULT
+
+			STATE_FAULT_CLEARING: begin
+				count	<= count + 1;
+
+				if(count == 0)
+					state			<= STATE_OFF;
+
+			end	//end STATE_FAULT_CLEARING
+
+		endcase
+
+	end
+
+endmodule

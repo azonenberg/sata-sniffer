@@ -5,7 +5,7 @@
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2021-2021 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -39,6 +39,7 @@ module SnifferTop(
 	input wire			clk_200mhz_p,
 	input wire			clk_200mhz_n,
 
+	/*
 	input wire			gtx_refclk_156_p,
 	input wire			gtx_refclk_156_n,
 	input wire			gtx_refclk_200_p,
@@ -56,6 +57,7 @@ module SnifferTop(
 	output wire			sata_host_tx_p,
 	output wire			sata_host_tx_n,
 
+	*/
 	//Extra GTX
 
 	//10Gbase-R
@@ -66,15 +68,17 @@ module SnifferTop(
 	input wire			sfp_mod_abs,
 	input wire			sfp_rx_los,
 	output wire[1:0]	sfp_rs,
+	/*
 	input wire			sfp_rx_p,
 	input wire			sfp_rx_n,
 	output wire			sfp_tx_p,
 	output wire			sfp_tx_n,
+	*/
 
 	//RGMII
 	output wire			eth_mdc,
 	inout wire			eth_mdio,
-	output wire			eth_rst_n,
+	output logic		eth_rst_n	= 0,
 	input wire[1:0]		eth_led_n_1v8,
 	output wire[1:0]	eth_led_p_3v3,
 	input wire			rgmii_rxc,
@@ -90,16 +94,16 @@ module SnifferTop(
 	//Logic analyzer pods
 	input wire[7:0]		la0_p,
 	input wire[7:0]		la0_n,
-	input wire			la0_present,
-	input wire			la0_12v_fault,
+	input wire			la0_present_n,
+	input wire			la0_12v_fault_n,
 	output wire			la0_12v_en,
 	input wire			la0_uart_rx,
 	output wire			la0_uart_tx,
 
 	input wire[7:0]		la1_p,
 	input wire[7:0]		la1_n,
-	input wire			la1_present,
-	input wire			la1_12v_fault,
+	input wire			la1_present_n,
+	input wire			la1_12v_fault_n,
 	output wire			la1_12v_en,
 	input wire			la1_uart_rx,
 	output wire			la1_uart_tx,
@@ -138,7 +142,7 @@ module SnifferTop(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// GTX clock inputs
-
+	/*
 	wire	gtx_refclk_156;
 	wire	gtx_refclk_200;
 
@@ -157,6 +161,7 @@ module SnifferTop(
 		.O(gtx_refclk_200),
 		.ODIV2()
 	);
+	*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// LVDS GPIOs
@@ -179,8 +184,7 @@ module SnifferTop(
 	wire	clk_125mhz;
 	wire	clk_200mhz;
 	wire	clk_250mhz;
-	wire	clk_625mhz_0;
-	wire	clk_625mhz_90;
+	wire	clk_400mhz;
 
 	ClockGeneration clockgen(
 		.clk_125mhz_p(clk_125mhz_p),
@@ -191,35 +195,97 @@ module SnifferTop(
 		.clk_125mhz(clk_125mhz),
 		.clk_200mhz(clk_200mhz),
 		.clk_250mhz(clk_250mhz),
-		.clk_625mhz_0(clk_625mhz_0),
-		.clk_625mhz_90(clk_625mhz_90)
+		.clk_400mhz(clk_400mhz),
+
+		.pll_lock()
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Logic analyzer pods
+
+	wire	la0_clk_312p5mhz;
+	wire	la0_clk_625mhz_fabric;
+	wire	la0_clk_625mhz_io_0;
+	wire	la0_clk_625mhz_io_90;
+
+	wire	la0_align_done;
+
+	LogicPodClocking la0_clocks(
+		.clk_125mhz(clk_125mhz),
+
+		.clk_312p5mhz(la0_clk_312p5mhz),
+		.clk_625mhz_io_0(la0_clk_625mhz_io_0),
+		.clk_625mhz_io_90(la0_clk_625mhz_io_90),
+		.clk_625mhz_fabric(la0_clk_625mhz_fabric),
+
+		.pll_lock(),
+		.align_done(la0_align_done)
+	);
 
 	`include "LogicPod.svh"
 	la_sample_t[7:0]	la0_samples;
 	la_sample_t[7:0]	la1_samples;
 
 	LogicPodDatapath #(.LANE_INVERT(8'b10011100)) la0_path (
-		.clk_250mhz(clk_250mhz),
-		.clk_625mhz_0(clk_625mhz_0),
-		.clk_625mhz_90(clk_625mhz_90),
+		.clk_312p5mhz(la0_clk_312p5mhz),
+		.clk_400mhz(clk_400mhz),
+		.clk_625mhz_io_0(la0_clk_625mhz_io_0),
+		.clk_625mhz_io_90(la0_clk_625mhz_io_90),
+		.clk_625mhz_fabric(la0_clk_625mhz_fabric),
 		.pod_data_p(la0_p),
 		.pod_data_n(la0_n),
 		.samples(la0_samples));
 
+	/*
 	LogicPodDatapath #(.LANE_INVERT(8'b00000110)) la1_path (
-		.clk_250mhz(clk_250mhz),
-		.clk_625mhz_0(clk_625mhz_0),
-		.clk_625mhz_90(clk_625mhz_90),
+		.clk_312p5mhz(clk_312p5mhz),
+		.clk_400mhz(clk_400mhz),
+		.clk_625mhz_io_0(clk_625mhz_io_0),
+		.clk_625mhz_io_90(clk_625mhz_io_90),
+		.clk_625mhz_fabric(clk_625mhz_fabric),
 		.pod_data_p(la1_p),
 		.pod_data_n(la1_n),
-		.samples(la1_samples));
+		.samples(la1_samples));*/
+
+	LogicPodControl la0_ctl(
+		.clk_125mhz(clk_125mhz),
+		.pod_present_n(la0_present_n),
+		.pod_power_fault_n(la0_12v_fault_n),
+		.pod_power_en(la0_12v_en),
+		.uart_rx(la0_uart_rx),
+		.uart_tx(la0_uart_tx)
+		);
+
+	/*
+	LogicPodControl la1_ctl(
+		.clk_125mhz(clk_125mhz),
+		.pod_present_n(la1_present_n),
+		.pod_power_fault_n(la1_12v_fault_n),
+		.pod_power_en(la1_12v_en),
+		.uart_rx(la1_uart_rx),
+		.uart_tx(la1_uart_tx)
+		);
+	*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DRAM controller
+
+	wire		ddr_cal_complete;
+	wire		ddr3_user_clk;
+
+	wire[28:0]	ddr3_app_addr;
+	wire[2:0]	ddr3_app_cmd;
+	wire		ddr3_app_en;
+
+	wire[511:0]	ddr3_app_wdf_data;
+	wire		ddr3_app_wdf_end;
+	wire[63:0]	ddr3_app_wdf_mask;
+
+	wire		ddr3_app_wdf_wren;
+
+	wire		ddr3_app_ref_req;
+	wire		ddr3_app_sr_req;
+	wire		ddr3_app_zq_req;
 
 	ddr3 ram(
 
@@ -240,31 +306,96 @@ module SnifferTop(
 		.ddr3_dm(ddr3_dm),
 		.ddr3_odt(ddr3_odt),
 
-		//Internal ports TODO
+		//Internal ports
 		.sys_clk_i(clk_200mhz),	//Main controller clock
 		.clk_ref_i(clk_200mhz),	//Reference clock for IDELAYCTRLs
-		.app_addr(),
-		.app_cmd(),
-		.app_en(),
-		.app_wdf_data(),
-		.app_wdf_end(),
-		.app_wdf_mask(),
-		.app_wdf_wren(),
+		.app_addr(ddr3_app_addr),
+		.app_cmd(ddr3_app_cmd),
+		.app_en(ddr3_app_en),
+		.app_wdf_data(ddr3_app_wdf_data),
+		.app_wdf_end(ddr3_app_wdf_end),
+		.app_wdf_mask(ddr3_app_wdf_mask),
+		.app_wdf_wren(ddr3_app_wdf_wren),
+		.app_rd_data(),
 		.app_rd_data_end(),
 		.app_rd_data_valid(),
 		.app_rdy(),
 		.app_wdf_rdy(),
-		.app_sr_req(),
-		.app_ref_req(),
-		.app_zq_req(),
+		.app_sr_req(ddr3_app_sr_req),
+		.app_ref_req(ddr3_app_ref_req),
+		.app_zq_req(ddr3_app_zq_req),
 		.app_sr_active(),
 		.app_ref_ack(),
 		.app_zq_ack(),
-		.ui_clk(),
+		.ui_clk(ddr3_user_clk),
 		.ui_clk_sync_rst(),
-		.init_calib_complete(),
+		.init_calib_complete(ddr_cal_complete),
 		.device_temp(),
-		.sys_rst()
+		.sys_rst(1'b0)
+	);
+
+	//Tie off unused pins
+	assign ddr3_app_addr = 0;
+	assign ddr3_app_cmd = 0;
+	assign ddr3_app_en = 0;
+	assign ddr3_app_wdf_data = 0;
+	assign ddr3_app_wdf_end = 0;
+	assign ddr3_app_wdf_mask = 0;
+	assign ddr3_app_wdf_wren = 0;
+	assign ddr3_app_ref_req = 0;
+	assign ddr3_app_zq_req = 0;
+	assign ddr3_app_sr_req = 0;
+
+	/*
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// SERDES quad PLL
+
+	wire	qpll_clk;
+
+	GTXE2_COMMON #(
+		.SIM_QPLL_REFCLK_SEL(3'b010),	//must match QPLLREFCLKSEL
+		.SIM_VERSION(4.0),
+
+		//FIXME
+		.QPLL_CFG(),
+		.QPLL_CLKOUT_CFG(),
+		.QPLL_COARSE_FREQ_OVRD(),
+		.QPLL_COARSE_FREQ_OVRD_EN(1'b0),
+		.QPLL_CP(),
+		.QPLL_CP_MONITOR_EN(1'b0),
+		.QPLL_DMONITOR_SEL().
+		.QPLL_FBDIV(66),
+		.QPLL_FBDIV_MONITOR_EN(1'b),
+		.QPLL_FBDIV_RATIO(1'b0),
+		.QPLL_INIT_CFG(),
+		.QPLL_LOCK_CFG(),
+		.QPLL_LPF(),
+		.QPLL_REFCLK_DIV(),
+		.RXOUT_DIV()
+		.TXOUT_DIV(),
+		.COMMON_CFG()
+
+	) serdes_common(
+		.QPLLDMONITOR(),
+		.QPLLFBCLKLOST(),
+		.QPLLLOCK(),
+		.QPLLLOCKDETCLK(),
+		.QPLLLOCKEN(1'b1),
+		.QPLLOUTCLK(qpll_clk),
+		.QPLLOUTRESET(1'b0),
+		.QPLLPD(1'b0),
+		.QPLLREFCLKLOST(),
+		.QPLLREFCLKSEL(3'b010),			//use REFCLK1
+		.QPLLRESET(1'b0),
+		.QPLLRSVD1(16'h0),
+		.QPLLRSVD2(5'h0),
+		.BGBYPASB(1'b1),
+		.BGMONITORENB(1'b1),
+		.BGPDB(1'b1),
+		.BGRCALOVRD(5'b11111),
+		.BGRCALOVRDENB(1'b1),
+		.RCALENB(1'b1),
+		.PMARSVD(1'b0)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,8 +403,8 @@ module SnifferTop(
 
 	gtwizard_sata_device device_transceiver(
 		.sysclk_in(),
-		.soft_reset_tx_in(),
-		.soft_reset_rx_in(),
+		.soft_reset_tx_in(1'b0),
+		.soft_reset_rx_in(1'b0),
 		.dont_reset_on_data_error_in(),
 		.gt0_tx_fsm_reset_done_out(),
 		.gt0_rx_fsm_reset_done_out(),
@@ -355,8 +486,8 @@ module SnifferTop(
 
 	gtwizard_sata_host host_transceiver(
 		.sysclk_in(),
-		.soft_reset_tx_in(),
-		.soft_reset_rx_in(),
+		.soft_reset_tx_in(1'b0),
+		.soft_reset_rx_in(1'b0),
 		.dont_reset_on_data_error_in(),
 		.gt0_tx_fsm_reset_done_out(),
 		.gt0_rx_fsm_reset_done_out(),
@@ -434,15 +565,15 @@ module SnifferTop(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Extra GTX (configured as 10GbE for now)
+	// Extra GTX for PRBS generation
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 10G Ethernet
 
 	gtwizard_10gbe xg_transceiver(
 		.sysclk_in(),
-		.soft_reset_tx_in(),
-		.soft_reset_rx_in(),
+		.soft_reset_tx_in(1'b0),
+		.soft_reset_rx_in(1'b0),
 		.dont_reset_on_data_error_in(),
 		.gt0_tx_fsm_reset_done_out(),
 		.gt0_rx_fsm_reset_done_out(),
@@ -506,7 +637,7 @@ module SnifferTop(
 		.gt0_qplloutclk_in(),
 		.gt0_qplloutrefclk_in()
 	);
-
+	*/
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Ethernet LED level shiters
 
@@ -514,6 +645,24 @@ module SnifferTop(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 1G Ethernet
+
+	//Bring up the PHY after a little while
+	logic[15:0] eth_rst_count = 1;
+	always_ff @(posedge clk_125mhz) begin
+		if(eth_rst_count == 0)
+			eth_rst_n		<= 1;
+		else
+			eth_rst_count	<= eth_rst_count + 1'h1;
+	end
+
+	wire		baset_link_up;
+	lspeed_t	baset_link_speed;
+
+	wire			mac_rx_clk;
+	EthernetRxBus	mac_rx_bus;
+
+	EthernetTxBus	mac_tx_bus;
+	wire			mac_tx_ready;
 
 	RGMIIMACWrapper gig_mac_wrapper(
 		.clk_125mhz(clk_125mhz),
@@ -527,12 +676,45 @@ module SnifferTop(
 		.rgmii_txd(rgmii_txd),
 		.rgmii_tx_ctl(rgmii_tx_en),
 
-		.mac_rx_clk(),
-		.mac_rx_bus(),
-		.mac_tx_bus(),
-		.mac_tx_ready(),
-		.link_up(),
-		.link_speed()
+		.mac_rx_clk(mac_rx_clk),
+		.mac_rx_bus(mac_rx_bus),
+		.mac_tx_bus(mac_tx_bus),
+		.mac_tx_ready(mac_tx_ready),
+		.link_up(baset_link_up),
+		.link_speed(baset_link_speed)
 	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug LEDs
+
+	assign gpio_led[0] = 1'b0;
+	assign gpio_led[1] = 1'b0;
+	assign gpio_led[2] = ddr_cal_complete;
+	assign gpio_led[3] = la0_align_done;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug IP
+
+	/*
+	wire	ddr_cal_complete_sync;
+	ThreeStageSynchronizer sync_1(
+		.clk_in(ddr3_user_clk),
+		.din(ddr_cal_complete),
+		.clk_out(clk_125mhz),
+		.dout(ddr_cal_complete_sync));
+
+	vio_0 vio(
+		.clk(clk_125mhz),
+
+		.probe_in0(baset_link_up),
+		.probe_in1(ddr_cal_complete_sync),
+		.probe_in2(la0_present_n),
+		.probe_in3(sfp_tx_fault),
+		.probe_in4(la0_12v_fault_n),
+		.probe_in5(eth_led_n_1v8),
+		.probe_in6(baset_link_speed),
+		.probe_in7(sfp_mod_abs)
+	);
+	*/
 
 endmodule

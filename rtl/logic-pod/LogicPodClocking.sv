@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2021-2021 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,14 +27,104 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-`ifndef LogicPod_h
-`define LogicPod_h
+/**
+	@brief Generate clocks for use by the design
+ */
+module LogicPodClocking(
 
-//Each channel outputs 16 bits per clock at 312.5 MHz.
-//Bit 15 of a block is the oldest, bit 0 is the most recent.
-typedef struct packed
-{
-	logic[15:0]			bits;
-} la_sample_t;
+	//Inputs from global clock tree
+	input wire	clk_125mhz,
 
-`endif
+	//Clock outputs
+	output wire	clk_312p5mhz,
+	output wire clk_625mhz_fabric,
+	output wire	clk_625mhz_io_0,
+	output wire	clk_625mhz_io_90,
+
+	output wire	pll_lock,
+	output wire	align_done
+);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Main PLL
+
+	wire[1:0]	clk_unused;
+
+	wire	phase_shift_en;
+	wire	phase_shift_inc;
+	wire	phase_shift_done;
+
+	ReconfigurablePLL #(
+		.IN0_PERIOD(8),			//125 MHz input
+		.IN1_PERIOD(8),
+
+		.OUTPUT_BUF_GLOBAL(6'b001100),
+		//.OUTPUT_BUF_IO(		6'b000011),
+		.OUTPUT_BUF_IO(		6'b000001),		//remove the unused bufio for initial testing
+		.OUTPUT_GATE(		6'b001100),
+
+		.OUT0_MIN_PERIOD(1.6),	//625 MHz output to IO clock network
+		.OUT1_MIN_PERIOD(1.6),	//625 MHz output to IO clock network
+		.OUT2_MIN_PERIOD(1.6),	//625 MHz output to fabric
+		.OUT3_MIN_PERIOD(3.2),	//312.5 MHz output to fabric
+		.OUT4_MIN_PERIOD(3.2),	//312.5 MHz output (unused)
+		.OUT5_MIN_PERIOD(3.2),	//312.5 MHz output (unused)
+
+		.OUT0_DEFAULT_PHASE(0),
+		.OUT1_DEFAULT_PHASE(90),
+		.OUT2_DEFAULT_PHASE(0),
+		.OUT3_DEFAULT_PHASE(0),
+		.OUT4_DEFAULT_PHASE(0),
+		.OUT5_DEFAULT_PHASE(0),
+
+		.FINE_PHASE_SHIFT(6'b001100),
+
+		.ACTIVE_ON_START(1)		//Start PLL on power up
+	) pll (
+		.clkin({clk_125mhz, clk_125mhz}),
+		.clksel(1'b0),
+
+		.clkout({clk_unused, clk_312p5mhz, clk_625mhz_fabric, clk_625mhz_io_90, clk_625mhz_io_0}),
+
+		.reset(1'b0),
+		.locked(pll_lock),
+
+		.busy(),
+		.reconfig_clk(clk_125mhz),
+		.reconfig_start(1'b0),
+		.reconfig_finish(1'b0),
+		.reconfig_cmd_done(),
+
+		.reconfig_vco_en(1'b0),
+		.reconfig_vco_mult(7'b0),
+		.reconfig_vco_indiv(7'b0),
+		.reconfig_vco_bandwidth(1'b0),
+
+		.reconfig_output_en(1'b0),
+		.reconfig_output_idx(3'b0),
+		.reconfig_output_div(8'b0),
+		.reconfig_output_phase(9'b0),
+
+		.phase_shift_clk(clk_312p5mhz),
+		.phase_shift_en(phase_shift_en),
+		.phase_shift_inc(phase_shift_inc),
+		.phase_shift_done(phase_shift_done)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Phase control
+
+	LogicPodPhaseAlignment phase_ctl(
+		.clk_312p5mhz(clk_312p5mhz),
+		.clk_625mhz_fabric(clk_625mhz_fabric),
+		.clk_625mhz_io_0(clk_625mhz_io_0),
+		.clk_625mhz_io_90(clk_625mhz_io_90),
+
+		.phase_shift_en(phase_shift_en),
+		.phase_shift_inc(phase_shift_inc),
+		.phase_shift_done(phase_shift_done),
+
+		.done(align_done)
+	);
+
+endmodule

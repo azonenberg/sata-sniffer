@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2021-2021 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,14 +27,87 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-`ifndef LogicPod_h
-`define LogicPod_h
+/**
+	@brief RPM for getting data from 625 MHz clock domain into 312.5 MHz domain
+ */
+module LogicPodSampling(
+	input wire			clk_625mhz_fabric,
+	input wire			clk_312p5mhz,
 
-//Each channel outputs 16 bits per clock at 312.5 MHz.
-//Bit 15 of a block is the oldest, bit 0 is the most recent.
-typedef struct packed
-{
-	logic[15:0]			bits;
-} la_sample_t;
+	input wire[3:0]		deser_p,
+	input wire[3:0]		deser_n,
 
-`endif
+	output wire[7:0]	p_out,
+	output wire[7:0]	n_out
+);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Register inputs in the fast clock domain
+
+	(* RLOC = "X0Y0" *)
+	logic[3:0]	deser_p_ff;
+
+	(* RLOC = "X0Y1" *)
+	logic[3:0]	deser_p_ff2;
+
+	(* RLOC = "X0Y2" *)
+	logic[3:0]	deser_n_ff;
+
+	(* RLOC = "X0Y3" *)
+	logic[3:0]	deser_n_ff2;
+
+	logic		toggle = 0;
+
+	always_ff @(posedge clk_625mhz_fabric) begin
+		deser_p_ff <= deser_p;
+		deser_n_ff <= deser_n;
+
+		deser_p_ff2	<= deser_p_ff;
+		deser_n_ff2	<= deser_n_ff;
+
+		toggle		<= !toggle;
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Write registered values to a tiny FIFO made from block RAM
+
+	//Do not synchronize pointers! We just read garbage for the first few clocks after reset, but that's OK.
+	logic[3:0] wr_ptr = 5'h0;
+
+	(* RAM_STYLE = "distributed" *)
+	logic[7:0] fifo_mem_p[15:0];
+
+	(* RAM_STYLE = "distributed" *)
+	logic[7:0] fifo_mem_n[15:0];
+
+	always_ff @(posedge clk_625mhz_fabric) begin
+		if(toggle) begin
+			wr_ptr				<= wr_ptr + 1;
+
+			fifo_mem_p[wr_ptr]	<= {deser_p_ff2, deser_p_ff};
+			fifo_mem_n[wr_ptr]	<= {deser_n_ff2, deser_n_ff};
+		end
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Read FIFO in the slow clock domain
+
+	logic[3:0] rd_ptr 		= 5'h08;
+
+	logic[7:0] p_sampled	= 0;
+	logic[7:0] n_sampled	= 0;
+
+	always_ff @(posedge clk_312p5mhz) begin
+
+		for(integer i=0; i<8; i=i+1) begin
+			p_sampled	<= fifo_mem_p[rd_ptr];
+			n_sampled	<= fifo_mem_n[rd_ptr];
+			rd_ptr		<= rd_ptr + 1;
+		end
+
+	end
+
+	assign p_out = p_sampled;
+	assign n_out = n_sampled;
+
+endmodule

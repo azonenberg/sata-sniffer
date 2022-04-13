@@ -1,3 +1,149 @@
+set_max_delay -from [get_pins [list {la0_path/genblk2[0].iserdes_n/Q1} \
+          {la0_path/genblk2[0].iserdes_n/Q2} \
+          {la0_path/genblk2[0].iserdes_n/Q3} \
+          {la0_path/genblk2[0].iserdes_n/Q4} \
+          {la0_path/genblk2[0].iserdes_n/Q5} \
+          {la0_path/genblk2[0].iserdes_n/Q6} \
+          {la0_path/genblk2[0].iserdes_n/Q7} \
+          {la0_path/genblk2[0].iserdes_n/Q8} \
+          {la0_path/genblk2[0].iserdes_p/Q1} \
+          {la0_path/genblk2[0].iserdes_p/Q2} \
+          {la0_path/genblk2[0].iserdes_p/Q3} \
+          {la0_path/genblk2[0].iserdes_p/Q4} \
+          {la0_path/genblk2[0].iserdes_p/Q5} \
+          {la0_path/genblk2[0].iserdes_p/Q6} \
+          {la0_path/genblk2[0].iserdes_p/Q7} \
+          {la0_path/genblk2[0].iserdes_p/Q8} \
+          {la0_path/genblk2[1].iserdes_n/Q1} \
+          {la0_path/genblk2[1].iserdes_n/Q2} \
+          {la0_path/genblk2[1].iserdes_n/Q3} \
+          {la0_path/genblk2[1].iserdes_n/Q4} \
+          {la0_path/genblk2[1].iserdes_n/Q5} \
+          {la0_path/genblk2[1].iserdes_n/Q6} \
+          {la0_path/genblk2[1].iserdes_n/Q7} \
+          {la0_path/genblk2[1].iserdes_n/Q8} \
+          {la0_path/genblk2[1].iserdes_p/Q1} \
+          {la0_path/genblk2[1].iserdes_p/Q2} \
+          {la0_path/genblk2[1].iserdes_p/Q3} \
+          {la0_path/genblk2[1].iserdes_p/Q4} \
+          {la0_path/genblk2[1].iserdes_p/Q5} \
+          {la0_path/genblk2[1].iserdes_p/Q6} \
+          {la0_path/genblk2[1].iserdes_p/Q7} \
+          {la0_path/genblk2[1].iserdes_p/Q8} \
+          {la0_path/genblk2[2].iserdes_n/Q1} \
+          {la0_path/genblk2[2].iserdes_n/Q2} \
+          {la0_path/genblk2[2].iserdes_n/Q3} \
+          {la0_path/genblk2[2].iserdes_n/Q4} \
+          {la0_path/genblk2[2].iserdes_n/Q5} \
+          {la0_path/genblk2[2].iserdes_n/Q6} \
+          {la0_path/genblk2[2].iserdes_n/Q7} \
+          {la0_path/genblk2[2].iserdes_n/Q8} \
+          {la0_path/genblk2[2].iserdes_p/Q1} \
+          {la0_path/genblk2[2].iserdes_p/Q2} \
+          {la0_path/genblk2[2].iserdes_p/Q3} \
+          {la0_path/genblk2[2].iserdes_p/Q4} \
+          {la0_path/genblk2[2].iserdes_p/Q5} \
+          {la0_path/genblk2[2].iserdes_p/Q6} \
+          {la0_path/genblk2[2].iserdes_p/Q7} \
+          {la0_path/genblk2[2].iserdes_p/Q8} \
+          {la0_path/genblk2[3].iserdes_n/Q1} \
+          {la0_path/genblk2[3].iserdes_n/Q2} \
+          {la0_path/genblk2[3].iserdes_n/Q3} \
+          {la0_path/genblk2[3].iserdes_n/Q4} \
+          {la0_path/genblk2[3].iserdes_n/Q5} \
+          {la0_path/genblk2[3].iserdes_n/Q6} \
+          {la0_path/genblk2[3].iserdes_n/Q7} \
+          {la0_path/genblk2[3].iserdes_n/Q8} \
+          {la0_path/genblk2[3].iserdes_p/Q1} \
+          {la0_path/genblk2[3].iserdes_p/Q2} \
+          {la0_path/genblk2[3].iserdes_p/Q3} \
+          {la0_path/genblk2[3].iserdes_p/Q4} \
+          {la0_path/genblk2[3].iserdes_p/Q5} \
+          {la0_path/genblk2[3].iserdes_p/Q6} \
+          {la0_path/genblk2[3].iserdes_p/Q7} \
+          {la0_path/genblk2[3].iserdes_p/Q8} \
+          {la0_path/genblk2[4].iserdes_n/Q1} \
+          {la0_path/genblk2[4].iserdes_n/Q2} \
+          {la0_path/genblk2[4].iserdes_n/Q3} \
+          {la0_path/genblk2[4].iserdes_n/Q4} \
+          {la0_path/genblk2[4].iserdes_n/Q5} \
+          {la0_path/genblk2[4].iserdes_n/Q6} \
+          {la0_path/genblk2[4].iserdes_n/Q7} \
+          {la0_path/genblk2[4].iserdes_n/Q8} \
+          {la0_path/genblk2[4].iserdes_p/Q1} \
+          {la0_path/genblk2[4].iserdes_p/Q2} \
+          {la0_path/genblk2[4].iserdes_p/Q3} \
+          {la0_path/genblk2[4].iserdes_p/Q4} \
+          {la0_path/genblk2[4].iserdes_p/Q5} \
+          {la0_path/genblk2[4].iserdes_p/Q6} \
+          {la0_path/genblk2[4].iserdes_p/Q7} \
+          {la0_path/genblk2[4].iserdes_p/Q8} \
+          {la0_path/genblk2[5].iserdes_n/Q1} \
+          {la0_path/genblk2[5].iserdes_n/Q2} \
+          {la0_path/genblk2[5].iserdes_n/Q3} \
+          {la0_path/genblk2[5].iserdes_n/Q4} \
+          {la0_path/genblk2[5].iserdes_n/Q5} \
+          {la0_path/genblk2[5].iserdes_n/Q6} \
+          {la0_path/genblk2[5].iserdes_n/Q7} \
+          {la0_path/genblk2[5].iserdes_n/Q8} \
+          {la0_path/genblk2[5].iserdes_p/Q1} \
+          {la0_path/genblk2[5].iserdes_p/Q2} \
+          {la0_path/genblk2[5].iserdes_p/Q3} \
+          {la0_path/genblk2[5].iserdes_p/Q4} \
+          {la0_path/genblk2[5].iserdes_p/Q5} \
+          {la0_path/genblk2[5].iserdes_p/Q6} \
+          {la0_path/genblk2[5].iserdes_p/Q7} \
+          {la0_path/genblk2[5].iserdes_p/Q8} \
+          {la0_path/genblk2[6].iserdes_n/Q1} \
+          {la0_path/genblk2[6].iserdes_n/Q2} \
+          {la0_path/genblk2[6].iserdes_n/Q3} \
+          {la0_path/genblk2[6].iserdes_n/Q4} \
+          {la0_path/genblk2[6].iserdes_n/Q5} \
+          {la0_path/genblk2[6].iserdes_n/Q6} \
+          {la0_path/genblk2[6].iserdes_n/Q7} \
+          {la0_path/genblk2[6].iserdes_n/Q8} \
+          {la0_path/genblk2[6].iserdes_p/Q1} \
+          {la0_path/genblk2[6].iserdes_p/Q2} \
+          {la0_path/genblk2[6].iserdes_p/Q3} \
+          {la0_path/genblk2[6].iserdes_p/Q4} \
+          {la0_path/genblk2[6].iserdes_p/Q5} \
+          {la0_path/genblk2[6].iserdes_p/Q6} \
+          {la0_path/genblk2[6].iserdes_p/Q7} \
+          {la0_path/genblk2[6].iserdes_p/Q8} \
+          {la0_path/genblk2[7].iserdes_n/Q1} \
+          {la0_path/genblk2[7].iserdes_n/Q2} \
+          {la0_path/genblk2[7].iserdes_n/Q3} \
+          {la0_path/genblk2[7].iserdes_n/Q4} \
+          {la0_path/genblk2[7].iserdes_n/Q5} \
+          {la0_path/genblk2[7].iserdes_n/Q6} \
+          {la0_path/genblk2[7].iserdes_n/Q7} \
+          {la0_path/genblk2[7].iserdes_n/Q8} \
+          {la0_path/genblk2[7].iserdes_p/Q1} \
+          {la0_path/genblk2[7].iserdes_p/Q2} \
+          {la0_path/genblk2[7].iserdes_p/Q3} \
+          {la0_path/genblk2[7].iserdes_p/Q4} \
+          {la0_path/genblk2[7].iserdes_p/Q5} \
+          {la0_path/genblk2[7].iserdes_p/Q6} \
+          {la0_path/genblk2[7].iserdes_p/Q7} \
+          {la0_path/genblk2[7].iserdes_p/Q8}]] -to [get_cells [list {la0_path/genblk3[0].sampler/deser_n_ff2_reg[0]} \
+          {la0_path/genblk3[0].sampler/deser_n_ff2_reg[1]} \
+          {la0_path/genblk3[0].sampler/deser_n_ff2_reg[2]} \
+          {la0_path/genblk3[0].sampler/deser_n_ff2_reg[3]} \
+          {la0_path/genblk3[0].sampler/deser_n_ff_reg[0]} \
+          {la0_path/genblk3[0].sampler/deser_n_ff_reg[1]} \
+          {la0_path/genblk3[0].sampler/deser_n_ff_reg[2]} \
+          {la0_path/genblk3[0].sampler/deser_n_ff_reg[3]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[0]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[1]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[2]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[3]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff_reg[0]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff_reg[1]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff_reg[2]} \
+          {la0_path/genblk3[0].sampler/deser_p_ff_reg[3]}]] 0.600
+########################################################################################################################
+# Pinout and IOSTANDARD constraints
+
 set_property PACKAGE_PIN AB13 [get_ports {la0_p[7]}]
 set_property PACKAGE_PIN AA11 [get_ports {la0_p[6]}]
 set_property PACKAGE_PIN AA10 [get_ports {la0_p[5]}]
@@ -107,24 +253,24 @@ set_property IOSTANDARD LVCMOS33 [get_ports {sfp_rs[0]}]
 set_property PACKAGE_PIN D11 [get_ports {sfp_rs[1]}]
 set_property PACKAGE_PIN F11 [get_ports {sfp_rs[0]}]
 set_property IOSTANDARD LVCMOS33 [get_ports la0_12v_en]
-set_property IOSTANDARD LVCMOS33 [get_ports la0_12v_fault]
-set_property IOSTANDARD LVCMOS33 [get_ports la0_present]
+set_property IOSTANDARD LVCMOS33 [get_ports la0_12v_fault_n]
+set_property IOSTANDARD LVCMOS33 [get_ports la0_present_n]
 set_property IOSTANDARD LVCMOS33 [get_ports la0_uart_rx]
 set_property IOSTANDARD LVCMOS33 [get_ports la1_12v_en]
 set_property IOSTANDARD LVCMOS33 [get_ports la0_uart_tx]
-set_property IOSTANDARD LVCMOS33 [get_ports la1_12v_fault]
-set_property IOSTANDARD LVCMOS33 [get_ports la1_present]
+set_property IOSTANDARD LVCMOS33 [get_ports la1_12v_fault_n]
+set_property IOSTANDARD LVCMOS33 [get_ports la1_present_n]
 set_property IOSTANDARD LVCMOS33 [get_ports la1_uart_rx]
 set_property IOSTANDARD LVCMOS33 [get_ports la1_uart_tx]
 set_property IOSTANDARD LVCMOS33 [get_ports ram_scl]
 set_property PACKAGE_PIN F8 [get_ports la0_12v_en]
-set_property PACKAGE_PIN G8 [get_ports la0_12v_fault]
-set_property PACKAGE_PIN F9 [get_ports la0_present]
+set_property PACKAGE_PIN G8 [get_ports la0_12v_fault_n]
+set_property PACKAGE_PIN F9 [get_ports la0_present_n]
 set_property PACKAGE_PIN E9 [get_ports la0_uart_rx]
 set_property PACKAGE_PIN E8 [get_ports la0_uart_tx]
 set_property PACKAGE_PIN C9 [get_ports la1_12v_en]
-set_property PACKAGE_PIN D9 [get_ports la1_12v_fault]
-set_property PACKAGE_PIN C8 [get_ports la1_present]
+set_property PACKAGE_PIN D9 [get_ports la1_12v_fault_n]
+set_property PACKAGE_PIN C8 [get_ports la1_present_n]
 set_property PACKAGE_PIN B8 [get_ports la1_uart_rx]
 set_property PACKAGE_PIN C10 [get_ports la1_uart_tx]
 set_property PACKAGE_PIN H14 [get_ports ram_scl]
@@ -144,32 +290,95 @@ set_property PACKAGE_PIN F13 [get_ports sfp_tx_fault]
 set_property PACKAGE_PIN L16 [get_ports flash_cs_n]
 set_property PACKAGE_PIN H18 [get_ports flash_si]
 set_property PACKAGE_PIN H19 [get_ports flash_so]
-set_property SLEW FAST [get_ports flash_cs_n]
-set_property SLEW FAST [get_ports flash_si]
 set_property IOSTANDARD SSTL135 [get_ports flash_cs_n]
 set_property IOSTANDARD SSTL135 [get_ports flash_si]
 set_property IOSTANDARD SSTL135 [get_ports flash_so]
 
-set_property PACKAGE_PIN G4 [get_ports sata_device_rx_p]
-set_property PACKAGE_PIN E4 [get_ports sata_host_rx_p]
 
-set_property PACKAGE_PIN D6 [get_ports gtx_refclk_156_p]
-set_property PACKAGE_PIN F6 [get_ports gtx_refclk_200_p]
 
 set_property PACKAGE_PIN L19 [get_ports clk_200mhz_p]
 set_property IOSTANDARD LVDS_25 [get_ports clk_200mhz_p]
 set_property IOSTANDARD LVDS_25 [get_ports clk_200mhz_n]
-set_property PACKAGE_PIN C4 [get_ports sfp_rx_p]
-create_clock -period 5.000 -name gtx_refclk_200_p -waveform {0.000 2.500} [get_ports gtx_refclk_200_p]
 
+set_property PACKAGE_PIN H8 [get_ports {eth_led_p_3v3[1]}]
+set_property PACKAGE_PIN H9 [get_ports {eth_led_p_3v3[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {eth_led_p_3v3[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {eth_led_p_3v3[0]}]
+
+########################################################################################################################
+# Pullup/down and slew constraints
+
+set_property PULLUP true [get_ports la1_12v_fault_n]
+set_property PULLUP true [get_ports la0_12v_fault_n]
+
+set_property SLEW FAST [get_ports flash_cs_n]
+set_property SLEW FAST [get_ports flash_si]
+
+########################################################################################################################
+# Input clocks
+
+create_clock -period 8.000 -name clk_125mhz_p -waveform {0.000 4.000} [get_ports clk_125mhz_p]
 create_clock -period 5.000 -name clk_200mhz_p -waveform {0.000 2.500} [get_ports clk_200mhz_p]
 create_clock -period 8.000 -name rgmii_rxc -waveform {0.000 4.000} [get_ports rgmii_rxc]
+
+########################################################################################################################
+# Rename PLL outputs for convenience
+
+create_generated_clock -name clk_125mhz -source [get_pins clockgen/pll_125/mmcm/CLKIN1] -master_clock [get_clocks clk_125mhz_p] [get_pins clockgen/pll_125/mmcm/CLKOUT0]
+create_generated_clock -name clk_250mhz -source [get_pins clockgen/pll_125/mmcm/CLKIN1] -master_clock [get_clocks clk_125mhz_p] [get_pins clockgen/pll_125/mmcm/CLKOUT1]
+
+create_generated_clock -name la0_clk_625mhz_io_0 -source [get_pins la0_clocks/pll/mmcm/CLKIN1] -master_clock [get_clocks clk_125mhz] [get_pins la0_clocks/pll/mmcm/CLKOUT0]
+create_generated_clock -name la0_clk_625mhz_io_90 -source [get_pins la0_clocks/pll/mmcm/CLKIN1] -master_clock [get_clocks clk_125mhz] [get_pins la0_clocks/pll/mmcm/CLKOUT1]
+create_generated_clock -name la0_clk_625mhz_fabric -source [get_pins la0_clocks/pll/mmcm/CLKIN1] -master_clock [get_clocks clk_125mhz] [get_pins la0_clocks/pll/mmcm/CLKOUT2]
+create_generated_clock -name la0_clk_312p5mhz -source [get_pins la0_clocks/pll/mmcm/CLKIN1] -master_clock [get_clocks clk_125mhz] [get_pins la0_clocks/pll/mmcm/CLKOUT3]
+
+########################################################################################################################
+# Logic analyzer timing and floorplanning
+
+# Location for the IOLOGIC blocks in the phase alignment system
+set_property LOC OLOGIC_X1Y0 [get_cells la0_clocks/phase_ctl/oserdes]
+set_property LOC ILOGIC_X1Y0 [get_cells la0_clocks/phase_ctl/iserdes]
+
+# Location for rest of the logic analyzer
+create_pblock pblock_la0
+add_cells_to_pblock [get_pblocks pblock_la0] [get_cells -quiet [list la0_clocks la0_path]]
+resize_pblock [get_pblocks pblock_la0] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y0}
+set_property IS_SOFT TRUE [get_pblocks pblock_la0]
+
+# IOSERDES loopback is a false path
+set_false_path -from [get_pins la0_clocks/phase_ctl/oserdes/CLK] -to [get_pins la0_clocks/phase_ctl/iserdes/OFB]
+
+# Tight timing path from BUFIO to BUFG clock
+set_max_delay -from [get_pins -hierarchical -filter { NAME =~  "*iserdes*" && NAME =~  "*Q*" && NAME =~  "*la*_path*" }] -to [get_cells -hierarchical *deser_*_ff*] 0.600
+
+# Path through LUTRAM FIFO can take a little while as it's multicycle
+set_max_delay -from [get_clocks *625mhz_fabric*] -through [get_cells -hierarchical -filter { PRIMITIVE_TYPE == DMEM.DRAM.RAM32M && PARENT =~  "*la*_path*" }] -to [get_clocks *312p5*] 3.200
+
+########################################################################################################################
+# Other timing constraints
+
+# CDC from RGMII to internal 125 MHz clock domain
+set_clock_groups -asynchronous -group [get_clocks rgmii_rxc] -group [get_clocks clk_125mhz]
+set_clock_groups -asynchronous -group [get_clocks clk_125mhz] -group [get_clocks rgmii_rxc]
+
+# Don't need dedicated routing for 125 MHz refclk input
+# as phase from the oscillator to anything else doesn't matter
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets clockgen/clk_125_ibuf/clk_125mhz_in]
+
+########################################################################################################################
+# Miscellaneous
+
 create_pblock pblock_ddr
 resize_pblock [get_pblocks pblock_ddr] -add {SLICE_X0Y0:SLICE_X23Y149}
 resize_pblock [get_pblocks pblock_ddr] -add {DSP48_X0Y0:DSP48_X1Y59}
 resize_pblock [get_pblocks pblock_ddr] -add {RAMB18_X0Y0:RAMB18_X1Y59}
 resize_pblock [get_pblocks pblock_ddr] -add {RAMB36_X0Y0:RAMB36_X1Y29}
-create_pblock pblock_la
-resize_pblock [get_pblocks pblock_la] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y1}
+set_property IS_SOFT TRUE [get_pblocks pblock_ddr]
 create_pblock pblock_xg_pcs
 resize_pblock [get_pblocks pblock_xg_pcs] -add {CLOCKREGION_X1Y2:CLOCKREGION_X1Y2}
+set_property IS_SOFT TRUE [get_pblocks pblock_xg_pcs]
+
+set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
+set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
+set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
+connect_debug_port dbg_hub/clk [get_nets clk_125mhz]
