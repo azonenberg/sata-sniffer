@@ -54,10 +54,7 @@ module LogicPodDatapath #(
 
 	//LVDS input
 	input wire[7:0]			pod_data_p,
-	input wire[7:0]			pod_data_n,
-
-	//Parallel digitized output
-	output la_sample_t[7:0]	samples
+	input wire[7:0]			pod_data_n
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,8 +162,6 @@ module LogicPodDatapath #(
 
 	//Sampling order is Q1 Q3 Q2 Q4 in oversampling mode
 	//then we interleave with negative before positive
-	wire[7:0] input_comb;
-
 	for(genvar g=0; g<8; g=g+1) begin
 		ISERDESE2 #(
 			.DATA_RATE("DDR"),
@@ -187,7 +182,7 @@ module LogicPodDatapath #(
 			.Q6(),
 			.Q7(),
 			.Q8(),
-			.O(input_comb[g]),
+			.O(),
 			.SHIFTOUT1(),
 			.SHIFTOUT2(),
 			.D(),
@@ -272,14 +267,17 @@ module LogicPodDatapath #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Merge P/N into a single 16-bit stream, inverting as necessary
 
+	//Parallel digitized output
+	la_sample_t[7:0]	samples;
+
 	//N has a larger delay than P, so it's logically earlier in the stream
 	always_ff @(posedge clk_312p5mhz) begin
 
 		for(integer i=0; i<8; i=i+1) begin
 
 			for(integer j=0; j<8; j=j+1) begin
-				samples[i].bits[j*2 + 1]	<= !n_merged[i][j];
-				samples[i].bits[j*2]		<= p_merged[i][j];
+				samples[i].bits[j*2 + 1]	<= !n_merged[i][j] ^ LANE_INVERT[i];
+				samples[i].bits[j*2]		<= p_merged[i][j] ^ LANE_INVERT[i];
 			end
 
 		end
@@ -287,19 +285,48 @@ module LogicPodDatapath #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Output registers and inversion
+	// Compression (per lane)
+
+	wire[7:0] out_valid;
+	wire[7:0] out_format;
+	wire[15:0] out_data[7:0];
+
+	for(genvar g=0; g<8; g=g+1) begin
+
+		LogicPodCompression compressor(
+			.clk(clk_312p5mhz),
+			.din(samples[g].bits),
+
+			.out_valid(out_valid[g]),
+			.out_format(out_format[g]),
+			.out_data(out_data[g])
+		);
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// CDC FIFOs
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Arbitration and deserialization in DRAM clock domain
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug ILA
 
 	ila_0 ila(
 		.clk(clk_312p5mhz),
-		.probe0(p_merged[0]),
-		.probe1(n_merged[0]),
-		.probe2(samples[0].bits),
-		.probe3(p_merged[1]),
-		.probe4(n_merged[1]),
-		.probe5(samples[1].bits),
-
-		.probe6(input_comb)
+		.probe0(samples[0].bits),
+		.probe1(samples[1].bits),
+		.probe2(out_valid),
+		.probe3(out_format),
+		.probe4(out_data[0]),
+		.probe5(out_data[1]),
+		.probe6(out_data[2]),
+		.probe7(out_data[3]),
+		.probe8(out_data[4]),
+		.probe9(out_data[5]),
+		.probe10(out_data[6]),
+		.probe11(out_data[7])
 	);
-
 
 endmodule

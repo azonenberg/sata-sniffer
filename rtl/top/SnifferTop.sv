@@ -222,10 +222,6 @@ module SnifferTop(
 		.align_done(la0_align_done)
 	);
 
-	`include "LogicPod.svh"
-	la_sample_t[7:0]	la0_samples;
-	la_sample_t[7:0]	la1_samples;
-
 	LogicPodDatapath #(.LANE_INVERT(8'b10011100)) la0_path (
 		.clk_312p5mhz(la0_clk_312p5mhz),
 		.clk_400mhz(clk_400mhz),
@@ -233,8 +229,7 @@ module SnifferTop(
 		.clk_625mhz_io_90(la0_clk_625mhz_io_90),
 		.clk_625mhz_fabric(la0_clk_625mhz_fabric),
 		.pod_data_p(la0_p),
-		.pod_data_n(la0_n),
-		.samples(la0_samples));
+		.pod_data_n(la0_n));
 
 	/*
 	LogicPodDatapath #(.LANE_INVERT(8'b00000110)) la1_path (
@@ -244,8 +239,7 @@ module SnifferTop(
 		.clk_625mhz_io_90(clk_625mhz_io_90),
 		.clk_625mhz_fabric(clk_625mhz_fabric),
 		.pod_data_p(la1_p),
-		.pod_data_n(la1_n),
-		.samples(la1_samples));*/
+		.pod_data_n(la1_n));*/
 
 	LogicPodControl la0_ctl(
 		.clk_125mhz(clk_125mhz),
@@ -256,7 +250,6 @@ module SnifferTop(
 		.uart_tx(la0_uart_tx)
 		);
 
-	/*
 	LogicPodControl la1_ctl(
 		.clk_125mhz(clk_125mhz),
 		.pod_present_n(la1_present_n),
@@ -265,7 +258,6 @@ module SnifferTop(
 		.uart_rx(la1_uart_rx),
 		.uart_tx(la1_uart_tx)
 		);
-	*/
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DRAM controller

@@ -64,6 +64,17 @@ module ClockGeneration(
 		.fabric_out(clk_125mhz_in)
 	);
 
+	wire	clk_125mhz_in_bufg;
+
+	ClockBuffer #(
+		.TYPE("GLOBAL"),
+		.CE("NO")
+	) clk_buf_125(
+		.clkin(clk_125mhz_in),
+		.ce(1'b1),
+		.clkout(clk_125mhz_in_bufg)
+	);
+
 	wire clk_200mhz_raw;
 	DifferentialInputBuffer #(
 		.WIDTH(1),
@@ -113,7 +124,7 @@ module ClockGeneration(
 
 		.ACTIVE_ON_START(1)		//Start PLL on power up
 	) pll_125 (
-		.clkin({clk_125mhz_in, clk_125mhz_in}),
+		.clkin({clk_125mhz_in_bufg, clk_125mhz_in_bufg}),
 		.clksel(1'b0),
 
 		.clkout({clk_unused1, clk_250mhz, clk_125mhz}),
