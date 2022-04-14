@@ -87,6 +87,18 @@ module LogicPodDatapath #(
 	assign pod_data_p_remapped[7] = pod_data_p[0];
 	assign pod_data_n_remapped[7] = pod_data_n[0];
 
+	localparam LANE_INVERT_REMAPPED =
+	{
+		LANE_INVERT[0],
+		LANE_INVERT[1],
+		LANE_INVERT[4],
+		LANE_INVERT[5],
+		LANE_INVERT[6],
+		LANE_INVERT[7],
+		LANE_INVERT[2],
+		LANE_INVERT[3]
+	};
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// LVDS input buffers
 
@@ -276,8 +288,8 @@ module LogicPodDatapath #(
 		for(integer i=0; i<8; i=i+1) begin
 
 			for(integer j=0; j<8; j=j+1) begin
-				samples[i].bits[j*2 + 1]	<= !n_merged[i][j] ^ LANE_INVERT[i];
-				samples[i].bits[j*2]		<= p_merged[i][j] ^ LANE_INVERT[i];
+				samples[i].bits[j*2 + 1]	<= !n_merged[i][j] ^ LANE_INVERT_REMAPPED[i];
+				samples[i].bits[j*2]		<= p_merged[i][j] ^ LANE_INVERT_REMAPPED[i];
 			end
 
 		end

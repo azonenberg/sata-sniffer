@@ -167,7 +167,6 @@ module LogicPodCompression(
 	always_ff @(posedge clk) begin
 
 		out_valid	<= 0;
-		out_format	<= 0;
 		out_data	<= 0;
 
 		//If we have a pending incompressible block, output that.
