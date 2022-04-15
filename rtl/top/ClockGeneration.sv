@@ -156,57 +156,64 @@ module ClockGeneration(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Secondary PLL (200 MHz input)
+	// Use a regular PLL here, not a MMCM, as we don't need anything fancy
 
-	wire[4:0] clk_unused2;
+	wire	clk_400mhz_raw;
+	ClockBuffer #(
+		.TYPE("GLOBAL"),
+		.CE("YES")
+	) buf_clk_400mhz(
+		.clkin(clk_400mhz_raw),
+		.ce(pll_lock[1]),
+		.clkout(clk_400mhz)
+	);
 
-	ReconfigurablePLL #(
-		.IN0_PERIOD(5),			//200 MHz input
-		.IN1_PERIOD(5),
+	wire	pll_200_fb;
+	PLLE2_BASE #(
+		.BANDWIDTH("OPTIMIZED"),
+		.STARTUP_WAIT("TRUE"),
 
-		.OUT0_MIN_PERIOD(2.5),	//400 MHz output
-		.OUT1_MIN_PERIOD(5),	//200 MHz output (unused)
-		.OUT2_MIN_PERIOD(5),	//200 MHz output (unused)
-		.OUT3_MIN_PERIOD(5),	//200 MHz output (unused)
-		.OUT4_MIN_PERIOD(5),	//200 MHz output (unused)
-		.OUT5_MIN_PERIOD(5),	//200 MHz output (unused)
+		.CLKFBOUT_MULT(6),			//200 MHz -> 1.2 GHz VCO
+		.DIVCLK_DIVIDE(1),
+		.CLKFBOUT_PHASE(0),
 
-		.OUT0_DEFAULT_PHASE(0),
-		.OUT1_DEFAULT_PHASE(0),
-		.OUT2_DEFAULT_PHASE(0),
-		.OUT3_DEFAULT_PHASE(0),
-		.OUT4_DEFAULT_PHASE(0),
-		.OUT5_DEFAULT_PHASE(0),
+		.CLKIN1_PERIOD(8),
 
-		.ACTIVE_ON_START(1)		//Start PLL on power up
+		.CLKOUT0_DIVIDE(3),			//400 MHz output to IODELAYs
+		.CLKOUT1_DIVIDE(16),
+		.CLKOUT2_DIVIDE(16),
+		.CLKOUT3_DIVIDE(16),
+		.CLKOUT4_DIVIDE(16),
+		.CLKOUT5_DIVIDE(16),
+
+		.CLKOUT0_PHASE(0.0),
+		.CLKOUT1_PHASE(0.0),
+		.CLKOUT2_PHASE(0.0),
+		.CLKOUT3_PHASE(0.0),
+		.CLKOUT4_PHASE(0.0),
+		.CLKOUT5_PHASE(0.0),
+
+		.CLKOUT0_DUTY_CYCLE(0.5),
+		.CLKOUT1_DUTY_CYCLE(0.5),
+		.CLKOUT2_DUTY_CYCLE(0.5),
+		.CLKOUT3_DUTY_CYCLE(0.5),
+		.CLKOUT4_DUTY_CYCLE(0.5),
+		.CLKOUT5_DUTY_CYCLE(0.5)
 	) pll_200 (
-		.clkin({clk_200mhz, clk_200mhz}),
-		.clksel(1'b0),
+		.RST(1'b0),
+		.PWRDWN(1'b0),
+		.LOCKED(pll_lock[1]),
 
-		.clkout({clk_unused2, clk_400mhz}),
+		.CLKIN1(clk_200mhz),
+		.CLKFBIN(pll_200_fb),
+		.CLKFBOUT(pll_200_fb),
 
-		.reset(1'b0),
-		.locked(pll_lock[1]),
-
-		.busy(),
-		.reconfig_clk(clk_125mhz_in),
-		.reconfig_start(1'b0),
-		.reconfig_finish(1'b0),
-		.reconfig_cmd_done(),
-
-		.reconfig_vco_en(1'b0),
-		.reconfig_vco_mult(7'b0),
-		.reconfig_vco_indiv(7'b0),
-		.reconfig_vco_bandwidth(1'b0),
-
-		.reconfig_output_en(1'b0),
-		.reconfig_output_idx(3'b0),
-		.reconfig_output_div(8'b0),
-		.reconfig_output_phase(9'b0),
-
-		.phase_shift_clk(1'b0),
-		.phase_shift_en(1'b0),
-		.phase_shift_inc(1'b0),
-		.phase_shift_done()
+		.CLKOUT0(clk_400mhz_raw),
+		.CLKOUT1(),
+		.CLKOUT2(),
+		.CLKOUT3(),
+		.CLKOUT4(),
+		.CLKOUT5()
 	);
 
 endmodule
