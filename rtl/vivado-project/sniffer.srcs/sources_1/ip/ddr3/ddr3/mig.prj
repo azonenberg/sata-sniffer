@@ -42,12 +42,12 @@
 
   <Controller number="0">
     <MemoryDevice>DDR3_SDRAM/SODIMMs/MT8KTF25664HZ-1G4</MemoryDevice>
-    <TimePeriod>3000</TimePeriod>
+    <TimePeriod>3076</TimePeriod>
     <VccAuxIO>1.8V</VccAuxIO>
     <PHYRatio>4:1</PHYRatio>
-    <InputClkFreq>333.333</InputClkFreq>
+    <InputClkFreq>200.06</InputClkFreq>
     <UIExtraClocks>0</UIExtraClocks>
-    <MMCM_VCO>666</MMCM_VCO>
+    <MMCM_VCO>650</MMCM_VCO>
     <MMCMClkOut0> 1.000</MMCMClkOut0>
     <MMCMClkOut1>1</MMCMClkOut1>
     <MMCMClkOut2>1</MMCMClkOut2>

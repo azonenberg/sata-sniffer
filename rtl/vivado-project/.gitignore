@@ -3,3 +3,6 @@
 *.cache
 *.hw
 *.sim
+*.gen
+ip_upgrade.log
+sniffer.srcs/sources_1/ip/ddr3/ddr3/example_design/

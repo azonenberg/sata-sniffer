@@ -1,4 +1,4 @@
-set_max_delay -from [get_pins [list {la0_path/genblk2[0].iserdes_n/Q1} \
+set _xlnx_shared_i0 [get_pins [list {la0_path/genblk2[0].iserdes_n/Q1} \
           {la0_path/genblk2[0].iserdes_n/Q2} \
           {la0_path/genblk2[0].iserdes_n/Q3} \
           {la0_path/genblk2[0].iserdes_n/Q4} \
@@ -125,22 +125,11 @@ set_max_delay -from [get_pins [list {la0_path/genblk2[0].iserdes_n/Q1} \
           {la0_path/genblk2[7].iserdes_p/Q5} \
           {la0_path/genblk2[7].iserdes_p/Q6} \
           {la0_path/genblk2[7].iserdes_p/Q7} \
-          {la0_path/genblk2[7].iserdes_p/Q8}]] -to [get_cells [list {la0_path/genblk3[0].sampler/deser_n_ff2_reg[0]} \
-          {la0_path/genblk3[0].sampler/deser_n_ff2_reg[1]} \
-          {la0_path/genblk3[0].sampler/deser_n_ff2_reg[2]} \
-          {la0_path/genblk3[0].sampler/deser_n_ff2_reg[3]} \
-          {la0_path/genblk3[0].sampler/deser_n_ff_reg[0]} \
-          {la0_path/genblk3[0].sampler/deser_n_ff_reg[1]} \
-          {la0_path/genblk3[0].sampler/deser_n_ff_reg[2]} \
-          {la0_path/genblk3[0].sampler/deser_n_ff_reg[3]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[0]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[1]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[2]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff2_reg[3]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff_reg[0]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff_reg[1]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff_reg[2]} \
-          {la0_path/genblk3[0].sampler/deser_p_ff_reg[3]}]] 0.600
+          {la0_path/genblk2[7].iserdes_p/Q8}]]
+set_max_delay -from $_xlnx_shared_i0 -to [get_cells {{la0_path/genblk3[0].sampler/deser_n_ff2_reg[0]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[1]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[2]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[3]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[0]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[1]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[2]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[3]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[0]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[1]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[2]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[3]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[0]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[1]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[2]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[3]}}] 0.600
+set_max_delay -from $_xlnx_shared_i0 -to [get_cells {{la0_path/genblk3[0].sampler/deser_n_ff2_reg[0]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[1]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[2]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[3]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[0]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[1]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[2]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[3]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[0]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[1]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[2]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[3]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[0]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[1]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[2]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[3]} {la0_path/genblk3[1].sampler/deser_n_ff2_reg[0]} {la0_path/genblk3[1].sampler/deser_n_ff2_reg[1]} {la0_path/genblk3[1].sampler/deser_n_ff2_reg[2]} {la0_path/genblk3[1].sampler/deser_n_ff2_reg[3]} {la0_path/genblk3[1].sampler/deser_n_ff_reg[0]} {la0_path/genblk3[1].sampler/deser_n_ff_reg[1]} {la0_path/genblk3[1].sampler/deser_n_ff_reg[2]} {la0_path/genblk3[1].sampler/deser_n_ff_reg[3]} {la0_path/genblk3[1].sampler/deser_p_ff2_reg[0]} {la0_path/genblk3[1].sampler/deser_p_ff2_reg[1]} {la0_path/genblk3[1].sampler/deser_p_ff2_reg[2]} {la0_path/genblk3[1].sampler/deser_p_ff2_reg[3]} {la0_path/genblk3[1].sampler/deser_p_ff_reg[0]} {la0_path/genblk3[1].sampler/deser_p_ff_reg[1]} {la0_path/genblk3[1].sampler/deser_p_ff_reg[2]} {la0_path/genblk3[1].sampler/deser_p_ff_reg[3]}}] 0.600
+set_max_delay -from [get_pins {{la0_path/genblk2[0].iserdes_n/Q1} {la0_path/genblk2[0].iserdes_n/Q2} {la0_path/genblk2[0].iserdes_n/Q3} {la0_path/genblk2[0].iserdes_n/Q4} {la0_path/genblk2[0].iserdes_n/Q5} {la0_path/genblk2[0].iserdes_n/Q6} {la0_path/genblk2[0].iserdes_n/Q7} {la0_path/genblk2[0].iserdes_n/Q8} {la0_path/genblk2[0].iserdes_p/Q1} {la0_path/genblk2[0].iserdes_p/Q2} {la0_path/genblk2[0].iserdes_p/Q3} {la0_path/genblk2[0].iserdes_p/Q4} {la0_path/genblk2[0].iserdes_p/Q5} {la0_path/genblk2[0].iserdes_p/Q6} {la0_path/genblk2[0].iserdes_p/Q7} {la0_path/genblk2[0].iserdes_p/Q8} {la0_path/genblk2[1].iserdes_n/Q1} {la0_path/genblk2[1].iserdes_n/Q2} {la0_path/genblk2[1].iserdes_n/Q3} {la0_path/genblk2[1].iserdes_n/Q4} {la0_path/genblk2[1].iserdes_n/Q5} {la0_path/genblk2[1].iserdes_n/Q6} {la0_path/genblk2[1].iserdes_n/Q7} {la0_path/genblk2[1].iserdes_n/Q8} {la0_path/genblk2[1].iserdes_p/Q1} {la0_path/genblk2[1].iserdes_p/Q2} {la0_path/genblk2[1].iserdes_p/Q3} {la0_path/genblk2[1].iserdes_p/Q4} {la0_path/genblk2[1].iserdes_p/Q5} {la0_path/genblk2[1].iserdes_p/Q6} {la0_path/genblk2[1].iserdes_p/Q7} {la0_path/genblk2[1].iserdes_p/Q8}}] -to [get_cells {{la0_path/genblk3[0].sampler/deser_n_ff2_reg[0]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[1]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[2]} {la0_path/genblk3[0].sampler/deser_n_ff2_reg[3]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[0]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[1]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[2]} {la0_path/genblk3[0].sampler/deser_n_ff_reg[3]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[0]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[1]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[2]} {la0_path/genblk3[0].sampler/deser_p_ff2_reg[3]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[0]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[1]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[2]} {la0_path/genblk3[0].sampler/deser_p_ff_reg[3]}}] 0.600
+
 ########################################################################################################################
 # Pinout and IOSTANDARD constraints
 
@@ -341,18 +330,215 @@ set_property LOC ILOGIC_X1Y0 [get_cells la0_clocks/phase_ctl/iserdes]
 
 # Location for rest of the logic analyzer
 create_pblock pblock_la0
-add_cells_to_pblock [get_pblocks pblock_la0] [get_cells -quiet [list la0_clocks la0_path]]
+add_cells_to_pblock [get_pblocks pblock_la0] [get_cells -quiet [list \
+          la0_clocks \
+          la0_path/GND \
+          la0_path/VCC \
+          la0_path/VCC_1 \
+          la0_path/cal \
+          {la0_path/genblk1[0].ibuf} \
+          {la0_path/genblk1[1].ibuf} \
+          {la0_path/genblk1[2].ibuf} \
+          {la0_path/genblk1[3].ibuf} \
+          {la0_path/genblk1[4].ibuf} \
+          {la0_path/genblk1[5].ibuf} \
+          {la0_path/genblk1[6].ibuf} \
+          {la0_path/genblk1[7].ibuf} \
+          {la0_path/genblk2[0].iserdes_n} \
+          {la0_path/genblk2[0].iserdes_p} \
+          {la0_path/genblk2[1].iserdes_n} \
+          {la0_path/genblk2[1].iserdes_p} \
+          {la0_path/genblk2[2].iserdes_n} \
+          {la0_path/genblk2[2].iserdes_p} \
+          {la0_path/genblk2[3].iserdes_n} \
+          {la0_path/genblk2[3].iserdes_p} \
+          {la0_path/genblk2[4].iserdes_n} \
+          {la0_path/genblk2[4].iserdes_p} \
+          {la0_path/genblk2[5].iserdes_n} \
+          {la0_path/genblk2[5].iserdes_p} \
+          {la0_path/genblk2[6].iserdes_n} \
+          {la0_path/genblk2[6].iserdes_p} \
+          {la0_path/genblk2[7].iserdes_n} \
+          {la0_path/genblk2[7].iserdes_p} \
+          {la0_path/genblk3[0].sampler} \
+          {la0_path/genblk3[1].sampler} \
+          {la0_path/genblk3[2].sampler} \
+          {la0_path/genblk3[3].sampler} \
+          {la0_path/genblk3[4].sampler} \
+          {la0_path/genblk3[5].sampler} \
+          {la0_path/genblk3[6].sampler} \
+          {la0_path/genblk3[7].sampler} \
+          {la0_path/genblk4[0].compressor} \
+          {la0_path/genblk4[1].compressor} \
+          {la0_path/genblk4[2].compressor} \
+          {la0_path/genblk4[3].compressor} \
+          {la0_path/genblk4[4].compressor} \
+          {la0_path/genblk4[5].compressor} \
+          {la0_path/genblk4[6].compressor} \
+          {la0_path/genblk4[7].compressor} \
+          la0_path/idelay_n \
+          la0_path/idelay_p \
+          {la0_path/samples[2][bits][0]_i_1} \
+          {la0_path/samples[2][bits][10]_i_1} \
+          {la0_path/samples[2][bits][12]_i_1} \
+          {la0_path/samples[2][bits][14]_i_1} \
+          {la0_path/samples[2][bits][2]_i_1} \
+          {la0_path/samples[2][bits][4]_i_1} \
+          {la0_path/samples[2][bits][6]_i_1} \
+          {la0_path/samples[2][bits][8]_i_1} \
+          {la0_path/samples[6][bits][11]_i_1} \
+          {la0_path/samples[6][bits][13]_i_1} \
+          {la0_path/samples[6][bits][15]_i_1} \
+          {la0_path/samples[6][bits][3]_i_1} \
+          {la0_path/samples[6][bits][5]_i_1} \
+          {la0_path/samples[6][bits][7]_i_1} \
+          {la0_path/samples[6][bits][9]_i_1} \
+          {la0_path/samples_reg[0][bits][0]} \
+          {la0_path/samples_reg[0][bits][10]} \
+          {la0_path/samples_reg[0][bits][11]} \
+          {la0_path/samples_reg[0][bits][12]} \
+          {la0_path/samples_reg[0][bits][13]} \
+          {la0_path/samples_reg[0][bits][14]} \
+          {la0_path/samples_reg[0][bits][15]} \
+          {la0_path/samples_reg[0][bits][1]} \
+          {la0_path/samples_reg[0][bits][2]} \
+          {la0_path/samples_reg[0][bits][3]} \
+          {la0_path/samples_reg[0][bits][4]} \
+          {la0_path/samples_reg[0][bits][5]} \
+          {la0_path/samples_reg[0][bits][6]} \
+          {la0_path/samples_reg[0][bits][7]} \
+          {la0_path/samples_reg[0][bits][8]} \
+          {la0_path/samples_reg[0][bits][9]} \
+          {la0_path/samples_reg[1][bits][0]} \
+          {la0_path/samples_reg[1][bits][10]} \
+          {la0_path/samples_reg[1][bits][11]} \
+          {la0_path/samples_reg[1][bits][12]} \
+          {la0_path/samples_reg[1][bits][13]} \
+          {la0_path/samples_reg[1][bits][14]} \
+          {la0_path/samples_reg[1][bits][15]} \
+          {la0_path/samples_reg[1][bits][1]} \
+          {la0_path/samples_reg[1][bits][2]} \
+          {la0_path/samples_reg[1][bits][3]} \
+          {la0_path/samples_reg[1][bits][4]} \
+          {la0_path/samples_reg[1][bits][5]} \
+          {la0_path/samples_reg[1][bits][6]} \
+          {la0_path/samples_reg[1][bits][7]} \
+          {la0_path/samples_reg[1][bits][8]} \
+          {la0_path/samples_reg[1][bits][9]} \
+          {la0_path/samples_reg[2][bits][0]} \
+          {la0_path/samples_reg[2][bits][10]} \
+          {la0_path/samples_reg[2][bits][11]} \
+          {la0_path/samples_reg[2][bits][12]} \
+          {la0_path/samples_reg[2][bits][13]} \
+          {la0_path/samples_reg[2][bits][14]} \
+          {la0_path/samples_reg[2][bits][15]} \
+          {la0_path/samples_reg[2][bits][1]} \
+          {la0_path/samples_reg[2][bits][2]} \
+          {la0_path/samples_reg[2][bits][3]} \
+          {la0_path/samples_reg[2][bits][4]} \
+          {la0_path/samples_reg[2][bits][5]} \
+          {la0_path/samples_reg[2][bits][6]} \
+          {la0_path/samples_reg[2][bits][7]} \
+          {la0_path/samples_reg[2][bits][8]} \
+          {la0_path/samples_reg[2][bits][9]} \
+          {la0_path/samples_reg[3][bits][0]} \
+          {la0_path/samples_reg[3][bits][10]} \
+          {la0_path/samples_reg[3][bits][11]} \
+          {la0_path/samples_reg[3][bits][12]} \
+          {la0_path/samples_reg[3][bits][13]} \
+          {la0_path/samples_reg[3][bits][14]} \
+          {la0_path/samples_reg[3][bits][15]} \
+          {la0_path/samples_reg[3][bits][1]} \
+          {la0_path/samples_reg[3][bits][2]} \
+          {la0_path/samples_reg[3][bits][3]} \
+          {la0_path/samples_reg[3][bits][4]} \
+          {la0_path/samples_reg[3][bits][5]} \
+          {la0_path/samples_reg[3][bits][6]} \
+          {la0_path/samples_reg[3][bits][7]} \
+          {la0_path/samples_reg[3][bits][8]} \
+          {la0_path/samples_reg[3][bits][9]} \
+          {la0_path/samples_reg[4][bits][0]} \
+          {la0_path/samples_reg[4][bits][10]} \
+          {la0_path/samples_reg[4][bits][11]} \
+          {la0_path/samples_reg[4][bits][12]} \
+          {la0_path/samples_reg[4][bits][13]} \
+          {la0_path/samples_reg[4][bits][14]} \
+          {la0_path/samples_reg[4][bits][15]} \
+          {la0_path/samples_reg[4][bits][1]} \
+          {la0_path/samples_reg[4][bits][2]} \
+          {la0_path/samples_reg[4][bits][3]} \
+          {la0_path/samples_reg[4][bits][4]} \
+          {la0_path/samples_reg[4][bits][5]} \
+          {la0_path/samples_reg[4][bits][6]} \
+          {la0_path/samples_reg[4][bits][7]} \
+          {la0_path/samples_reg[4][bits][8]} \
+          {la0_path/samples_reg[4][bits][9]} \
+          {la0_path/samples_reg[5][bits][0]} \
+          {la0_path/samples_reg[5][bits][10]} \
+          {la0_path/samples_reg[5][bits][11]} \
+          {la0_path/samples_reg[5][bits][12]} \
+          {la0_path/samples_reg[5][bits][13]} \
+          {la0_path/samples_reg[5][bits][14]} \
+          {la0_path/samples_reg[5][bits][15]} \
+          {la0_path/samples_reg[5][bits][1]} \
+          {la0_path/samples_reg[5][bits][2]} \
+          {la0_path/samples_reg[5][bits][3]} \
+          {la0_path/samples_reg[5][bits][4]} \
+          {la0_path/samples_reg[5][bits][5]} \
+          {la0_path/samples_reg[5][bits][6]} \
+          {la0_path/samples_reg[5][bits][7]} \
+          {la0_path/samples_reg[5][bits][8]} \
+          {la0_path/samples_reg[5][bits][9]} \
+          {la0_path/samples_reg[6][bits][0]} \
+          {la0_path/samples_reg[6][bits][10]} \
+          {la0_path/samples_reg[6][bits][11]} \
+          {la0_path/samples_reg[6][bits][12]} \
+          {la0_path/samples_reg[6][bits][13]} \
+          {la0_path/samples_reg[6][bits][14]} \
+          {la0_path/samples_reg[6][bits][15]} \
+          {la0_path/samples_reg[6][bits][1]} \
+          {la0_path/samples_reg[6][bits][2]} \
+          {la0_path/samples_reg[6][bits][3]} \
+          {la0_path/samples_reg[6][bits][4]} \
+          {la0_path/samples_reg[6][bits][5]} \
+          {la0_path/samples_reg[6][bits][6]} \
+          {la0_path/samples_reg[6][bits][7]} \
+          {la0_path/samples_reg[6][bits][8]} \
+          {la0_path/samples_reg[6][bits][9]} \
+          {la0_path/samples_reg[7][bits][0]} \
+          {la0_path/samples_reg[7][bits][10]} \
+          {la0_path/samples_reg[7][bits][11]} \
+          {la0_path/samples_reg[7][bits][12]} \
+          {la0_path/samples_reg[7][bits][13]} \
+          {la0_path/samples_reg[7][bits][14]} \
+          {la0_path/samples_reg[7][bits][15]} \
+          {la0_path/samples_reg[7][bits][1]} \
+          {la0_path/samples_reg[7][bits][2]} \
+          {la0_path/samples_reg[7][bits][3]} \
+          {la0_path/samples_reg[7][bits][4]} \
+          {la0_path/samples_reg[7][bits][5]} \
+          {la0_path/samples_reg[7][bits][6]} \
+          {la0_path/samples_reg[7][bits][7]} \
+          {la0_path/samples_reg[7][bits][8]} \
+          {la0_path/samples_reg[7][bits][9]}]]
 resize_pblock [get_pblocks pblock_la0] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y0}
 set_property IS_SOFT TRUE [get_pblocks pblock_la0]
+
+create_pblock pblock_la1
+resize_pblock [get_pblocks pblock_la1] -add {CLOCKREGION_X1Y1:CLOCKREGION_X1Y1}
+set_property IS_SOFT TRUE [get_pblocks pblock_la1]
 
 # IOSERDES loopback is a false path
 set_false_path -from [get_pins la0_clocks/phase_ctl/oserdes/CLK] -to [get_pins la0_clocks/phase_ctl/iserdes/OFB]
 
 # Tight timing path from BUFIO to BUFG clock
-set_max_delay -from [get_pins -hierarchical -filter { NAME =~  "*iserdes*" && NAME =~  "*Q*" && NAME =~  "*la*_path*" }] -to [get_cells -hierarchical *deser_*_ff*] 0.600
+set _xlnx_shared_i1 [get_pins -hierarchical -filter { NAME =~  "*iserdes*" && NAME =~  "*Q*" && NAME =~  "*la*_path*" }]
+set _xlnx_shared_i2 [get_cells -hierarchical *deser_*_ff*]
+set_max_delay -from $_xlnx_shared_i1 -to $_xlnx_shared_i2 0.600
 
 # Path through LUTRAM FIFO can take a little while as it's multicycle
-set_max_delay -from [get_clocks *625mhz_fabric*] -through [get_cells -hierarchical -filter { PRIMITIVE_TYPE == DMEM.DRAM.RAM32M && PARENT =~  "*la*_path*" }] -to [get_clocks *312p5*] 3.200
+set _xlnx_shared_i3 [get_cells -hierarchical -filter { PRIMITIVE_TYPE == DMEM.DRAM.RAM32M && PARENT =~  "*la*_path*" }]
+set_max_delay -from [get_clocks *625mhz_fabric*] -through $_xlnx_shared_i3 -to [get_clocks *312p5*] 3.200
 
 ########################################################################################################################
 # Other timing constraints
@@ -378,6 +564,18 @@ create_pblock pblock_xg_pcs
 resize_pblock [get_pblocks pblock_xg_pcs] -add {CLOCKREGION_X1Y2:CLOCKREGION_X1Y2}
 set_property IS_SOFT TRUE [get_pblocks pblock_xg_pcs]
 
+create_pblock pblock_sata
+resize_pblock [get_pblocks pblock_sata] -add {CLOCKREGION_X0Y3:CLOCKREGION_X1Y3}
+set_property IS_SOFT TRUE [get_pblocks pblock_sata]
+
+
+
+set_property PACKAGE_PIN D6 [get_ports gtx_refclk_156_p]
+set_property PACKAGE_PIN F6 [get_ports gtx_refclk_200_p]
+set_property PACKAGE_PIN A4 [get_ports sma_tx_p]
+
+create_clock -period 6.400 -name gtx_refclk_156_p -waveform {0.000 3.200} [get_ports gtx_refclk_156_p]
+create_clock -period 5.000 -name gtx_refclk_200_p -waveform {0.000 2.500} [get_ports gtx_refclk_200_p]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

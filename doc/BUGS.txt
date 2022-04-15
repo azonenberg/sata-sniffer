@@ -1,0 +1,2 @@
+1) Incorrect silkscreen on TX- SMA connector
+J6, the southernmost SMA connector, is actually the TX- signal however the silkscreen text says "RX-".
