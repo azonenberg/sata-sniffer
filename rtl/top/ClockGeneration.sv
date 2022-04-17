@@ -29,8 +29,6 @@
 
 /**
 	@brief Generate clocks for use by the design
-
-	All clocks are synthesized from the 125 MHz input except for the 200 MHz, which goes straight to the RAM controller.
  */
 module ClockGeneration(
 
@@ -45,6 +43,7 @@ module ClockGeneration(
 	output wire			clk_125mhz,
 	output wire			clk_200mhz,
 	output wire			clk_250mhz,
+	output wire			clk_ipstack,
 	output wire 		clk_400mhz,
 	output wire[1:0]	pll_lock
 );
@@ -158,6 +157,16 @@ module ClockGeneration(
 	// Secondary PLL (200 MHz input)
 	// Use a regular PLL here, not a MMCM, as we don't need anything fancy
 
+	wire	clk_ipstack_raw;
+	ClockBuffer #(
+		.TYPE("GLOBAL"),
+		.CE("YES")
+	) buf_clk_ipstack(
+		.clkin(clk_ipstack_raw),
+		.ce(pll_lock[1]),
+		.clkout(clk_ipstack)
+	);
+
 	wire	clk_400mhz_raw;
 	ClockBuffer #(
 		.TYPE("GLOBAL"),
@@ -180,7 +189,7 @@ module ClockGeneration(
 		.CLKIN1_PERIOD(8),
 
 		.CLKOUT0_DIVIDE(3),			//400 MHz output to IODELAYs
-		.CLKOUT1_DIVIDE(16),
+		.CLKOUT1_DIVIDE(4),			//300 MHz output to TCP/IP stack
 		.CLKOUT2_DIVIDE(16),
 		.CLKOUT3_DIVIDE(16),
 		.CLKOUT4_DIVIDE(16),
@@ -209,7 +218,7 @@ module ClockGeneration(
 		.CLKFBOUT(pll_200_fb),
 
 		.CLKOUT0(clk_400mhz_raw),
-		.CLKOUT1(),
+		.CLKOUT1(clk_ipstack_raw),
 		.CLKOUT2(),
 		.CLKOUT3(),
 		.CLKOUT4(),

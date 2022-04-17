@@ -72,17 +72,16 @@ module SnifferTop(
 	input wire			sfp_mod_abs,
 	input wire			sfp_rx_los,
 	output wire[1:0]	sfp_rs,
-	/*
+
 	input wire			sfp_rx_p,
 	input wire			sfp_rx_n,
 	output wire			sfp_tx_p,
 	output wire			sfp_tx_n,
-	*/
 
 	//RGMII
 	output wire			eth_mdc,
 	inout wire			eth_mdio,
-	output logic		eth_rst_n	= 0,
+	output wire			eth_rst_n,
 	input wire[1:0]		eth_led_n_1v8,
 	output wire[1:0]	eth_led_p_3v3,
 	input wire			rgmii_rxc,
@@ -165,6 +164,7 @@ module SnifferTop(
 	wire	clk_125mhz;
 	wire	clk_200mhz;
 	wire	clk_250mhz;
+	wire	clk_ipstack;
 	wire	clk_400mhz;
 
 	wire[1:0]	sys_pll_lock;
@@ -178,9 +178,68 @@ module SnifferTop(
 		.clk_125mhz(clk_125mhz),
 		.clk_200mhz(clk_200mhz),
 		.clk_250mhz(clk_250mhz),
+		.clk_ipstack(clk_ipstack),
 		.clk_400mhz(clk_400mhz),
 
 		.pll_lock(sys_pll_lock)
+	);
+
+	wire qpll_clk;
+	wire qpll_refclk;
+	wire qpll_lock;
+	wire qpll_refclk_lost;
+
+	QuadPLL qpll(
+		.gtx_refclk_156_p(gtx_refclk_156_p),
+		.gtx_refclk_156_n(gtx_refclk_156_n),
+		.gtx_refclk_200_p(gtx_refclk_200_p),
+		.gtx_refclk_200_n(gtx_refclk_200_n),
+
+		.clk_125mhz(clk_125mhz),
+
+		.qpll_clk(qpll_clk),
+		.qpll_refclk(qpll_refclk),
+		.qpll_lock(qpll_lock),
+		.qpll_refclk_lost(qpll_refclk_lost)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Ethernet
+
+	EthernetSubsystem ethernet(
+		.clk_125mhz(clk_125mhz),
+		.clk_250mhz(clk_250mhz),
+		.clk_ipstack(clk_ipstack),
+
+		.qpll_clk(qpll_clk),
+		.qpll_refclk(qpll_refclk),
+		.qpll_refclk_lost(qpll_refclk_lost),
+		.qpll_lock(qpll_lock),
+
+		.sfp_scl(sfp_scl),
+		.sfp_sda(sfp_sda),
+		.sfp_tx_fault(sfp_tx_fault),
+		.sfp_tx_disable(sfp_tx_disable),
+		.sfp_mod_abs(sfp_mod_abs),
+		.sfp_rx_los(sfp_rx_los),
+		.sfp_rs(sfp_rs),
+
+		.sfp_rx_p(sfp_rx_p),
+		.sfp_rx_n(sfp_rx_n),
+		.sfp_tx_p(sfp_tx_p),
+		.sfp_tx_n(sfp_tx_n),
+
+		.eth_mdc(eth_mdc),
+		.eth_mdio(eth_mdio),
+		.eth_rst_n(eth_rst_n),
+		.eth_led_n_1v8(eth_led_n_1v8),
+		.eth_led_p_3v3(eth_led_p_3v3),
+		.rgmii_rxc(rgmii_rxc),
+		.rgmii_rx_dv(rgmii_rx_dv),
+		.rgmii_rxd(rgmii_rxd),
+		.rgmii_txc(rgmii_txc),
+		.rgmii_tx_en(rgmii_tx_en),
+		.rgmii_txd(rgmii_txd)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -327,89 +386,6 @@ module SnifferTop(
 	assign ddr3_app_ref_req = 0;
 	assign ddr3_app_zq_req = 0;
 	assign ddr3_app_sr_req = 0;
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// SERDES quad PLL
-
-	wire	gtx_refclk_156;
-	wire	gtx_refclk_200;
-
-	IBUFDS_GTE2 clk_buf_refclk_156(
-		.I(gtx_refclk_156_p),
-		.IB(gtx_refclk_156_n),
-		.CEB(1'b0),
-		.O(gtx_refclk_156),
-		.ODIV2()
-	);
-
-	IBUFDS_GTE2 clk_buf_refclk_200(
-		.I(gtx_refclk_200_p),
-		.IB(gtx_refclk_200_n),
-		.CEB(1'b0),
-		.O(gtx_refclk_200),
-		.ODIV2()
-	);
-
-	wire	qpll_clk;
-	wire	qpll_refclk;
-	wire	qpll_lock;
-	wire	qpll_refclk_lost;
-
-	GTXE2_COMMON #(
-		//Magic numbers from transceivers wizard
-		.BIAS_CFG                               (64'h0000040000001000),
-		.COMMON_CFG                             (32'h00000000),
-		.QPLL_CFG                               (27'h0680181),
-		.QPLL_CLKOUT_CFG                        (4'b0000),
-		.QPLL_COARSE_FREQ_OVRD                  (6'b010000),
-		.QPLL_COARSE_FREQ_OVRD_EN               (1'b0),
-		.QPLL_CP                                (10'b0000011111),
-		.QPLL_CP_MONITOR_EN                     (1'b0),
-		.QPLL_DMONITOR_SEL                      (1'b0),
-		.QPLL_FBDIV                             (10'b0101000000),
-		.QPLL_FBDIV_MONITOR_EN                  (1'b0),
-		.QPLL_FBDIV_RATIO                       (1'b0),
-		.QPLL_INIT_CFG                          (24'h000006),
-		.QPLL_LOCK_CFG                          (16'h21E8),
-		.QPLL_LPF                               (4'b1111),
-		.QPLL_REFCLK_DIV                        (1)
-	) serdes_common(
-		.DRPADDR(8'b0),
-		.DRPCLK(clk_125mhz),
-		.DRPDI(16'b0),
-		.DRPEN(1'b0),
-		.DRPWE(1'b0),
-		.DRPRDY(),
-		.DRPDO(),
-		.REFCLKOUTMONITOR(),
-		.GTGREFCLK(1'b0),
-		.GTNORTHREFCLK0(1'b0),
-		.GTNORTHREFCLK1(1'b0),
-		.GTSOUTHREFCLK0(1'b0),
-		.GTSOUTHREFCLK1(1'b0),
-		.GTREFCLK0(gtx_refclk_156),
-		.GTREFCLK1(gtx_refclk_200),
-		.QPLLDMONITOR(),
-		.QPLLFBCLKLOST(),
-		.QPLLLOCK(qpll_lock),
-		.QPLLLOCKDETCLK(clk_125mhz),
-		.QPLLLOCKEN(1'b1),
-		.QPLLOUTCLK(qpll_clk),
-		.QPLLOUTREFCLK(qpll_refclk),
-		.QPLLOUTRESET(1'b0),
-		.QPLLPD(1'b0),
-		.QPLLREFCLKLOST(qpll_refclk_lost),
-		.QPLLREFCLKSEL(3'b001),			//use REFCLK0 (156.25 MHz)
-		.QPLLRESET(1'b0),
-		.QPLLRSVD1(16'h0),
-		.QPLLRSVD2(5'b11111),
-		.BGBYPASSB(1'b1),
-		.BGMONITORENB(1'b1),
-		.BGPDB(1'b1),
-		.BGRCALOVRD(5'b11111),
-		.RCALENB(1'b1),
-		.PMARSVD(1'b0)
-	);
 
 	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -581,188 +557,18 @@ module SnifferTop(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Extra GTX for PRBS generation
 
-	wire	prbs_tx_clk_raw;
-	wire	prbs_tx_clk;
-
-	ClockBuffer #(
-		.TYPE("LOCAL"),
-		.CE("NO")
-	) clk_buf_prbs_tx_clk (
-		.clkin(prbs_tx_clk_raw),
-		.ce(1'b1),
-		.clkout(prbs_tx_clk)
-		);
-
-	//TODO: investigate all these other siganls and try to figure out what's not working...
-	wire		tx_reset_done;
-
-	gtwizard_sma prbs_transceiver(
-		.sysclk_in(clk_125mhz),
-
-		//TODO: what are these for?
-		.soft_reset_tx_in(1'b0),
-		.dont_reset_on_data_error_in(1'b0),
-		.gt0_tx_fsm_reset_done_out(),
-		.gt0_rx_fsm_reset_done_out(),
-
-		//Tie off unused ports
-		.gt0_drpaddr_in(9'b0),
-		.gt0_drpclk_in(clk_125mhz),
-		.gt0_drpdi_in(16'b0),
-		.gt0_drpdo_out(),
-		.gt0_drpen_in(1'b0),
-		.gt0_drprdy_out(),
-		.gt0_drpwe_in(1'b0),
-		.gt0_dmonitorout_out(),
-		.gt0_eyescanreset_in(1'b0),
-		.gt0_eyescandataerror_out(),
-		.gt0_eyescantrigger_in(1'b0),
-		.gt0_rxphmonitor_out(),
-		.gt0_rxphslipmonitor_out(),
-		.gt0_rxmonitorout_out(),
-		.gt0_rxmonitorsel_in(2'b0),
-		.gt0_gtrxreset_in(1'b0),
-		.gt0_gttxreset_in(1'b0),
-		.gt0_txuserrdy_in(sys_pll_lock[0]),
-		.gt0_txusrclk_in(prbs_tx_clk),
-		.gt0_txusrclk2_in(prbs_tx_clk),
-		.gt0_data_valid_in(1'b1),
-		.gt0_txdata_in(32'h00000000),
-		.gt0_gtxtxn_out(sma_tx_n),
-		.gt0_gtxtxp_out(sma_tx_p),
-		.gt0_txoutclk_out(prbs_tx_clk_raw),
-		.gt0_txoutclkfabric_out(),
-		.gt0_txoutclkpcs_out(),
-		.gt0_txresetdone_out(),
-		.gt0_txprbssel_in(3'b010),	//PRBS-15
-
-		//Output swing control
-		.gt0_txdiffctrl_in(4'b0100),	//543 mV p-p differential
-
-		//Clock from QPLL
-		.gt0_qplllock_in(qpll_lock),
-		.gt0_qpllrefclklost_in(qpll_refclk_lost),
-		.gt0_qpllreset_out(),
-		.gt0_qplloutclk_in(qpll_clk),
-		.gt0_qplloutrefclk_in(qpll_refclk)
-		);
-
-	/*
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// 10G Ethernet
-
-	gtwizard_10gbe xg_transceiver(
-		.sysclk_in(),
-		.soft_reset_tx_in(1'b0),
-		.soft_reset_rx_in(1'b0),
-		.dont_reset_on_data_error_in(),
-		.gt0_tx_fsm_reset_done_out(),
-		.gt0_rx_fsm_reset_done_out(),
-		.gt0_data_valid_in(),
-		.gt0_tx_mmcm_lock_in(),
-		.gt0_tx_mmcm_reset_out(),
-		.gt0_drpaddr_in(),
-		.gt0_drpclk_in(),
-		.gt0_drpdi_in(),
-		.gt0_drpdo_out(),
-		.gt0_drpen_in(),
-		.gt0_drprdy_out(),
-		.gt0_drpwe_in(),
-		.gt0_dmonitorout_out(),
-		.gt0_eyescanreset_in(),
-		.gt0_rxuserrdy_in(),
-		.gt0_eyescandataerror_out(),
-		.gt0_eyescantrigger_in(),
-		.gt0_rxusrclk_in(),
-		.gt0_rxusrclk2_in(),
-		.gt0_rxdata_out(),
-		.gt0_gtxrxp_in(sfp_rx_p),
-		.gt0_gtxrxn_in(sfp_rx_n),
-		.gt0_rxphmonitor_out(),
-		.gt0_rxphslipmonitor_out(),
-		.gt0_rxdfelpmreset_in(),
-		.gt0_rxmonitorout_out(),
-		.gt0_rxmonitorsel_in(),
-		.gt0_rxoutclk_out(),
-		.gt0_rxoutclkfabric_out(),
-		.gt0_rxdatavalid_out(),
-		.gt0_rxheader_out(),
-		.gt0_rxheadervalid_out(),
-		.gt0_rxgearboxslip_in(),
-		.gt0_gtrxreset_in(),
-		.gt0_rxpcsreset_in(),
-		.gt0_rxpmareset_in(),
-		.gt0_rxresetdone_out(),
-		.gt0_txpostcursor_in(),
-		.gt0_txprecursor_in(),
-		.gt0_gttxreset_in(),
-		.gt0_txuserrdy_in(),
-		.gt0_txusrclk_in(),
-		.gt0_txusrclk2_in(),
-		.gt0_txbufstatus_out(),
-		.gt0_txmaincursor_in(),
-		.gt0_txdata_in(),
-		.gt0_gtxtxn_out(sfp_tx_n),
-		.gt0_gtxtxp_out(sfp_tx_p),
-		.gt0_txoutclk_out(),
-		.gt0_txoutclkfabric_out(),
-		.gt0_txoutclkpcs_out(),
-		.gt0_txheader_in(),
-		.gt0_txsequence_in(),
-		.gt0_txpcsreset_in(),
-		.gt0_txpmareset_in(),
-		.gt0_txresetdone_out(),
-		.gt0_qplllock_in(),
-		.gt0_qpllrefclklost_in(),
-		.gt0_qpllreset_out(),
-		.gt0_qplloutclk_in(),
-		.gt0_qplloutrefclk_in()
-	);
-	*/
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Ethernet LED level shiters
-
-	assign eth_led_p_3v3 = ~eth_led_n_1v8;
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// 1G Ethernet
-
-	//Bring up the PHY after a little while
-	logic[15:0] eth_rst_count = 1;
-	always_ff @(posedge clk_125mhz) begin
-		if(eth_rst_count == 0)
-			eth_rst_n		<= 1;
-		else
-			eth_rst_count	<= eth_rst_count + 1'h1;
-	end
-
-	wire		baset_link_up;
-	lspeed_t	baset_link_speed;
-
-	wire			mac_rx_clk;
-	EthernetRxBus	mac_rx_bus;
-
-	EthernetTxBus	mac_tx_bus;
-	wire			mac_tx_ready;
-
-	RGMIIMACWrapper gig_mac_wrapper(
+	ExpansionTransceiver expansion_txvr(
 		.clk_125mhz(clk_125mhz),
-		.clk_250mhz(clk_250mhz),
 
-		.rgmii_rxc(rgmii_rxc),
-		.rgmii_rxd(rgmii_rxd),
-		.rgmii_rx_ctl(rgmii_rx_dv),
+		.sma_tx_p(sma_tx_p),
+		.sma_tx_n(sma_tx_n),
 
-		.rgmii_txc(rgmii_txc),
-		.rgmii_txd(rgmii_txd),
-		.rgmii_tx_ctl(rgmii_tx_en),
+		.qpll_clk(qpll_clk),
+		.qpll_refclk(qpll_refclk),
+		.qpll_refclk_lost(qpll_refclk_lost),
+		.qpll_lock(qpll_lock),
 
-		.mac_rx_clk(mac_rx_clk),
-		.mac_rx_bus(mac_rx_bus),
-		.mac_tx_bus(mac_tx_bus),
-		.mac_tx_ready(mac_tx_ready),
-		.link_up(baset_link_up),
-		.link_speed(baset_link_speed)
+		.sys_pll_lock(sys_pll_lock)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
