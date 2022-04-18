@@ -44,16 +44,16 @@ module LogicPodSampling(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Register inputs in the fast clock domain
 
-	(* RLOC = "X0Y0" *)
+	(* RLOC = "X1Y0" *)
 	logic[3:0]	deser_p_ff;
 
-	(* RLOC = "X0Y1" *)
+	(* RLOC = "X1Y1" *)
 	logic[3:0]	deser_p_ff2;
 
-	(* RLOC = "X0Y2" *)
+	(* RLOC = "X1Y2" *)
 	logic[3:0]	deser_n_ff;
 
-	(* RLOC = "X0Y3" *)
+	(* RLOC = "X1Y3" *)
 	logic[3:0]	deser_n_ff2;
 
 	logic		toggle = 0;
@@ -71,21 +71,56 @@ module LogicPodSampling(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Write registered values to a tiny FIFO made from block RAM
 
-	//Do not synchronize pointers! We just read garbage for the first few clocks after reset, but that's OK.
-	logic[3:0] wr_ptr = 5'h0;
+	//Do not synchronize pointers!
+	//We just read garbage for the first few clocks after reset, but that's OK in this application.
+
+	//Replicate write pointers so there's one copy in each slice right next to the RAM.
+
+	(* RLOC = "X0Y0" *)
+	(* DONT_TOUCH *)
+	logic[3:0] wr_ptr_p_lo = 5'h0;
+
+	(* RLOC = "X0Y1" *)
+	(* DONT_TOUCH *)
+	logic[3:0] wr_ptr_p_hi = 5'h0;
+
+	(* RLOC = "X0Y2" *)
+	(* DONT_TOUCH *)
+	logic[3:0] wr_ptr_n_lo = 5'h0;
+
+	(* RLOC = "X0Y3" *)
+	(* DONT_TOUCH *)
+	logic[3:0] wr_ptr_n_hi = 5'h0;
 
 	(* RAM_STYLE = "distributed" *)
-	logic[7:0] fifo_mem_p[15:0];
+	(* RLOC = "X0Y0" *)
+	logic[3:0] fifo_mem_p_lo[15:0];
 
 	(* RAM_STYLE = "distributed" *)
-	logic[7:0] fifo_mem_n[15:0];
+	(* RLOC = "X0Y1" *)
+	logic[3:0] fifo_mem_p_hi[15:0];
+
+	(* RAM_STYLE = "distributed" *)
+	(* RLOC = "X0Y2" *)
+	logic[3:0] fifo_mem_n_lo[15:0];
+
+	(* RAM_STYLE = "distributed" *)
+	(* RLOC = "X0Y3" *)
+	logic[3:0] fifo_mem_n_hi[15:0];
 
 	always_ff @(posedge clk_625mhz_fabric) begin
 		if(toggle) begin
-			wr_ptr				<= wr_ptr + 1;
+			wr_ptr_p_lo				<= wr_ptr_p_lo + 1;
+			wr_ptr_n_lo				<= wr_ptr_n_lo + 1;
+			wr_ptr_p_hi				<= wr_ptr_p_hi + 1;
+			wr_ptr_n_hi				<= wr_ptr_n_hi + 1;
 
-			fifo_mem_p[wr_ptr]	<= {deser_p_ff2, deser_p_ff};
-			fifo_mem_n[wr_ptr]	<= {deser_n_ff2, deser_n_ff};
+			fifo_mem_p_lo[wr_ptr_p_lo]	<= deser_p_ff;
+			fifo_mem_p_hi[wr_ptr_p_hi]	<= deser_p_ff2;
+
+			fifo_mem_n_lo[wr_ptr_n_lo]	<= deser_n_ff;
+			fifo_mem_n_hi[wr_ptr_n_hi]	<= deser_n_ff2;
+
 		end
 	end
 
@@ -100,8 +135,8 @@ module LogicPodSampling(
 	always_ff @(posedge clk_312p5mhz) begin
 
 		for(integer i=0; i<8; i=i+1) begin
-			p_sampled	<= fifo_mem_p[rd_ptr];
-			n_sampled	<= fifo_mem_n[rd_ptr];
+			p_sampled	<= { fifo_mem_p_hi[rd_ptr], fifo_mem_p_lo[rd_ptr] };
+			n_sampled	<= { fifo_mem_n_hi[rd_ptr], fifo_mem_n_lo[rd_ptr] };
 			rd_ptr		<= rd_ptr + 1;
 		end
 
