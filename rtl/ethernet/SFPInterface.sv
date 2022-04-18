@@ -216,7 +216,8 @@ module SFPInterface(
 
 		.block_sync_good(block_sync_good),
 		.link_up(link_up),
-		.remote_fault(remote_fault)
+		.remote_fault(remote_fault),
+		.sfp_los(sfp_rx_los)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

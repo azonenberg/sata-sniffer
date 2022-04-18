@@ -189,7 +189,8 @@ module ClockGeneration(
 		.CLKIN1_PERIOD(8),
 
 		.CLKOUT0_DIVIDE(3),			//400 MHz output to IODELAYs
-		.CLKOUT1_DIVIDE(4),			//300 MHz output to TCP/IP stack
+		.CLKOUT1_DIVIDE(6),			//250 MHz output to TCP/IP stack
+									//This limits our max throughput to 250 * 32 = 8 Gbps
 		.CLKOUT2_DIVIDE(16),
 		.CLKOUT3_DIVIDE(16),
 		.CLKOUT4_DIVIDE(16),

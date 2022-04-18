@@ -33,6 +33,10 @@
 
 /**
 	@brief All of the Ethernet stuff
+
+	For now, pull in the entire TCP/IP stack.
+
+	Long term: consider offloading a lot of stuff to an external MCU
  */
 module EthernetSubsystem(
 
@@ -286,13 +290,23 @@ module EthernetSubsystem(
 		tx_baser_l2_bus = tx_l2_bus;
 		tx_baset_l2_bus = tx_l2_bus;
 
+		//Don't write to 10G buffer if link is down
 		if(!baser_link_up_ipstack) begin
 			tx_baser_l2_bus.start		= 0;
 			tx_baser_l2_bus.data_valid	= 0;
 			tx_baser_l2_bus.commit		= 0;
 		end
 
+		//Don't write to 1G buffer if link is down
 		if(!baset_link_up_ipstack) begin
+			tx_baset_l2_bus.start		= 0;
+			tx_baset_l2_bus.data_valid	= 0;
+			tx_baset_l2_bus.commit		= 0;
+		end
+
+		//If 10G link is up, it takes precedence.
+		//Don't also send out the 1G link.
+		if(baser_link_up_ipstack) begin
 			tx_baset_l2_bus.start		= 0;
 			tx_baset_l2_bus.data_valid	= 0;
 			tx_baset_l2_bus.commit		= 0;
@@ -370,14 +384,66 @@ module EthernetSubsystem(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug ILA
+	// IPv4
 
-	ila_1 ila(
+	IPv4RxBus	ipv4_rx_l3_bus;
+	IPv4TxBus	ipv4_tx_l3_bus;
+
+	wire		ipv4_tx_busy;
+
+	IPv4Protocol ipv4(
 		.clk(clk_ipstack),
-		.probe0(rx_l2_bus),
-		.probe1(arp_learn_valid),
-		.probe2(arp_learn_ip),
-		.probe3(arp_learn_mac)
+
+		.ip_config(ip_config),
+
+		.rx_l2_bus(rx_l2_bus),
+		.tx_l2_bus(ipv4_tx_l2_bus),
+
+		.rx_l3_bus(ipv4_rx_l3_bus),
+		.tx_l3_bus(ipv4_tx_l3_bus),
+
+		.tx_busy(ipv4_tx_busy)
+	);
+
+	IPv4TxBus	icmp_ipv4_tx_l3_bus;
+	IPv4TxBus	udp_ipv4_tx_l3_bus;
+	IPv4TxBus	tcp_ipv4_tx_l3_bus = 0;
+
+	IPv4TransmitArbiter ip_arbiter(
+		.clk(clk_ipstack),
+
+		.icmp_bus(icmp_ipv4_tx_l3_bus),
+		.tcp_bus(tcp_ipv4_tx_l3_bus),
+		.udp_bus(udp_ipv4_tx_l3_bus),
+
+		.ipv4_bus(ipv4_tx_l3_bus),
+
+		.tx_busy(ipv4_tx_busy)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Layer 4 UDP (for IPv4)
+
+	UDPProtocol udp_ipv4(
+		.clk(clk_ipstack),
+
+		.rx_l3_bus(ipv4_rx_l3_bus),
+		.rx_l4_bus(/*udpv4_rx_bus*/),
+
+		.tx_l3_bus(udp_ipv4_tx_l3_bus),
+		.tx_l4_bus(/*udpv4_tx_bus*/)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Layer 4 ICMP (for IPv4)
+
+	ICMPv4Protocol icmp_ipv4(
+		.clk(clk_ipstack),
+
+		.rx_l3_bus(ipv4_rx_l3_bus),
+		.tx_l3_bus(icmp_ipv4_tx_l3_bus),
+
+		.perf()
 	);
 
 endmodule

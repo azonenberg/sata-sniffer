@@ -27,6 +27,107 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+module LogicPodSamplingFifo(
+	input wire			fast_clk,
+	input wire			slow_clk,
+
+	input wire[3:0]		fast_data,
+	output wire[3:0]	fast_data_ff,	//output so we can use for shift reg too
+	output wire[3:0]	slow_data
+);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Register inputs in the fast clock domain
+
+	//Inputs and write pointer live one slice left of the RAM / address slice
+	(* RLOC = "X1Y0" *)
+	(* DONT_TOUCH *)
+	logic[3:0]	fast_data_ff_int	= 0;
+
+	assign fast_data_ff = fast_data_ff_int;
+
+	//Toggle has to go off to the right, cannot fit in same slice as memory
+	(* RLOC = "X3Y0" *)
+	(* DONT_TOUCH *)
+	logic		toggle = 0;
+
+	always_ff @(posedge fast_clk) begin
+		toggle		<= !toggle;
+
+		if(toggle)
+			fast_data_ff_int	<= fast_data;
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Write registered values to a tiny FIFO made from LUT RAM
+
+	//Do not synchronize pointers!
+	//We just read garbage for the first few clocks after reset, but that's OK in this application.
+
+	//Replicate write pointers so there's one copy in each slice right next to the RAM.
+	//Write pointer and FIFO memory live in the same slice
+
+	(* RLOC = "X1Y0" *)
+	(* DONT_TOUCH *)
+	logic[3:0] wr_ptr = 4'h0;
+
+	//Half the speed of the write side, less placement critical
+	//Cannot live in any of the other slices due to control set conflicts
+	//but can be packed in with the read side data registers
+	(* RLOC = "X0Y0" *)
+	logic[3:0] rd_ptr 		= 5'h08;
+
+	//Need to use primitive instantiation here
+	//because RLOC doesn't seem to work on inferred memory
+	wire[3:0]	rd_data;
+	(* RLOC = "X2Y0" *)
+	RAM32M fifomem(
+
+		//Write side
+		.DIA(fast_data_ff[3:2]),
+		.DIB(fast_data_ff[1:0]),
+		.DIC(2'b0),
+		.DID(2'b0),
+		.ADDRD({1'b0, wr_ptr}),
+		.WE(toggle),
+		.WCLK(fast_clk),
+
+		//Read side
+		.ADDRA({1'b0, rd_ptr}),
+		.ADDRB({1'b0, rd_ptr}),
+		.DOA(rd_data[3:2]),
+		.DOB(rd_data[1:0]),
+
+		//other half of bus not used
+		.ADDRC(5'h0),
+		.DOC(),
+		.DOD()
+	);
+
+	always_ff @(posedge fast_clk) begin
+		if(toggle)
+			wr_ptr				<= wr_ptr + 1;
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Read size (8 clocks out of phase)
+
+	(* RLOC = "X0Y0" *)
+	logic[3:0] slow_data_ff	= 0;
+
+	always_ff @(posedge slow_clk) begin
+
+		for(integer i=0; i<8; i=i+1) begin
+			slow_data_ff	<= rd_data;
+			rd_ptr			<= rd_ptr + 1;
+		end
+
+	end
+
+	assign slow_data = slow_data_ff;
+
+endmodule
+
 /**
 	@brief RPM for getting data from 625 MHz clock domain into 312.5 MHz domain
  */
@@ -42,107 +143,37 @@ module LogicPodSampling(
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Register inputs in the fast clock domain
+	// FIFO instances
 
-	(* RLOC = "X1Y0" *)
-	logic[3:0]	deser_p_ff;
+	wire[3:0]	deser_p_ff;
+	LogicPodSamplingFifo fifo_p_lo(
+		.fast_clk(clk_625mhz_fabric),
+		.slow_clk(clk_312p5mhz),
+		.fast_data(deser_p_ff),
+		.fast_data_ff(),
+		.slow_data(p_out[3:0]));
 
-	(* RLOC = "X1Y1" *)
-	logic[3:0]	deser_p_ff2;
+	LogicPodSamplingFifo fifo_p_hi(
+		.fast_clk(clk_625mhz_fabric),
+		.slow_clk(clk_312p5mhz),
+		.fast_data(deser_p),
+		.fast_data_ff(deser_p_ff),
+		.slow_data(p_out[7:4]));
 
-	(* RLOC = "X1Y2" *)
-	logic[3:0]	deser_n_ff;
+	wire[3:0]	deser_n_ff;
+	wire[7:0]	n_sampled;
+	LogicPodSamplingFifo fifo_n_lo(
+		.fast_clk(clk_625mhz_fabric),
+		.slow_clk(clk_312p5mhz),
+		.fast_data(deser_n_ff),
+		.fast_data_ff(),
+		.slow_data(n_out[3:0]));
 
-	(* RLOC = "X1Y3" *)
-	logic[3:0]	deser_n_ff2;
-
-	logic		toggle = 0;
-
-	always_ff @(posedge clk_625mhz_fabric) begin
-		deser_p_ff <= deser_p;
-		deser_n_ff <= deser_n;
-
-		deser_p_ff2	<= deser_p_ff;
-		deser_n_ff2	<= deser_n_ff;
-
-		toggle		<= !toggle;
-	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Write registered values to a tiny FIFO made from block RAM
-
-	//Do not synchronize pointers!
-	//We just read garbage for the first few clocks after reset, but that's OK in this application.
-
-	//Replicate write pointers so there's one copy in each slice right next to the RAM.
-
-	(* RLOC = "X0Y0" *)
-	(* DONT_TOUCH *)
-	logic[3:0] wr_ptr_p_lo = 5'h0;
-
-	(* RLOC = "X0Y1" *)
-	(* DONT_TOUCH *)
-	logic[3:0] wr_ptr_p_hi = 5'h0;
-
-	(* RLOC = "X0Y2" *)
-	(* DONT_TOUCH *)
-	logic[3:0] wr_ptr_n_lo = 5'h0;
-
-	(* RLOC = "X0Y3" *)
-	(* DONT_TOUCH *)
-	logic[3:0] wr_ptr_n_hi = 5'h0;
-
-	(* RAM_STYLE = "distributed" *)
-	(* RLOC = "X0Y0" *)
-	logic[3:0] fifo_mem_p_lo[15:0];
-
-	(* RAM_STYLE = "distributed" *)
-	(* RLOC = "X0Y1" *)
-	logic[3:0] fifo_mem_p_hi[15:0];
-
-	(* RAM_STYLE = "distributed" *)
-	(* RLOC = "X0Y2" *)
-	logic[3:0] fifo_mem_n_lo[15:0];
-
-	(* RAM_STYLE = "distributed" *)
-	(* RLOC = "X0Y3" *)
-	logic[3:0] fifo_mem_n_hi[15:0];
-
-	always_ff @(posedge clk_625mhz_fabric) begin
-		if(toggle) begin
-			wr_ptr_p_lo				<= wr_ptr_p_lo + 1;
-			wr_ptr_n_lo				<= wr_ptr_n_lo + 1;
-			wr_ptr_p_hi				<= wr_ptr_p_hi + 1;
-			wr_ptr_n_hi				<= wr_ptr_n_hi + 1;
-
-			fifo_mem_p_lo[wr_ptr_p_lo]	<= deser_p_ff;
-			fifo_mem_p_hi[wr_ptr_p_hi]	<= deser_p_ff2;
-
-			fifo_mem_n_lo[wr_ptr_n_lo]	<= deser_n_ff;
-			fifo_mem_n_hi[wr_ptr_n_hi]	<= deser_n_ff2;
-
-		end
-	end
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Read FIFO in the slow clock domain
-
-	logic[3:0] rd_ptr 		= 5'h08;
-
-	logic[7:0] p_sampled	= 0;
-	logic[7:0] n_sampled	= 0;
-
-	always_ff @(posedge clk_312p5mhz) begin
-
-		for(integer i=0; i<8; i=i+1) begin
-			p_sampled	<= { fifo_mem_p_hi[rd_ptr], fifo_mem_p_lo[rd_ptr] };
-			n_sampled	<= { fifo_mem_n_hi[rd_ptr], fifo_mem_n_lo[rd_ptr] };
-			rd_ptr		<= rd_ptr + 1;
-		end
-
-	end
-
-	assign p_out = p_sampled;
-	assign n_out = n_sampled;
+	LogicPodSamplingFifo fifo_n_hi(
+		.fast_clk(clk_625mhz_fabric),
+		.slow_clk(clk_312p5mhz),
+		.fast_data(deser_n),
+		.fast_data_ff(deser_n_ff),
+		.slow_data(n_out[7:4]));
 
 endmodule
