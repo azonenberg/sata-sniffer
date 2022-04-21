@@ -320,7 +320,13 @@ module EthernetSubsystem(
 	EthernetTxL2Bus	arp_tx_l2_bus;
 	EthernetTxL2Bus	ipv4_tx_arp_bus;
 
-	EthernetTransmitArbiter tx_arbiter(
+	EthernetTransmitArbiter #(
+		.PACKET_DEPTH(2048),
+		.ARP_PACKET_DEPTH(512),
+		.HEADER_DEPTH(512),
+		.ARP_HEADER_DEPTH(32),
+		.JUMBO_FRAME_SUPPORT(0)
+	) tx_arbiter(
 		.clk(clk_ipstack),
 
 		.ipv4_tx_l2_bus(ipv4_tx_arp_bus),
@@ -363,7 +369,7 @@ module EthernetSubsystem(
 	ARPManager #(
 		.AGE_INTERVAL(300000000),
 		.NUM_WAYS(2),
-		.LINES_PER_WAY(128),
+		.LINES_PER_WAY(256),
 		.MAX_AGE(3600)
 	) arp_mgr (
 		.clk(clk_ipstack),

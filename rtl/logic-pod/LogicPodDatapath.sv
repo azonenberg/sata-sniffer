@@ -323,7 +323,7 @@ module LogicPodDatapath #(
 	// Arbitration and deserialization in DRAM clock domain
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug ILA
+	// Debug ILA (mostly so things don't get optimized out)
 
 	ila_0 ila(
 		.clk(clk_312p5mhz),

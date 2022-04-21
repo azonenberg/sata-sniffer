@@ -159,7 +159,7 @@ module SnifferTop(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Clock synthesis
+	// Top level clock generation
 
 	wire	clk_125mhz;
 	wire	clk_200mhz;
@@ -245,67 +245,39 @@ module SnifferTop(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Logic analyzer pods
 
-	wire	la0_clk_312p5mhz;
-	wire	la0_clk_625mhz_fabric;
-	wire	la0_clk_625mhz_io_0;
-	wire	la0_clk_625mhz_io_90;
+	wire	ddr_cal_complete;
+	wire	ddr3_user_clk;
 
 	wire	la0_align_done;
-
-	LogicPodClocking la0_clocks(
+	wire	la1_align_done;
+	LogicAnalyzerSubsystem la(
 		.clk_125mhz(clk_125mhz),
+		.clk_400mhz(clk_400mhz),
 
-		.clk_312p5mhz(la0_clk_312p5mhz),
-		.clk_625mhz_io_0(la0_clk_625mhz_io_0),
-		.clk_625mhz_io_90(la0_clk_625mhz_io_90),
-		.clk_625mhz_fabric(la0_clk_625mhz_fabric),
+		.la0_p(la0_p),
+		.la0_n(la0_n),
+		.la0_present_n(la0_present_n),
+		.la0_12v_fault_n(la0_12v_fault_n),
+		.la0_12v_en(la0_12v_en),
+		.la0_uart_rx(la0_uart_rx),
+		.la0_uart_tx(la0_uart_tx),
+		.la1_p(la1_p),
+		.la1_n(la1_n),
+		.la1_present_n(la1_present_n),
+		.la1_12v_fault_n(la1_12v_fault_n),
+		.la1_12v_en(la1_12v_en),
+		.la1_uart_rx(la1_uart_rx),
+		.la1_uart_tx(la1_uart_tx),
 
-		.pll_lock(),
-		.align_done(la0_align_done)
+		.ram_ready(ddr_cal_complete),
+		.ram_clk(ddr3_user_clk),
+
+		.la0_align_done(la0_align_done),
+		.la1_align_done(la1_align_done)
 	);
-
-	LogicPodDatapath #(.LANE_INVERT(8'b10011100)) la0_path (
-		.clk_312p5mhz(la0_clk_312p5mhz),
-		.clk_400mhz(clk_400mhz),
-		.clk_625mhz_io_0(la0_clk_625mhz_io_0),
-		.clk_625mhz_io_90(la0_clk_625mhz_io_90),
-		.clk_625mhz_fabric(la0_clk_625mhz_fabric),
-		.pod_data_p(la0_p),
-		.pod_data_n(la0_n));
-
-	/*
-	LogicPodDatapath #(.LANE_INVERT(8'b00000110)) la1_path (
-		.clk_312p5mhz(clk_312p5mhz),
-		.clk_400mhz(clk_400mhz),
-		.clk_625mhz_io_0(clk_625mhz_io_0),
-		.clk_625mhz_io_90(clk_625mhz_io_90),
-		.clk_625mhz_fabric(clk_625mhz_fabric),
-		.pod_data_p(la1_p),
-		.pod_data_n(la1_n));*/
-
-	LogicPodControl la0_ctl(
-		.clk_125mhz(clk_125mhz),
-		.pod_present_n(la0_present_n),
-		.pod_power_fault_n(la0_12v_fault_n),
-		.pod_power_en(la0_12v_en),
-		.uart_rx(la0_uart_rx),
-		.uart_tx(la0_uart_tx)
-		);
-
-	LogicPodControl la1_ctl(
-		.clk_125mhz(clk_125mhz),
-		.pod_present_n(la1_present_n),
-		.pod_power_fault_n(la1_12v_fault_n),
-		.pod_power_en(la1_12v_en),
-		.uart_rx(la1_uart_rx),
-		.uart_tx(la1_uart_tx)
-		);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DRAM controller
-
-	wire		ddr_cal_complete;
-	wire		ddr3_user_clk;
 
 	wire[28:0]	ddr3_app_addr;
 	wire[2:0]	ddr3_app_cmd;
@@ -574,10 +546,10 @@ module SnifferTop(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug LEDs
 
-	assign gpio_led[0] = 1'b0;
+	assign gpio_led[0] = ddr_cal_complete;
 	assign gpio_led[1] = 1'b0;
-	assign gpio_led[2] = ddr_cal_complete;
-	assign gpio_led[3] = la0_align_done;
+	assign gpio_led[2] = la0_align_done;
+	assign gpio_led[3] = la1_align_done;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug IP
