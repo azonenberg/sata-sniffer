@@ -38,7 +38,8 @@
 	All clocks must come from the same PLL and be aligned.
  */
 module LogicPodDatapath #(
-	parameter LANE_INVERT = 8'b00000000
+	parameter LANE_INVERT 	= 8'b00000000,
+	parameter POD_NUMBER 	= 0
 ) (
 
 	//Main clock
@@ -54,7 +55,15 @@ module LogicPodDatapath #(
 
 	//LVDS input
 	input wire[7:0]			pod_data_p,
-	input wire[7:0]			pod_data_n
+	input wire[7:0]			pod_data_n,
+
+	//DDR interface
+	input wire				clk_ram,
+	input wire				ram_ready,
+	output logic			ram_wr_en	= 0,
+	output logic[28:0]		ram_wr_addr	= 0,
+	output logic[255:0]		ram_wr_data	= 0,
+	input wire				ram_wr_done
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +180,6 @@ module LogicPodDatapath #(
 
 	logic	iserdes_rst = 0;
 
-
 	//Sampling order is Q1 Q3 Q2 Q4 in oversampling mode
 	//then we interleave with negative before positive
 	for(genvar g=0; g<8; g=g+1) begin
@@ -260,36 +268,180 @@ module LogicPodDatapath #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Capture into the slow clock domain
+	// Capturing and processing
 
-	wire[7:0]	p_merged[7:0];
-	wire[7:0]	n_merged[7:0];
+	logic[7:0]		compressed_block_valid	= 0;
+	logic[7:0]		compressed_block_clear	= 0;
+	logic[254:0]	compressed_block[7:0];
+	wire[10:0]		fifo_rd_size[7:0];
 
 	for(genvar g=0; g<8; g=g+1) begin
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Capture into the slow clock domain
+
+		wire[7:0]	p_merged;
+		wire[7:0]	n_merged;
+
 		LogicPodSampling sampler (
 			.clk_625mhz_fabric(clk_625mhz_fabric),
 			.clk_312p5mhz(clk_312p5mhz),
 			.deser_p(deser_p[g]),
 			.deser_n(deser_n[g]),
-			.p_out(p_merged[g]),
-			.n_out(n_merged[g])
+			.p_out(p_merged),
+			.n_out(n_merged)
 		);
-	end
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Merge P/N into a single 16-bit stream, inverting as necessary
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Merge P/N into a single 16-bit stream, inverting as necessary
 
-	//Parallel digitized output
-	la_sample_t[7:0]	samples;
+		//Parallel digitized output
+		la_sample_t		samples;
 
-	//N has a larger delay than P, so it's logically earlier in the stream
-	always_ff @(posedge clk_312p5mhz) begin
+		//N has a larger delay than P, so it's logically earlier in the stream
+		always_ff @(posedge clk_312p5mhz) begin
+			for(integer i=0; i<8; i=i+1) begin
+				samples.bits[i*2 + 1]	<= !n_merged[i] ^ LANE_INVERT_REMAPPED[g];
+				samples.bits[i*2]		<= p_merged[i] ^ LANE_INVERT_REMAPPED[g];
+			end
+		end
 
-		for(integer i=0; i<8; i=i+1) begin
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// RLE compression
 
-			for(integer j=0; j<8; j=j+1) begin
-				samples[i].bits[j*2 + 1]	<= !n_merged[i][j] ^ LANE_INVERT_REMAPPED[i];
-				samples[i].bits[j*2]		<= p_merged[i][j] ^ LANE_INVERT_REMAPPED[i];
+		wire		compress_out_valid;
+		wire		compress_out_format;
+		wire[15:0]	compress_out_data;
+
+		LogicPodCompression compressor(
+			.clk(clk_312p5mhz),
+			.din(samples.bits),
+
+			.out_valid(compress_out_valid),
+			.out_format(compress_out_format),
+			.out_data(compress_out_data)
+		);
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// CDC FIFO from compressor to RAM clock domain
+
+		logic		fifo_rd_en;
+		wire		fifo_rd_empty;
+
+		logic[50:0]	fifo_wr_data	= 0;
+		logic		fifo_wr_en		= 0;
+		logic[1:0]	fifo_wr_phase	= 0;
+
+		always_ff @(posedge clk_312p5mhz) begin
+
+			fifo_wr_en					<= 0;
+
+			//TODO: gate until memory is up
+			if(compress_out_valid) begin
+
+				fifo_wr_phase 			<= fifo_wr_phase + 1;
+				if(fifo_wr_phase == 2)
+					fifo_wr_phase		<= 0;
+
+				case(fifo_wr_phase)
+					0:	fifo_wr_data[50:34]	<= {compress_out_format, compress_out_data};
+					1:	fifo_wr_data[33:17]	<= {compress_out_format, compress_out_data};
+					default: begin
+						fifo_wr_en			<= 1;
+						fifo_wr_data[16:0]	<= {compress_out_format, compress_out_data};
+					end
+				endcase
+
+			end
+
+		end
+
+		//Two block RAMs
+		wire[50:0]	fifo_rd_data;
+		CrossClockFifo #(
+			.WIDTH(51),
+			.DEPTH(1024),
+			.USE_BLOCK(1),
+			.OUT_REG(1)
+		) cdc_fifo (
+
+			//Write side: push in at full rate.
+			//No flow control really possible here as the data can't be slowed down.
+			//The FIFO will just start dropping samples if you push too fast.
+			//TODO: add error flag to detect when this happens
+			.wr_clk(clk_312p5mhz),
+			.wr_en(fifo_wr_en),
+			.wr_data(fifo_wr_data),
+			.wr_size(),
+			.wr_full(),
+			.wr_overflow(),
+			.wr_reset(1'b0),
+
+			//Read side
+			.rd_clk(clk_ram),
+			.rd_en(fifo_rd_en),
+			.rd_data(fifo_rd_data),
+			.rd_size(fifo_rd_size[g]),
+			.rd_empty(fifo_rd_empty),
+			.rd_underflow(),
+			.rd_reset(1'b0)
+		);
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Deserialization
+
+		logic[2:0]	block_word_count	= 0;
+		logic		fifo_rd_valid		= 0;
+
+		//Pop the FIFO if we have space for it
+		logic[3:0]	block_word_count_fwd;
+		always_comb begin
+
+			//Number of 51-bit words that will be valid in the buffer at the end of this cycle
+			block_word_count_fwd = block_word_count + fifo_rd_valid;
+
+			//Space in the buffer?
+			fifo_rd_en	 = 0;
+			if(!fifo_rd_empty) begin
+
+				//Read if continuing an existing block, but output buffer isn't full
+				if(!compressed_block_valid[g] && (block_word_count_fwd < 5))
+					fifo_rd_en = 1;
+
+				//Read if this block is done
+				if(compressed_block_clear[g])
+					fifo_rd_en = 1;
+
+			end
+
+		end
+
+		//Data comes out of the FIFO in 34-bit words containing two compression blocks.
+		//We group them 7 at a time into 238-bit blocks.
+		//TODO: handle flush after we trigger (might have partial words to truncate, and partial blocks)
+		always_ff @(posedge clk_ram) begin
+
+			fifo_rd_valid					<= fifo_rd_en;
+			block_word_count				<= block_word_count_fwd;
+
+			//Handle incoming read data
+			//For some reason [block_word_count] doesn't synthesize so we have to do this ugliness.
+			//It still compiles to address matching and clock enables.
+			if(fifo_rd_valid) begin
+				for(integer i=0; i<5; i=i+1) begin
+					if(block_word_count == i)
+						compressed_block[g][i*51 +: 51]	<= fifo_rd_data;
+				end
+			end
+
+			//Block is valid once filled
+			if(block_word_count_fwd == 5)
+				compressed_block_valid[g]	<= 1;
+
+			//Block is no longer valid once consumed
+			if(compressed_block_clear[g]) begin
+				compressed_block_valid[g]	<= 0;
+				block_word_count			<= 0;
 			end
 
 		end
@@ -297,48 +449,100 @@ module LogicPodDatapath #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Compression (per lane)
+	// Arbitration for compressed blocks into DRAM
 
-	wire[7:0] out_valid;
-	wire[7:0] out_format;
-	wire[15:0] out_data[7:0];
+	logic		write_valid		= 0;
+	logic[2:0]	write_channel	= 0;
 
-	for(genvar g=0; g<8; g=g+1) begin
+	wire[7:0]	block_ready		= compressed_block_valid & ~compressed_block_clear;
 
-		LogicPodCompression compressor(
-			.clk(clk_312p5mhz),
-			.din(samples[g].bits),
+	always_ff @(posedge clk_ram) begin
 
-			.out_valid(out_valid[g]),
-			.out_format(out_format[g]),
-			.out_data(out_data[g])
-		);
+		//Pass 1: read from highest numbered channel that's more than half full
+		write_valid	= 0;
+		for(integer i=0; i<8; i=i+1) begin
+			if( (fifo_rd_size[i] > 512) && block_ready[i] ) begin
+				write_valid	= 1;
+				write_channel = i;
+			end
+		end
+
+		//Pass 2: read from highest numbered channel with any data
+		if(!write_valid) begin
+			for(integer i=0; i<8; i=i+1) begin
+				if(block_ready[i]) begin
+					write_valid	= 1;
+					write_channel = i;
+				end
+			end
+		end
 
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// CDC FIFOs
+	// Main mux path
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Arbitration and deserialization in DRAM clock domain
+	//Each LA channel has 0x200000 (2^22) 256-bit storage locations
+	logic[21:0] dram_wr_ptr[7:0];
+	initial begin
+		for(integer i=0; i<8; i=i+1)
+			dram_wr_ptr[i] <= 0;
+	end
+
+	logic	ram_write_pending	= 0;
+	always_ff @(posedge clk_ram) begin
+
+		//Default to not writing
+		ram_wr_en				<= 0;
+		compressed_block_clear	<= 0;
+
+		if(ram_wr_done)
+			ram_write_pending	<= 0;
+
+		//Something won arbitration
+		if(write_valid && (!ram_write_pending || ram_wr_done)) begin
+			ram_wr_en			<= 1;
+			ram_write_pending	<= 1;
+			ram_wr_addr			<=
+			{
+				1'b1,
+				POD_NUMBER[0],
+				write_channel,
+				dram_wr_ptr[write_channel],
+				2'b0
+			};
+			ram_wr_data			<= compressed_block[write_channel];
+
+			dram_wr_ptr[write_channel]				<= dram_wr_ptr[write_channel] + 1;
+			compressed_block_clear[write_channel]	<= 1;
+		end
+
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug ILA (mostly so things don't get optimized out)
 
-	ila_0 ila(
-		.clk(clk_312p5mhz),
-		.probe0(samples[0].bits),
-		.probe1(samples[1].bits),
-		.probe2(out_valid),
-		.probe3(out_format),
-		.probe4(out_data[0]),
-		.probe5(out_data[1]),
-		.probe6(out_data[2]),
-		.probe7(out_data[3]),
-		.probe8(out_data[4]),
-		.probe9(out_data[5]),
-		.probe10(out_data[6]),
-		.probe11(out_data[7])
-	);
+	if(POD_NUMBER == 0) begin
+		ila_0 ila(
+			.clk(clk_ram),
+			.probe0(ram_wr_en),
+			.probe1(ram_wr_addr),
+			.probe2(ram_wr_data),
+			.probe3(compressed_block_valid),
+			.probe4(compressed_block_clear),
+			.probe5(fifo_rd_size[0]),
+			.probe6(fifo_rd_size[1]),
+			.probe7(fifo_rd_size[2]),
+			.probe8(fifo_rd_size[3]),
+			.probe9(fifo_rd_size[4]),
+			.probe10(fifo_rd_size[5]),
+			.probe11(fifo_rd_size[6]),
+			.probe12(fifo_rd_size[7]),
+			.probe13(write_valid),
+			.probe14(write_channel),
+			.probe15(block_ready),
+			.probe16(ram_write_pending)
+		);
+	end
 
 endmodule

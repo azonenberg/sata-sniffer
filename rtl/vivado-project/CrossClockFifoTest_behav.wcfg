@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="CrossClockFifoTest_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="CrossClockFifoTest" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="791.500 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,041.701 ns"></ZoomEndTime>
+      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="328"></NameColumnWidth>
+      <ValueColumnWidth column_width="104"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="2" />
+   <wvobject type="group" fp_name="group140">
+      <obj_property name="label">WRITE SIDE</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_clk">
+         <obj_property name="ElementShortName">wr_clk</obj_property>
+         <obj_property name="ObjectShortName">wr_clk</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_en">
+         <obj_property name="ElementShortName">wr_en</obj_property>
+         <obj_property name="ObjectShortName">wr_en</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/wr_data">
+         <obj_property name="ElementShortName">wr_data[15:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_data[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/wr_size">
+         <obj_property name="ElementShortName">wr_size[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_size[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_full">
+         <obj_property name="ElementShortName">wr_full</obj_property>
+         <obj_property name="ObjectShortName">wr_full</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/wr_ptr">
+         <obj_property name="ElementShortName">wr_ptr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_ptr[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/wr_rd_ptr">
+         <obj_property name="ElementShortName">wr_rd_ptr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_rd_ptr[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_overflow">
+         <obj_property name="ElementShortName">wr_overflow</obj_property>
+         <obj_property name="ObjectShortName">wr_overflow</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_reset">
+         <obj_property name="ElementShortName">wr_reset</obj_property>
+         <obj_property name="ObjectShortName">wr_reset</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/wr_memptr">
+         <obj_property name="ElementShortName">wr_memptr[3:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_memptr[3:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/wr_ptr_ff">
+         <obj_property name="ElementShortName">wr_ptr_ff[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_ptr_ff[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_ptr_update">
+         <obj_property name="ElementShortName">wr_ptr_update</obj_property>
+         <obj_property name="ObjectShortName">wr_ptr_update</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_ptr_ack">
+         <obj_property name="ElementShortName">wr_ptr_ack</obj_property>
+         <obj_property name="ObjectShortName">wr_ptr_ack</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/wr_sync_busy">
+         <obj_property name="ElementShortName">wr_sync_busy</obj_property>
+         <obj_property name="ObjectShortName">wr_sync_busy</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/wr_ack_count">
+         <obj_property name="ElementShortName">wr_ack_count[4:0]</obj_property>
+         <obj_property name="ObjectShortName">wr_ack_count[4:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group141">
+      <obj_property name="label">READ SIDE</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_clk">
+         <obj_property name="ElementShortName">rd_clk</obj_property>
+         <obj_property name="ObjectShortName">rd_clk</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_en">
+         <obj_property name="ElementShortName">rd_en</obj_property>
+         <obj_property name="ObjectShortName">rd_en</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/rd_data">
+         <obj_property name="ElementShortName">rd_data[15:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_data[15:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/rd_size">
+         <obj_property name="ElementShortName">rd_size[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_size[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_empty">
+         <obj_property name="ElementShortName">rd_empty</obj_property>
+         <obj_property name="ObjectShortName">rd_empty</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_underflow">
+         <obj_property name="ElementShortName">rd_underflow</obj_property>
+         <obj_property name="ObjectShortName">rd_underflow</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_reset">
+         <obj_property name="ElementShortName">rd_reset</obj_property>
+         <obj_property name="ObjectShortName">rd_reset</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/rd_memptr">
+         <obj_property name="ElementShortName">rd_memptr[3:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_memptr[3:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/rd_ptr">
+         <obj_property name="ElementShortName">rd_ptr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/rd_ptr_ff">
+         <obj_property name="ElementShortName">rd_ptr_ff[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr_ff[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/rd_wr_ptr">
+         <obj_property name="ElementShortName">rd_wr_ptr[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_wr_ptr[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_ptr_update">
+         <obj_property name="ElementShortName">rd_ptr_update</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr_update</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_ptr_ack">
+         <obj_property name="ElementShortName">rd_ptr_ack</obj_property>
+         <obj_property name="ObjectShortName">rd_ptr_ack</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/CrossClockFifoTest/fifo/rd_sync_busy">
+         <obj_property name="ElementShortName">rd_sync_busy</obj_property>
+         <obj_property name="ObjectShortName">rd_sync_busy</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/CrossClockFifoTest/fifo/rd_ack_count">
+         <obj_property name="ElementShortName">rd_ack_count[4:0]</obj_property>
+         <obj_property name="ObjectShortName">rd_ack_count[4:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

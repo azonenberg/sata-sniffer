@@ -30,6 +30,65 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+/*
+	MEMORY BUS FORMAT
+
+	The DRAM (Kingston KVR16LS11S6/2) is 2^28 locations x 64 bits = 2GB (0x8000_0000) bytes in size.
+	A burst is 4 clocks so if we only do aligned accesses, we have 2^26 256-bit blocks.
+
+	RAM subsystem is 162.5 MHz on a 256 bit bus.
+	Hope to upgrade to 200 MHz on a 256 bit bus (51.2 Gbps peak throughput)
+
+	BITS (assuming 32-bit linear address space)
+
+	TODO: this implies we should have one more address bit than we actually do... what gives?
+	31				Unmapped, always 0
+	30:16			Row address (15)
+	15:13			Bank address (3)
+	12:3			Column address (10)
+	2:0				Unimplemented, always 0 (64 bit alignment)
+
+	Rationale for choosing row-bank-col over bank-row-col: if we partition half the ram for LA and half for
+	SATA with bank as the MSB then we have 4 banks statically allocated to the entire LA subsystem and 4 banks to the
+	SATA subsystem. Each set of four adjacent channels will share a single bank, which is great if the expected write
+	load per channel is similar. But it's not.
+
+	If we use row-bank-col, OTOH, large write bursts within a single LA channel can stripe across multiple banks. We
+	expect some channels to be much more compressible than others, so this allows the poorly compressible channels to
+	get better performance by using multiple banks for bulk writes.
+
+	MEMORY MAP
+
+	Byte addressed for readability. Physical address bus is missing low 3 bits because 64 bit wide SODIMM
+
+	START			END
+	0000_0000		3FFF_FFFF			Reserved for use by SATA subsystem
+
+	LOGIC ANALYZER BUFFER MEMORY
+	START			END
+	4000_0000		43FF_FFFF			LA0.0
+	4400_0000		47FF_FFFF			LA0.1
+	4800_0000		4BFF_FFFF			LA0.2
+	4C00_0000		4FFF_FFFF			LA0.3
+	5000_0000		53FF_FFFF			LA0.4
+	5400_0000		57FF_FFFF			LA0.5
+	5800_0000		5BFF_FFFF			LA0.6
+	5C00_0000		5FFF_FFFF			LA0.7
+	6000_0000		63FF_FFFF			LA1.0
+	6400_0000		67FF_FFFF			LA1.1
+	6800_0000		6BFF_FFFF			LA1.2
+	6C00_0000		6FFF_FFFF			LA1.3
+	7000_0000		73FF_FFFF			LA1.4
+	7400_0000		77FF_FFFF			LA1.7
+	7800_0000		7BFF_FFFF			LA1.6
+	7C00_0000		7FFF_FFFF			LA1.7
+
+	Each LA channel has 0x4000000 bytes or 64 MByte / 512 Mbit / 2 Mrows of sample buffer.
+
+
+	Each row can store 15 compression blocks, or 240 to 3810 bits, depending on compression ratio.
+	This gives a guaranteed memory depth of 480M samples, possibly up to 7620M with optimal compression.
+ */
 module SnifferTop(
 
 	//Clock inputs
@@ -283,21 +342,20 @@ module SnifferTop(
 	wire[2:0]	ddr3_app_cmd;
 	wire		ddr3_app_en;
 
-	wire[511:0]	ddr3_app_wdf_data;
+	wire[255:0]	ddr3_app_wdf_data;
 	wire		ddr3_app_wdf_end;
-	wire[63:0]	ddr3_app_wdf_mask;
-
+	wire[31:0]	ddr3_app_wdf_mask;
 	wire		ddr3_app_wdf_wren;
+	wire		ddr3_app_wdf_rdy;
 
 	wire		ddr3_app_ref_req;
 	wire		ddr3_app_sr_req;
 	wire		ddr3_app_zq_req;
 
-	wire[511:0]	ddr3_app_rd_data;
+	wire[255:0]	ddr3_app_rd_data;
 	wire		ddr3_app_rd_data_end;
 	wire		ddr3_app_rd_data_valid;
 
-	wire		ddr3_app_wdf_rdy;
 	wire		ddr3_app_rdy;
 
 	ddr3 ram(

@@ -120,22 +120,44 @@ module LogicAnalyzerSubsystem(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// High speed capture/compression datapaths
 
-	LogicPodDatapath #(.LANE_INVERT(8'b10011100)) la0_path (
+	LogicPodDatapath #(
+		.LANE_INVERT(8'b10011100),
+		.POD_NUMBER(0)
+	) la0_path (
 		.clk_312p5mhz(la0_clk_312p5mhz),
 		.clk_400mhz(clk_400mhz),
 		.clk_625mhz_io_0(la0_clk_625mhz_io_0),
 		.clk_625mhz_io_90(la0_clk_625mhz_io_90),
 		.clk_625mhz_fabric(la0_clk_625mhz_fabric),
 		.pod_data_p(la0_p),
-		.pod_data_n(la0_n));
+		.pod_data_n(la0_n),
 
-	LogicPodDatapath #(.LANE_INVERT(8'b00000110)) la1_path (
+		.clk_ram(ram_clk),
+		.ram_ready(ram_ready),
+		.ram_wr_en(),
+		.ram_wr_addr(),
+		.ram_wr_data(),
+		.ram_wr_done(1'b1)
+		);
+
+	LogicPodDatapath #(
+		.LANE_INVERT(8'b00000110),
+		.POD_NUMBER(1)
+	) la1_path (
 		.clk_312p5mhz(la1_clk_312p5mhz),
 		.clk_400mhz(clk_400mhz),
 		.clk_625mhz_io_0(la1_clk_625mhz_io_0),
 		.clk_625mhz_io_90(la1_clk_625mhz_io_90),
 		.clk_625mhz_fabric(la1_clk_625mhz_fabric),
 		.pod_data_p(la1_p),
-		.pod_data_n(la1_n));
+		.pod_data_n(la1_n),
+
+		.clk_ram(ram_clk),
+		.ram_ready(ram_ready),
+		.ram_wr_en(),
+		.ram_wr_addr(),
+		.ram_wr_data(),
+		.ram_wr_done(1'b1)
+		);
 
 endmodule

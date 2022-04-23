@@ -2,3 +2,5 @@
 J6, the southernmost SMA connector, is actually the TX- signal however the silkscreen text says "RX-".
 
 2) MAC address EEPROM was originally planned to be included on the board, but never made it into the schematic
+
+3) FPGA gets pretty hot, should have planned for active cooling. Easy to bodge on a 12V fan though.

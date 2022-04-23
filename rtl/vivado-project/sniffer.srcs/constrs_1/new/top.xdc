@@ -202,15 +202,23 @@ create_generated_clock -name la1_clk_312p5mhz -source [get_pins la/la1_clocks/pl
 
 create_generated_clock -name clk_ipstack -source [get_pins clockgen/pll_200/CLKIN1] -master_clock [get_clocks clk_200mhz_p] [get_pins clockgen/pll_200/CLKOUT1]
 
+create_generated_clock -name clk_ram -source [get_pins ram/u_ddr3_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKIN1] -master_clock [get_clocks pll_clk3_out] [get_pins ram/u_ddr3_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT]
+
 ########################################################################################################################
 # Logic analyzer timing and floorplanning
 
-# Location for the IOLOGIC blocks in the phase alignment system
-set_property LOC OLOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/oserdes]
-set_property LOC ILOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/iserdes]
+# Clock domain crossing from LA clocks to DDR clock domain
+set_clock_groups -asynchronous -group [get_clocks la0_clk_312p5mhz] -group [get_clocks clk_ram]
+set_clock_groups -asynchronous -group [get_clocks la1_clk_312p5mhz] -group [get_clocks clk_ram]
+set_clock_groups -asynchronous -group [get_clocks clk_ram] -group [get_clocks la0_clk_312p5mhz]
+set_clock_groups -asynchronous -group [get_clocks clk_ram] -group [get_clocks la1_clk_312p5mhz]
 
-set_property LOC OLOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/oserdes]
+# Location for the IOLOGIC blocks in the phase alignment system
+set_property LOC ILOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/iserdes]
+set_property LOC OLOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/oserdes]
+
 set_property LOC ILOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/iserdes]
+set_property LOC OLOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/oserdes]
 
 # Location for the IDELAYCTRL blocks for input phasing
 set_property LOC IDELAYCTRL_X1Y0 [get_cells la/la0_path/cal/delay_control_block]
@@ -249,152 +257,32 @@ add_cells_to_pblock [get_pblocks pblock_la0] [get_cells -quiet [list \
           {la/la0_path/genblk2[6].iserdes_p} \
           {la/la0_path/genblk2[7].iserdes_n} \
           {la/la0_path/genblk2[7].iserdes_p} \
+          {la/la0_path/genblk3[0].cdc_fifo} \
+          {la/la0_path/genblk3[0].compressor} \
           {la/la0_path/genblk3[0].sampler} \
+          {la/la0_path/genblk3[1].cdc_fifo} \
+          {la/la0_path/genblk3[1].compressor} \
           {la/la0_path/genblk3[1].sampler} \
+          {la/la0_path/genblk3[2].cdc_fifo} \
+          {la/la0_path/genblk3[2].compressor} \
           {la/la0_path/genblk3[2].sampler} \
+          {la/la0_path/genblk3[3].cdc_fifo} \
+          {la/la0_path/genblk3[3].compressor} \
           {la/la0_path/genblk3[3].sampler} \
+          {la/la0_path/genblk3[4].cdc_fifo} \
+          {la/la0_path/genblk3[4].compressor} \
           {la/la0_path/genblk3[4].sampler} \
+          {la/la0_path/genblk3[5].cdc_fifo} \
+          {la/la0_path/genblk3[5].compressor} \
           {la/la0_path/genblk3[5].sampler} \
+          {la/la0_path/genblk3[6].cdc_fifo} \
+          {la/la0_path/genblk3[6].compressor} \
           {la/la0_path/genblk3[6].sampler} \
+          {la/la0_path/genblk3[7].cdc_fifo} \
+          {la/la0_path/genblk3[7].compressor} \
           {la/la0_path/genblk3[7].sampler} \
-          {la/la0_path/genblk4[0].compressor} \
-          {la/la0_path/genblk4[1].compressor} \
-          {la/la0_path/genblk4[2].compressor} \
-          {la/la0_path/genblk4[3].compressor} \
-          {la/la0_path/genblk4[4].compressor} \
-          {la/la0_path/genblk4[5].compressor} \
-          {la/la0_path/genblk4[6].compressor} \
-          {la/la0_path/genblk4[7].compressor} \
           la/la0_path/idelay_n \
-          la/la0_path/idelay_p \
-          {la/la0_path/samples_reg[0][bits][0]} \
-          {la/la0_path/samples_reg[0][bits][10]} \
-          {la/la0_path/samples_reg[0][bits][11]} \
-          {la/la0_path/samples_reg[0][bits][12]} \
-          {la/la0_path/samples_reg[0][bits][13]} \
-          {la/la0_path/samples_reg[0][bits][14]} \
-          {la/la0_path/samples_reg[0][bits][15]} \
-          {la/la0_path/samples_reg[0][bits][1]} \
-          {la/la0_path/samples_reg[0][bits][2]} \
-          {la/la0_path/samples_reg[0][bits][3]} \
-          {la/la0_path/samples_reg[0][bits][4]} \
-          {la/la0_path/samples_reg[0][bits][5]} \
-          {la/la0_path/samples_reg[0][bits][6]} \
-          {la/la0_path/samples_reg[0][bits][7]} \
-          {la/la0_path/samples_reg[0][bits][8]} \
-          {la/la0_path/samples_reg[0][bits][9]} \
-          {la/la0_path/samples_reg[1][bits][0]} \
-          {la/la0_path/samples_reg[1][bits][10]} \
-          {la/la0_path/samples_reg[1][bits][11]} \
-          {la/la0_path/samples_reg[1][bits][12]} \
-          {la/la0_path/samples_reg[1][bits][13]} \
-          {la/la0_path/samples_reg[1][bits][14]} \
-          {la/la0_path/samples_reg[1][bits][15]} \
-          {la/la0_path/samples_reg[1][bits][1]} \
-          {la/la0_path/samples_reg[1][bits][2]} \
-          {la/la0_path/samples_reg[1][bits][3]} \
-          {la/la0_path/samples_reg[1][bits][4]} \
-          {la/la0_path/samples_reg[1][bits][5]} \
-          {la/la0_path/samples_reg[1][bits][6]} \
-          {la/la0_path/samples_reg[1][bits][7]} \
-          {la/la0_path/samples_reg[1][bits][8]} \
-          {la/la0_path/samples_reg[1][bits][9]} \
-          {la/la0_path/samples_reg[2][bits][0]} \
-          {la/la0_path/samples_reg[2][bits][10]} \
-          {la/la0_path/samples_reg[2][bits][11]} \
-          {la/la0_path/samples_reg[2][bits][12]} \
-          {la/la0_path/samples_reg[2][bits][13]} \
-          {la/la0_path/samples_reg[2][bits][14]} \
-          {la/la0_path/samples_reg[2][bits][15]} \
-          {la/la0_path/samples_reg[2][bits][1]} \
-          {la/la0_path/samples_reg[2][bits][2]} \
-          {la/la0_path/samples_reg[2][bits][3]} \
-          {la/la0_path/samples_reg[2][bits][4]} \
-          {la/la0_path/samples_reg[2][bits][5]} \
-          {la/la0_path/samples_reg[2][bits][6]} \
-          {la/la0_path/samples_reg[2][bits][7]} \
-          {la/la0_path/samples_reg[2][bits][8]} \
-          {la/la0_path/samples_reg[2][bits][9]} \
-          {la/la0_path/samples_reg[3][bits][0]} \
-          {la/la0_path/samples_reg[3][bits][10]} \
-          {la/la0_path/samples_reg[3][bits][11]} \
-          {la/la0_path/samples_reg[3][bits][12]} \
-          {la/la0_path/samples_reg[3][bits][13]} \
-          {la/la0_path/samples_reg[3][bits][14]} \
-          {la/la0_path/samples_reg[3][bits][15]} \
-          {la/la0_path/samples_reg[3][bits][1]} \
-          {la/la0_path/samples_reg[3][bits][2]} \
-          {la/la0_path/samples_reg[3][bits][3]} \
-          {la/la0_path/samples_reg[3][bits][4]} \
-          {la/la0_path/samples_reg[3][bits][5]} \
-          {la/la0_path/samples_reg[3][bits][6]} \
-          {la/la0_path/samples_reg[3][bits][7]} \
-          {la/la0_path/samples_reg[3][bits][8]} \
-          {la/la0_path/samples_reg[3][bits][9]} \
-          {la/la0_path/samples_reg[4][bits][0]} \
-          {la/la0_path/samples_reg[4][bits][10]} \
-          {la/la0_path/samples_reg[4][bits][11]} \
-          {la/la0_path/samples_reg[4][bits][12]} \
-          {la/la0_path/samples_reg[4][bits][13]} \
-          {la/la0_path/samples_reg[4][bits][14]} \
-          {la/la0_path/samples_reg[4][bits][15]} \
-          {la/la0_path/samples_reg[4][bits][1]} \
-          {la/la0_path/samples_reg[4][bits][2]} \
-          {la/la0_path/samples_reg[4][bits][3]} \
-          {la/la0_path/samples_reg[4][bits][4]} \
-          {la/la0_path/samples_reg[4][bits][5]} \
-          {la/la0_path/samples_reg[4][bits][6]} \
-          {la/la0_path/samples_reg[4][bits][7]} \
-          {la/la0_path/samples_reg[4][bits][8]} \
-          {la/la0_path/samples_reg[4][bits][9]} \
-          {la/la0_path/samples_reg[5][bits][0]} \
-          {la/la0_path/samples_reg[5][bits][10]} \
-          {la/la0_path/samples_reg[5][bits][11]} \
-          {la/la0_path/samples_reg[5][bits][12]} \
-          {la/la0_path/samples_reg[5][bits][13]} \
-          {la/la0_path/samples_reg[5][bits][14]} \
-          {la/la0_path/samples_reg[5][bits][15]} \
-          {la/la0_path/samples_reg[5][bits][1]} \
-          {la/la0_path/samples_reg[5][bits][2]} \
-          {la/la0_path/samples_reg[5][bits][3]} \
-          {la/la0_path/samples_reg[5][bits][4]} \
-          {la/la0_path/samples_reg[5][bits][5]} \
-          {la/la0_path/samples_reg[5][bits][6]} \
-          {la/la0_path/samples_reg[5][bits][7]} \
-          {la/la0_path/samples_reg[5][bits][8]} \
-          {la/la0_path/samples_reg[5][bits][9]} \
-          {la/la0_path/samples_reg[6][bits][0]} \
-          {la/la0_path/samples_reg[6][bits][10]} \
-          {la/la0_path/samples_reg[6][bits][11]} \
-          {la/la0_path/samples_reg[6][bits][12]} \
-          {la/la0_path/samples_reg[6][bits][13]} \
-          {la/la0_path/samples_reg[6][bits][14]} \
-          {la/la0_path/samples_reg[6][bits][15]} \
-          {la/la0_path/samples_reg[6][bits][1]} \
-          {la/la0_path/samples_reg[6][bits][2]} \
-          {la/la0_path/samples_reg[6][bits][3]} \
-          {la/la0_path/samples_reg[6][bits][4]} \
-          {la/la0_path/samples_reg[6][bits][5]} \
-          {la/la0_path/samples_reg[6][bits][6]} \
-          {la/la0_path/samples_reg[6][bits][7]} \
-          {la/la0_path/samples_reg[6][bits][8]} \
-          {la/la0_path/samples_reg[6][bits][9]} \
-          {la/la0_path/samples_reg[7][bits][0]} \
-          {la/la0_path/samples_reg[7][bits][10]} \
-          {la/la0_path/samples_reg[7][bits][11]} \
-          {la/la0_path/samples_reg[7][bits][12]} \
-          {la/la0_path/samples_reg[7][bits][13]} \
-          {la/la0_path/samples_reg[7][bits][14]} \
-          {la/la0_path/samples_reg[7][bits][15]} \
-          {la/la0_path/samples_reg[7][bits][1]} \
-          {la/la0_path/samples_reg[7][bits][2]} \
-          {la/la0_path/samples_reg[7][bits][3]} \
-          {la/la0_path/samples_reg[7][bits][4]} \
-          {la/la0_path/samples_reg[7][bits][5]} \
-          {la/la0_path/samples_reg[7][bits][6]} \
-          {la/la0_path/samples_reg[7][bits][7]} \
-          {la/la0_path/samples_reg[7][bits][8]} \
-          {la/la0_path/samples_reg[7][bits][9]}]]
+          la/la0_path/idelay_p]]
 resize_pblock [get_pblocks pblock_la0] -add {CLOCKREGION_X1Y0:CLOCKREGION_X1Y0}
 set_property IS_SOFT TRUE [get_pblocks pblock_la0]
 
@@ -402,22 +290,30 @@ create_pblock pblock_la1
 add_cells_to_pblock [get_pblocks pblock_la1] [get_cells -quiet [list \
           la/la1_clocks \
           la/la1_path/cal \
+          {la/la1_path/genblk3[0].cdc_fifo} \
+          {la/la1_path/genblk3[0].compressor} \
           {la/la1_path/genblk3[0].sampler} \
+          {la/la1_path/genblk3[1].cdc_fifo} \
+          {la/la1_path/genblk3[1].compressor} \
           {la/la1_path/genblk3[1].sampler} \
+          {la/la1_path/genblk3[2].cdc_fifo} \
+          {la/la1_path/genblk3[2].compressor} \
           {la/la1_path/genblk3[2].sampler} \
+          {la/la1_path/genblk3[3].cdc_fifo} \
+          {la/la1_path/genblk3[3].compressor} \
           {la/la1_path/genblk3[3].sampler} \
+          {la/la1_path/genblk3[4].cdc_fifo} \
+          {la/la1_path/genblk3[4].compressor} \
           {la/la1_path/genblk3[4].sampler} \
+          {la/la1_path/genblk3[5].cdc_fifo} \
+          {la/la1_path/genblk3[5].compressor} \
           {la/la1_path/genblk3[5].sampler} \
+          {la/la1_path/genblk3[6].cdc_fifo} \
+          {la/la1_path/genblk3[6].compressor} \
           {la/la1_path/genblk3[6].sampler} \
+          {la/la1_path/genblk3[7].cdc_fifo} \
+          {la/la1_path/genblk3[7].compressor} \
           {la/la1_path/genblk3[7].sampler} \
-          {la/la1_path/genblk4[0].compressor} \
-          {la/la1_path/genblk4[1].compressor} \
-          {la/la1_path/genblk4[2].compressor} \
-          {la/la1_path/genblk4[3].compressor} \
-          {la/la1_path/genblk4[4].compressor} \
-          {la/la1_path/genblk4[5].compressor} \
-          {la/la1_path/genblk4[6].compressor} \
-          {la/la1_path/genblk4[7].compressor} \
           la/la1_path/idelay_n \
           la/la1_path/idelay_p]]
 resize_pblock [get_pblocks pblock_la1] -add {CLOCKREGION_X1Y1:CLOCKREGION_X1Y1}
@@ -432,6 +328,12 @@ set_max_delay -from [get_pins -hierarchical -filter { NAME =~  "*la*" && NAME =~
 
 # Path through LUTRAM FIFO can take a little while as it's multicycle
 set_max_delay -from [get_clocks *625mhz_fabric*] -through [get_cells -hierarchical *fifomem*] -to [get_clocks *312p5mhz*] 3.200
+
+# Shove slow UART stuff off in the top left
+create_pblock pblock_slow_control
+add_cells_to_pblock [get_pblocks pblock_slow_control] [get_cells -quiet [list la/la0_ctl la/la1_ctl]]
+resize_pblock [get_pblocks pblock_slow_control] -add {SLICE_X0Y150:SLICE_X3Y199}
+set_property IS_SOFT FALSE [get_pblocks pblock_slow_control]
 
 ########################################################################################################################
 # Other timing constraints
@@ -465,9 +367,18 @@ set_property IS_SOFT TRUE [get_pblocks pblock_ddr]
 # Floorplanning for Ethernet stuff
 
 create_pblock pblock_sfp
-add_cells_to_pblock [get_pblocks pblock_sfp] [get_cells -quiet [list ethernet/baser_rx_cdc ethernet/sfp expansion_txvr]]
+add_cells_to_pblock [get_pblocks pblock_sfp] [get_cells -quiet [list ethernet/sfp expansion_txvr]]
 resize_pblock [get_pblocks pblock_sfp] -add {CLOCKREGION_X1Y2:CLOCKREGION_X1Y2}
-set_property IS_SOFT TRUE [get_pblocks pblock_sfp]
+set_property IS_SOFT FALSE [get_pblocks pblock_sfp]
+
+create_pblock pblock_protocols
+add_cells_to_pblock [get_pblocks pblock_protocols] [get_cells -quiet [list ethernet/arp ethernet/arp_mgr ethernet/icmp_ipv4 ethernet/ip_arbiter ethernet/ipv4 ethernet/rx_eth_decoder ethernet/tx_arbiter ethernet/tx_baser_buf ethernet/udp_ipv4]]
+resize_pblock [get_pblocks pblock_protocols] -add {CLOCKREGION_X0Y2:CLOCKREGION_X0Y2}
+
+create_pblock pblock_sfp_right
+add_cells_to_pblock [get_pblocks pblock_sfp_right] [get_cells -quiet [list ethernet/sfp/mac ethernet/sfp/pcs]]
+resize_pblock [get_pblocks pblock_sfp_right] -add {SLICE_X44Y100:SLICE_X53Y149}
+resize_pblock [get_pblocks pblock_sfp_right] -add {DSP48_X2Y40:DSP48_X2Y59}
 
 ########################################################################################################################
 # Floorplanning for SATA stuff
@@ -480,16 +391,12 @@ set_property IS_SOFT TRUE [get_pblocks pblock_sata]
 # Debugging
 
 
-
-create_pblock pblock_protocols
-add_cells_to_pblock [get_pblocks pblock_protocols] [get_cells -quiet [list ethernet/arp ethernet/arp_mgr ethernet/icmp_ipv4 ethernet/ip_arbiter ethernet/ipv4 ethernet/rx_eth_decoder ethernet/tx_arbiter ethernet/tx_baser_buf ethernet/udp_ipv4]]
-resize_pblock [get_pblocks pblock_protocols] -add {CLOCKREGION_X0Y2:CLOCKREGION_X0Y2}
-
-
-create_pblock pblock_slow_control
-add_cells_to_pblock [get_pblocks pblock_slow_control] [get_cells -quiet [list la/la0_ctl la/la1_ctl]]
-resize_pblock [get_pblocks pblock_slow_control] -add {SLICE_X0Y150:SLICE_X3Y199}
-set_property IS_SOFT FALSE [get_pblocks pblock_slow_control]
+create_pblock pblock_xg_cdc
+add_cells_to_pblock [get_pblocks pblock_xg_cdc] [get_cells -quiet [list ethernet/baser_rx_cdc]]
+resize_pblock [get_pblocks pblock_xg_cdc] -add {SLICE_X36Y125:SLICE_X43Y149}
+resize_pblock [get_pblocks pblock_xg_cdc] -add {RAMB18_X2Y50:RAMB18_X2Y59}
+resize_pblock [get_pblocks pblock_xg_cdc] -add {RAMB36_X2Y25:RAMB36_X2Y29}
+set_property IS_SOFT FALSE [get_pblocks pblock_xg_cdc]
 
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
