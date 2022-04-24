@@ -32,6 +32,8 @@ module LogicAnalyzerSubsystem(
 	//Global clocks
 	input wire			clk_125mhz,
 	input wire			clk_400mhz,
+	input wire			clk_ram,
+	input wire			clk_ram_2x,
 
 	//Top level pins
 	input wire[7:0]		la0_p,
@@ -52,11 +54,21 @@ module LogicAnalyzerSubsystem(
 
 	//DRAM status lines
 	input wire			ram_ready,
-	input wire			ram_clk,
 
 	//Status outputs
 	output wire			la0_align_done,
-	output wire			la1_align_done
+	output wire			la1_align_done,
+
+	//Ports to top level DDR arbiter
+	output wire			la0_ram_wr_en,
+	output wire[28:0]	la0_ram_wr_addr,
+	output wire[127:0]	la0_ram_wr_data,
+	input wire			la0_ram_wr_ack,
+
+	output wire			la1_ram_wr_en,
+	output wire[28:0]	la1_ram_wr_addr,
+	output wire[127:0]	la1_ram_wr_data,
+	input wire			la1_ram_wr_ack
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,12 +144,13 @@ module LogicAnalyzerSubsystem(
 		.pod_data_p(la0_p),
 		.pod_data_n(la0_n),
 
-		.clk_ram(ram_clk),
+		.clk_ram(clk_ram),
+		.clk_ram_2x(clk_ram_2x),
 		.ram_ready(ram_ready),
-		.ram_wr_en(),
-		.ram_wr_addr(),
-		.ram_wr_data(),
-		.ram_wr_done(1'b1)
+		.ram_wr_en(la0_ram_wr_en),
+		.ram_wr_addr(la0_ram_wr_addr),
+		.ram_wr_data(la0_ram_wr_data),
+		.ram_wr_ack(la0_ram_wr_ack)
 		);
 
 	LogicPodDatapath #(
@@ -152,12 +165,13 @@ module LogicAnalyzerSubsystem(
 		.pod_data_p(la1_p),
 		.pod_data_n(la1_n),
 
-		.clk_ram(ram_clk),
+		.clk_ram(clk_ram),
+		.clk_ram_2x(clk_ram_2x),
 		.ram_ready(ram_ready),
-		.ram_wr_en(),
-		.ram_wr_addr(),
-		.ram_wr_data(),
-		.ram_wr_done(1'b1)
+		.ram_wr_en(la1_ram_wr_en),
+		.ram_wr_addr(la1_ram_wr_addr),
+		.ram_wr_data(la1_ram_wr_data),
+		.ram_wr_ack(la1_ram_wr_ack)
 		);
 
 endmodule

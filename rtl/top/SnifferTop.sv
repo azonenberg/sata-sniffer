@@ -30,65 +30,6 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-/*
-	MEMORY BUS FORMAT
-
-	The DRAM (Kingston KVR16LS11S6/2) is 2^28 locations x 64 bits = 2GB (0x8000_0000) bytes in size.
-	A burst is 4 clocks so if we only do aligned accesses, we have 2^26 256-bit blocks.
-
-	RAM subsystem is 162.5 MHz on a 256 bit bus.
-	Hope to upgrade to 200 MHz on a 256 bit bus (51.2 Gbps peak throughput)
-
-	BITS (assuming 32-bit linear address space)
-
-	TODO: this implies we should have one more address bit than we actually do... what gives?
-	31				Unmapped, always 0
-	30:16			Row address (15)
-	15:13			Bank address (3)
-	12:3			Column address (10)
-	2:0				Unimplemented, always 0 (64 bit alignment)
-
-	Rationale for choosing row-bank-col over bank-row-col: if we partition half the ram for LA and half for
-	SATA with bank as the MSB then we have 4 banks statically allocated to the entire LA subsystem and 4 banks to the
-	SATA subsystem. Each set of four adjacent channels will share a single bank, which is great if the expected write
-	load per channel is similar. But it's not.
-
-	If we use row-bank-col, OTOH, large write bursts within a single LA channel can stripe across multiple banks. We
-	expect some channels to be much more compressible than others, so this allows the poorly compressible channels to
-	get better performance by using multiple banks for bulk writes.
-
-	MEMORY MAP
-
-	Byte addressed for readability. Physical address bus is missing low 3 bits because 64 bit wide SODIMM
-
-	START			END
-	0000_0000		3FFF_FFFF			Reserved for use by SATA subsystem
-
-	LOGIC ANALYZER BUFFER MEMORY
-	START			END
-	4000_0000		43FF_FFFF			LA0.0
-	4400_0000		47FF_FFFF			LA0.1
-	4800_0000		4BFF_FFFF			LA0.2
-	4C00_0000		4FFF_FFFF			LA0.3
-	5000_0000		53FF_FFFF			LA0.4
-	5400_0000		57FF_FFFF			LA0.5
-	5800_0000		5BFF_FFFF			LA0.6
-	5C00_0000		5FFF_FFFF			LA0.7
-	6000_0000		63FF_FFFF			LA1.0
-	6400_0000		67FF_FFFF			LA1.1
-	6800_0000		6BFF_FFFF			LA1.2
-	6C00_0000		6FFF_FFFF			LA1.3
-	7000_0000		73FF_FFFF			LA1.4
-	7400_0000		77FF_FFFF			LA1.7
-	7800_0000		7BFF_FFFF			LA1.6
-	7C00_0000		7FFF_FFFF			LA1.7
-
-	Each LA channel has 0x4000000 bytes or 64 MByte / 512 Mbit / 2 Mrows of sample buffer.
-
-
-	Each row can store 15 compression blocks, or 240 to 3810 bits, depending on compression ratio.
-	This gives a guaranteed memory depth of 480M samples, possibly up to 7620M with optimal compression.
- */
 module SnifferTop(
 
 	//Clock inputs
@@ -304,14 +245,28 @@ module SnifferTop(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Logic analyzer pods
 
-	wire	ddr_cal_complete;
-	wire	ddr3_user_clk;
+	wire		ddr_cal_complete;
+	wire		clk_ram;
+	wire		clk_ram_2x;
 
-	wire	la0_align_done;
-	wire	la1_align_done;
+	wire		la0_align_done;
+	wire		la1_align_done;
+
+	wire		la0_ram_wr_en;
+	wire[28:0]	la0_ram_wr_addr;
+	wire[127:0]	la0_ram_wr_data;
+	wire		la0_ram_wr_ack;
+
+	wire		la1_ram_wr_en;
+	wire[28:0]	la1_ram_wr_addr;
+	wire[127:0]	la1_ram_wr_data;
+	wire		la1_ram_wr_ack;
+
 	LogicAnalyzerSubsystem la(
 		.clk_125mhz(clk_125mhz),
 		.clk_400mhz(clk_400mhz),
+		.clk_ram(clk_ram),
+		.clk_ram_2x(clk_ram_2x),
 
 		.la0_p(la0_p),
 		.la0_n(la0_n),
@@ -329,36 +284,25 @@ module SnifferTop(
 		.la1_uart_tx(la1_uart_tx),
 
 		.ram_ready(ddr_cal_complete),
-		.ram_clk(ddr3_user_clk),
 
 		.la0_align_done(la0_align_done),
-		.la1_align_done(la1_align_done)
+		.la1_align_done(la1_align_done),
+
+		.la0_ram_wr_en(la0_ram_wr_en),
+		.la0_ram_wr_addr(la0_ram_wr_addr),
+		.la0_ram_wr_data(la0_ram_wr_data),
+		.la0_ram_wr_ack(la0_ram_wr_ack),
+
+		.la1_ram_wr_en(la1_ram_wr_en),
+		.la1_ram_wr_addr(la1_ram_wr_addr),
+		.la1_ram_wr_data(la1_ram_wr_data),
+		.la1_ram_wr_ack(la1_ram_wr_ack)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// DRAM controller
 
-	wire[28:0]	ddr3_app_addr;
-	wire[2:0]	ddr3_app_cmd;
-	wire		ddr3_app_en;
-
-	wire[255:0]	ddr3_app_wdf_data;
-	wire		ddr3_app_wdf_end;
-	wire[31:0]	ddr3_app_wdf_mask;
-	wire		ddr3_app_wdf_wren;
-	wire		ddr3_app_wdf_rdy;
-
-	wire		ddr3_app_ref_req;
-	wire		ddr3_app_sr_req;
-	wire		ddr3_app_zq_req;
-
-	wire[255:0]	ddr3_app_rd_data;
-	wire		ddr3_app_rd_data_end;
-	wire		ddr3_app_rd_data_valid;
-
-	wire		ddr3_app_rdy;
-
-	ddr3 ram(
+	MemorySubsystem mem(
 
 		//Top level pins
 		.ddr3_dq(ddr3_dq),
@@ -377,45 +321,23 @@ module SnifferTop(
 		.ddr3_dm(ddr3_dm),
 		.ddr3_odt(ddr3_odt),
 
-		//Internal ports
-		.sys_clk_i(clk_200mhz),	//Main controller clock
-		.clk_ref_i(clk_200mhz),	//Reference clock for IDELAYCTRLs
-		.app_addr(ddr3_app_addr),
-		.app_cmd(ddr3_app_cmd),
-		.app_en(ddr3_app_en),
-		.app_wdf_data(ddr3_app_wdf_data),
-		.app_wdf_end(ddr3_app_wdf_end),
-		.app_wdf_mask(ddr3_app_wdf_mask),
-		.app_wdf_wren(ddr3_app_wdf_wren),
-		.app_rd_data(ddr3_app_rd_data),
-		.app_rd_data_end(ddr3_app_rd_data_end),
-		.app_rd_data_valid(ddr3_app_rd_data_valid),
-		.app_rdy(ddr3_app_rdy),
-		.app_wdf_rdy(ddr3_app_wdf_rdy),
-		.app_sr_req(ddr3_app_sr_req),
-		.app_ref_req(ddr3_app_ref_req),
-		.app_zq_req(ddr3_app_zq_req),
-		.app_sr_active(),
-		.app_ref_ack(),
-		.app_zq_ack(),
-		.ui_clk(ddr3_user_clk),
-		.ui_clk_sync_rst(),
-		.init_calib_complete(ddr_cal_complete),
-		.device_temp(),
-		.sys_rst(1'b0)
-	);
+		//Clock/status
+		.clk_200mhz(clk_200mhz),
+		.ddr_cal_complete(ddr_cal_complete),
+		.clk_ram(clk_ram),
+		.clk_ram_2x(clk_ram_2x),
 
-	//Tie off unused pins
-	assign ddr3_app_addr = 0;
-	assign ddr3_app_cmd = 0;
-	assign ddr3_app_en = 0;
-	assign ddr3_app_wdf_data = 0;
-	assign ddr3_app_wdf_end = 0;
-	assign ddr3_app_wdf_mask = 0;
-	assign ddr3_app_wdf_wren = 0;
-	assign ddr3_app_ref_req = 0;
-	assign ddr3_app_zq_req = 0;
-	assign ddr3_app_sr_req = 0;
+		//Client domains
+		.la0_wr_en(la0_ram_wr_en),
+		.la0_wr_addr(la0_ram_wr_addr),
+		.la0_wr_data(la0_ram_wr_data),
+		.la0_wr_ack(la0_ram_wr_ack),
+
+		.la1_wr_en(la1_ram_wr_en),
+		.la1_wr_addr(la1_ram_wr_addr),
+		.la1_wr_data(la1_ram_wr_data),
+		.la1_wr_ack(la1_ram_wr_ack)
+	);
 
 	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -608,18 +530,5 @@ module SnifferTop(
 	assign gpio_led[1] = 1'b0;
 	assign gpio_led[2] = la0_align_done;
 	assign gpio_led[3] = la1_align_done;
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug IP
-	/*
-	vio_0 vio(
-		.clk(prbs_tx_clk),
-
-		.probe_in0(qpll_lock),
-		.probe_in1(qpll_refclk_lost),
-		.probe_out0(prbs_sel),
-		.probe_out1(tx_data)
-	);
-	*/
 
 endmodule

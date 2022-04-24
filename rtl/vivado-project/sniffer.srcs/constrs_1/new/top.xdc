@@ -202,7 +202,7 @@ create_generated_clock -name la1_clk_312p5mhz -source [get_pins la/la1_clocks/pl
 
 create_generated_clock -name clk_ipstack -source [get_pins clockgen/pll_200/CLKIN1] -master_clock [get_clocks clk_200mhz_p] [get_pins clockgen/pll_200/CLKOUT1]
 
-create_generated_clock -name clk_ram -source [get_pins ram/u_ddr3_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKIN1] -master_clock [get_clocks pll_clk3_out] [get_pins ram/u_ddr3_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT]
+create_generated_clock -name clk_ram -source [get_pins mem/ram/u_ddr3_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKIN1] -master_clock [get_clocks pll_clk3_out] [get_pins mem/ram/u_ddr3_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT]
 
 ########################################################################################################################
 # Logic analyzer timing and floorplanning
@@ -214,11 +214,11 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram] -group [get_clocks la
 set_clock_groups -asynchronous -group [get_clocks clk_ram] -group [get_clocks la1_clk_312p5mhz]
 
 # Location for the IOLOGIC blocks in the phase alignment system
-set_property LOC ILOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/iserdes]
 set_property LOC OLOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/oserdes]
+set_property LOC ILOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/iserdes]
 
-set_property LOC ILOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/iserdes]
 set_property LOC OLOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/oserdes]
+set_property LOC ILOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/iserdes]
 
 # Location for the IDELAYCTRL blocks for input phasing
 set_property LOC IDELAYCTRL_X1Y0 [get_cells la/la0_path/cal/delay_control_block]
@@ -356,7 +356,7 @@ set_clock_groups -asynchronous -group [get_clocks clk_ipstack] -group [get_clock
 # Floorplanning for RAM
 
 create_pblock pblock_ddr
-add_cells_to_pblock [get_pblocks pblock_ddr] [get_cells -quiet [list ram]]
+add_cells_to_pblock [get_pblocks pblock_ddr] [get_cells -quiet [list mem/ram]]
 resize_pblock [get_pblocks pblock_ddr] -add {SLICE_X0Y0:SLICE_X23Y149}
 resize_pblock [get_pblocks pblock_ddr] -add {DSP48_X0Y0:DSP48_X1Y59}
 resize_pblock [get_pblocks pblock_ddr] -add {RAMB18_X0Y0:RAMB18_X1Y59}
@@ -390,7 +390,6 @@ set_property IS_SOFT TRUE [get_pblocks pblock_sata]
 ########################################################################################################################
 # Debugging
 
-
 create_pblock pblock_xg_cdc
 add_cells_to_pblock [get_pblocks pblock_xg_cdc] [get_cells -quiet [list ethernet/baser_rx_cdc]]
 resize_pblock [get_pblocks pblock_xg_cdc] -add {SLICE_X36Y125:SLICE_X43Y149}
@@ -398,6 +397,11 @@ resize_pblock [get_pblocks pblock_xg_cdc] -add {RAMB18_X2Y50:RAMB18_X2Y59}
 resize_pblock [get_pblocks pblock_xg_cdc] -add {RAMB36_X2Y25:RAMB36_X2Y29}
 set_property IS_SOFT FALSE [get_pblocks pblock_xg_cdc]
 
+
+set_clock_groups -asynchronous -group [get_clocks la0_clk_312p5mhz] -group [get_clocks clk_ram_2x_raw]
+set_clock_groups -asynchronous -group [get_clocks la1_clk_312p5mhz] -group [get_clocks clk_ram_2x_raw]
+set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_clocks la0_clk_312p5mhz]
+set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_clocks la1_clk_312p5mhz]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
