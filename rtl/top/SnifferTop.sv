@@ -253,11 +253,13 @@ module SnifferTop(
 	wire		la1_align_done;
 
 	wire		la0_ram_wr_en;
+	wire		la0_ram_wr_valid;
 	wire[28:0]	la0_ram_wr_addr;
 	wire[127:0]	la0_ram_wr_data;
 	wire		la0_ram_wr_ack;
 
 	wire		la1_ram_wr_en;
+	wire		la1_ram_wr_valid;
 	wire[28:0]	la1_ram_wr_addr;
 	wire[127:0]	la1_ram_wr_data;
 	wire		la1_ram_wr_ack;
@@ -289,11 +291,13 @@ module SnifferTop(
 		.la1_align_done(la1_align_done),
 
 		.la0_ram_wr_en(la0_ram_wr_en),
+		.la0_ram_wr_valid(la0_ram_wr_valid),
 		.la0_ram_wr_addr(la0_ram_wr_addr),
 		.la0_ram_wr_data(la0_ram_wr_data),
 		.la0_ram_wr_ack(la0_ram_wr_ack),
 
 		.la1_ram_wr_en(la1_ram_wr_en),
+		.la1_ram_wr_valid(la1_ram_wr_valid),
 		.la1_ram_wr_addr(la1_ram_wr_addr),
 		.la1_ram_wr_data(la1_ram_wr_data),
 		.la1_ram_wr_ack(la1_ram_wr_ack)
@@ -329,11 +333,13 @@ module SnifferTop(
 
 		//Client domains
 		.la0_wr_en(la0_ram_wr_en),
+		.la0_wr_valid(la0_ram_wr_valid),
 		.la0_wr_addr(la0_ram_wr_addr),
 		.la0_wr_data(la0_ram_wr_data),
 		.la0_wr_ack(la0_ram_wr_ack),
 
 		.la1_wr_en(la1_ram_wr_en),
+		.la1_wr_valid(la1_ram_wr_valid),
 		.la1_wr_addr(la1_ram_wr_addr),
 		.la1_wr_data(la1_ram_wr_data),
 		.la1_wr_ack(la1_ram_wr_ack)

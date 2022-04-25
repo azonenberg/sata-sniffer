@@ -61,11 +61,13 @@ module LogicAnalyzerSubsystem(
 
 	//Ports to top level DDR arbiter
 	output wire			la0_ram_wr_en,
+	output wire			la0_ram_wr_valid,
 	output wire[28:0]	la0_ram_wr_addr,
 	output wire[127:0]	la0_ram_wr_data,
 	input wire			la0_ram_wr_ack,
 
 	output wire			la1_ram_wr_en,
+	output wire			la1_ram_wr_valid,
 	output wire[28:0]	la1_ram_wr_addr,
 	output wire[127:0]	la1_ram_wr_data,
 	input wire			la1_ram_wr_ack
@@ -148,6 +150,7 @@ module LogicAnalyzerSubsystem(
 		.clk_ram_2x(clk_ram_2x),
 		.ram_ready(ram_ready),
 		.ram_wr_en(la0_ram_wr_en),
+		.ram_wr_valid(la0_ram_wr_valid),
 		.ram_wr_addr(la0_ram_wr_addr),
 		.ram_wr_data(la0_ram_wr_data),
 		.ram_wr_ack(la0_ram_wr_ack)
@@ -169,6 +172,7 @@ module LogicAnalyzerSubsystem(
 		.clk_ram_2x(clk_ram_2x),
 		.ram_ready(ram_ready),
 		.ram_wr_en(la1_ram_wr_en),
+		.ram_wr_valid(la1_ram_wr_valid),
 		.ram_wr_addr(la1_ram_wr_addr),
 		.ram_wr_data(la1_ram_wr_data),
 		.ram_wr_ack(la1_ram_wr_ack)

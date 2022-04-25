@@ -61,9 +61,10 @@ module LogicPodDatapath #(
 	input wire				clk_ram,
 	input wire				clk_ram_2x,
 	input wire				ram_ready,
-	output logic			ram_wr_en	= 0,
-	output logic[28:0]		ram_wr_addr	= 0,
-	output logic[127:0]		ram_wr_data	= 0,
+	output logic			ram_wr_en		= 0,
+	output logic			ram_wr_valid	= 0,
+	output logic[28:0]		ram_wr_addr		= 0,
+	output logic[127:0]		ram_wr_data		= 0,
 	input wire				ram_wr_ack
 );
 
@@ -290,10 +291,12 @@ module LogicPodDatapath #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Capturing and processing
 
-	logic[7:0]		deser_rd	= 0;
-	wire[127:0]		deser_rd_data[7:0];
-	wire[5:0]		deser_rsize[7:0];
-	logic[7:0]		cdc_fifo_half_full = 0;
+	logic[7:0]		fifo_rd_en			= 0;
+	wire[127:0]		fifo_rd_data[7:0];
+	wire[9:0]		fifo_rd_size[7:0];
+	wire[7:0]		fifo_rd_empty;
+	logic[7:0]		fifo_half_full		 = 0;
+	logic[7:0]		fifo_burst_ready	 = 0;
 
 	for(genvar g=0; g<8; g=g+1) begin
 
@@ -345,18 +348,23 @@ module LogicPodDatapath #(
 		);
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// CDC FIFO for compressor output
+		// CDC FIFO for deserialized compressor output
 
-		//TODO: we can probably merge these two FIFOs into one
+		wire		fifo_wr;
+		wire[127:0]	fifo_wdata;
 
-		//Single compression block wide, since 2x RAM clock is actually slightly faster than the 312.5 MHz clock
-		logic		fifo_rd_en	= 0;
-		wire		fifo_rd_empty;
-		wire[16:0]	fifo_rd_data;
-		wire[10:0]	fifo_rd_size;
+		LogicPodDeserialization deserialization(
+			.clk(clk_312p5mhz),
+			.compress_out_valid(compress_out_valid),
+			.compress_out_format(compress_out_format),
+			.compress_out_data(compress_out_data),
+			.fifo_wr(fifo_wr),
+			.fifo_wdata(fifo_wdata)
+		);
+
 		CrossClockFifo #(
-			.WIDTH(17),
-			.DEPTH(1024),
+			.WIDTH(128),
+			.DEPTH(512),
 			.USE_BLOCK(1),
 			.OUT_REG(1)
 		) cdc_fifo (
@@ -366,8 +374,8 @@ module LogicPodDatapath #(
 			//The FIFO will just start dropping samples if you push too fast.
 			//TODO: add error flag to detect when this happens
 			.wr_clk(clk_312p5mhz),
-			.wr_en(compress_out_valid && armed),
-			.wr_data({compress_out_format, compress_out_data}),
+			.wr_en(fifo_wr),
+			.wr_data(fifo_wdata),
 			.wr_size(),
 			.wr_full(),
 			.wr_overflow(),
@@ -375,97 +383,17 @@ module LogicPodDatapath #(
 
 			//Read side
 			.rd_clk(clk_ram_2x),
-			.rd_en(fifo_rd_en),
-			.rd_data(fifo_rd_data),
-			.rd_size(fifo_rd_size),
+			.rd_en(fifo_rd_en[g]),
+			.rd_data(fifo_rd_data[g]),
+			.rd_size(fifo_rd_size[g]),
 			.rd_empty(fifo_rd_empty),
 			.rd_underflow(),
 			.rd_reset(1'b0)
 		);
 
-		always_ff @(posedge clk_ram_2x)
-			cdc_fifo_half_full[g] <= (fifo_rd_size > 512);
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Deserialization
-
-		//Easy but inefficient: 7 blocks * 17 bits = 119 bits used per 128b word, 9 wasted (7% overhead)
-		//We can double this with some effort: 15 blocks per 2 words = 1 bit waste per 256 (0.39% overhead)
-
-		//One 512b RAM burst is 30 cycles of the CDC FIFO output plus two padding bits
-		//Can fit up to eight bursts (32 128b words) in this buffer
-
-		logic			deser_wr	= 0;
-		logic[127:0]	deser_wdata	= 0;
-		wire			deser_full;
-		wire[5:0]		deser_wsize;
-		logic[2:0]		deser_words	= 0;
-
-		SingleClockFifo #(
-			.WIDTH(128),
-			.DEPTH(32),
-			.USE_BLOCK(1),
-			.OUT_REG(1)
-		) deser_fifo (
-			.clk(clk_ram_2x),
-
-			//Write side
-			.wr(deser_wr),
-			.din(deser_wdata),
-			.full(deser_full),
-			.empty(),
-			.wsize(deser_wsize),
-			.overflow(),
-
-			//Read side
-			.rd(deser_rd[g]),
-			.dout(deser_rd_data[g]),
-			.rsize(deser_rsize[g]),
-			.underflow(),
-			.reset(1'b0)
-		);
-
-		//Pop the CDC FIFO into the shift register
-		logic		fifo_rd_valid	= 0;
-		logic[2:0]	deser_words_fwd;
-		always_comb begin
-			deser_words_fwd	= deser_words + fifo_rd_valid;
-			fifo_rd_en			= 0;
-			deser_wr			= 0;
-
-			//Still working on a block?
-			if(deser_words_fwd < 7) begin
-
-				//Read if block isn't finished
-				if(!fifo_rd_empty )
-					fifo_rd_en		= 1;
-
-			end
-
-			//Done with block?
-			else begin
-
-				//Space to push to fifo?
-				if(!deser_full) begin
-					deser_wr		= 1;
-					deser_words_fwd	= 0;
-
-					//Start a new read cycle
-					if(!fifo_rd_empty)
-						fifo_rd_en	= 1;
-				end
-
-			end
-
-		end
-
 		always_ff @(posedge clk_ram_2x) begin
-			fifo_rd_valid	<= fifo_rd_en;
-			deser_words		<= deser_words_fwd;
-
-			if(fifo_rd_valid)
-				deser_wdata	<= {9'b0, deser_wdata[101:0], fifo_rd_data};
-
+			fifo_half_full[g] 	<= (fifo_rd_size[g] > 256);
+			fifo_burst_ready[g] <= (fifo_rd_size[g] >= 4);
 		end
 
 	end
@@ -493,19 +421,33 @@ module LogicPodDatapath #(
 	logic		write_start		= 0;
 	logic[2:0]	write_channel	= 0;
 
+	always_comb begin
+
+		fifo_rd_en	= 0;
+
+		//Read first word as soon as we have something to send
+		if(write_start)
+			fifo_rd_en[write_channel]	= 1;
+
+		//Read next word when arbitration completes
+		if(ram_wr_ack)
+			fifo_rd_en[write_channel]	= 1;
+
+		if( (write_phase == 2) || (write_phase == 3) )
+			fifo_rd_en[write_channel]	= 1;
+
+	end
+
 	always_ff @(posedge clk_ram_2x) begin
 
-		deser_rd	<= 0;
-		write_start	= 0;
-
-		if( (write_phase == 0) && !write_start ) begin
+		if( (write_phase == 0) && !write_start) begin
 
 			//Default to not forwarding anything
 			write_start	= 0;
 
 			//Pass 1: read from highest numbered channel that's more than half full in the big fifo
 			for(integer i=0; i<8; i=i+1) begin
-				if(cdc_fifo_half_full[i] && (deser_rsize[i] >= 4 ) ) begin
+				if(fifo_half_full[i]) begin
 					write_start	= 1;
 					write_channel = i;
 				end
@@ -514,22 +456,17 @@ module LogicPodDatapath #(
 			//Pass 2: read from highest numbered channel with any data (note that a full burst is required)
 			if(!write_start) begin
 				for(integer i=0; i<8; i=i+1) begin
-					if(deser_rsize[i] >= 4) begin
+					if(fifo_burst_ready[i]) begin
 						write_start	= 1;
 						write_channel = i;
 					end
 				end
 			end
 
-			//Start the read)
-			if(write_start)
-				deser_rd[write_channel] <= 1;
-
 		end
 
-		//Continue an existing burst
-		else if( (write_phase >= 1) && (write_phase <= 3) )
-			deser_rd[write_channel] <= 1;
+		else
+			write_start	= 0;
 
 	end
 
@@ -545,13 +482,18 @@ module LogicPodDatapath #(
 			dram_wr_ptr[i] <= 0;
 	end
 
+	logic	fifo_rd_valid	= 0;
+
 	always_ff @(posedge clk_ram_2x) begin
 
-		//Default to not writing
-		ram_wr_en				<= 0;
+		//Clear request once ack comes in
+		if(ram_wr_ack)
+			ram_wr_en			<= 0;
 
 		//Mux write output
-		ram_wr_data				<= deser_rd_data[write_channel];
+		ram_wr_data				<= fifo_rd_data[write_channel];
+		fifo_rd_valid			<= fifo_rd_en[write_channel];
+		ram_wr_valid			<= fifo_rd_valid;
 
 		//Start a new write cycle
 		if(write_start) begin
@@ -577,7 +519,7 @@ module LogicPodDatapath #(
 			//Begin burst as soon as we get the ACK from the arbiter
 			1: begin
 				if(ram_wr_ack)
-					write_phase		<= write_phase + 1;
+					write_phase		<= 2;
 			end
 
 			//Continue existing burst
@@ -594,27 +536,33 @@ module LogicPodDatapath #(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug ILA
 
+	/*
 	if(POD_NUMBER == 0) begin
 		ila_0 ila(
 			.clk(clk_ram_2x),
 			.probe0(write_phase),
 			.probe1(write_start),
 			.probe2(write_channel),
-			.probe3(deser_rd),
-			.probe4(cdc_fifo_half_full),
-			.probe5(deser_rsize[0]),
-			.probe6(deser_rsize[1]),
-			.probe7(deser_rsize[2]),
-			.probe8(deser_rsize[3]),
-			.probe9(deser_rsize[4]),
-			.probe10(deser_rsize[5]),
-			.probe11(deser_rsize[6]),
-			.probe12(deser_rsize[7]),
+			.probe3(fifo_rd_en),
+			.probe4(fifo_half_full),
+			.probe5(fifo_rd_size[0]),
+			.probe6(fifo_rd_size[1]),
+			.probe7(fifo_rd_size[2]),
+			.probe8(fifo_rd_size[3]),
+			.probe9(fifo_rd_size[4]),
+			.probe10(fifo_rd_size[5]),
+			.probe11(fifo_rd_size[6]),
+			.probe12(fifo_rd_size[7]),
 			.probe13(ram_wr_en),
 			.probe14(ram_wr_addr),
 			.probe15(ram_wr_data),
-			.probe16(ram_wr_ack)
+			.probe16(ram_wr_ack),
+			.probe17(fifo_burst_ready),
+			.probe18(fifo_rd_data[0][15:0]),
+			.probe19(ram_wr_valid),
+			.probe20(fifo_rd_valid)
 		);
 	end
+	*/
 
 endmodule

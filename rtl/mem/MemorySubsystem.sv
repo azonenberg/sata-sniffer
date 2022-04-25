@@ -117,11 +117,13 @@ module MemorySubsystem(
 
 	//Buses from client domains to arbiter
 	input wire			la0_wr_en,
+	input wire			la0_wr_valid,
 	input wire[28:0]	la0_wr_addr,
 	input wire[127:0]	la0_wr_data,
 	output wire			la0_wr_ack,
 
 	input wire			la1_wr_en,
+	input wire			la1_wr_valid,
 	input wire[28:0]	la1_wr_addr,
 	input wire[127:0]	la1_wr_data,
 	output wire			la1_wr_ack
@@ -286,11 +288,13 @@ module MemorySubsystem(
 
 		//Client domains
 		.la0_wr_en(la0_wr_en),
+		.la0_wr_valid(la0_wr_valid),
 		.la0_wr_addr(la0_wr_addr),
 		.la0_wr_data(la0_wr_data),
 		.la0_wr_ack(la0_wr_ack),
 
 		.la1_wr_en(la1_wr_en),
+		.la1_wr_valid(la1_wr_valid),
 		.la1_wr_addr(la1_wr_addr),
 		.la1_wr_data(la1_wr_data),
 		.la1_wr_ack(la1_wr_ack)
