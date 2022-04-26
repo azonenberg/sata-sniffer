@@ -1,84 +1,3 @@
-set_max_delay -from [get_clocks [list la0_clk_625mhz_fabric la1_clk_625mhz_fabric]] -through [get_cells [list {la/la0_path/genblk3[0].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[0].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[0].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[0].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[0].sampler/fifo_p_lo/fifomem} \
-          {la/la0_path/genblk3[1].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[1].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[1].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[1].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[1].sampler/fifo_p_lo/fifomem} \
-          {la/la0_path/genblk3[2].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[2].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[2].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[2].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[2].sampler/fifo_p_lo/fifomem} \
-          {la/la0_path/genblk3[3].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[3].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[3].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[3].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[3].sampler/fifo_p_lo/fifomem} \
-          {la/la0_path/genblk3[4].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[4].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[4].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[4].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[4].sampler/fifo_p_lo/fifomem} \
-          {la/la0_path/genblk3[5].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[5].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[5].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[5].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[5].sampler/fifo_p_lo/fifomem} \
-          {la/la0_path/genblk3[6].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[6].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[6].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[6].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[6].sampler/fifo_p_lo/fifomem} \
-          {la/la0_path/genblk3[7].cdc_fifo/fifomem} \
-          {la/la0_path/genblk3[7].sampler/fifo_n_hi/fifomem} \
-          {la/la0_path/genblk3[7].sampler/fifo_n_lo/fifomem} \
-          {la/la0_path/genblk3[7].sampler/fifo_p_hi/fifomem} \
-          {la/la0_path/genblk3[7].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[0].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[0].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[0].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[0].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[0].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[1].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[1].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[1].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[1].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[1].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[2].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[2].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[2].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[2].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[2].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[3].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[3].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[3].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[3].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[3].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[4].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[4].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[4].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[4].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[4].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[5].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[5].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[5].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[5].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[5].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[6].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[6].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[6].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[6].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[6].sampler/fifo_p_lo/fifomem} \
-          {la/la1_path/genblk3[7].cdc_fifo/fifomem} \
-          {la/la1_path/genblk3[7].sampler/fifo_n_hi/fifomem} \
-          {la/la1_path/genblk3[7].sampler/fifo_n_lo/fifomem} \
-          {la/la1_path/genblk3[7].sampler/fifo_p_hi/fifomem} \
-          {la/la1_path/genblk3[7].sampler/fifo_p_lo/fifomem} \
-          mem/arbiter/wr_data_fifo/fifomem]] -to [get_clocks [list la0_clk_312p5mhz la1_clk_312p5mhz]] 3.200
 ########################################################################################################################
 # Pinout and IOSTANDARD constraints
 
@@ -501,9 +420,11 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_cl
 set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_clocks la1_clk_312p5mhz]
 
 
-set_max_delay -datapath_only -from [get_cells -hierarchical -filter { NAME =~  "*wr_data_fifo*" && NAME =~  "*sync*" && NAME =~  "*reg_a_ff*" }] -to [get_cells -hierarchical -filter { NAME =~  "*wr_data_fifo*" && NAME =~  "*sync*" && NAME =~  "*reg_b*" }] 3.200
+set_max_delay -datapath_only -from [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*fifo*" && NAME =~  "*sync*" && NAME =~  "*reg_a_ff*" }] -to [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*sync*" && NAME =~  "*reg_b_reg*" }] 3.200
 
-set_max_delay -datapath_only -from [get_cells -hierarchical -filter { NAME =~  "*wr_data_fifo*" && NAME =~  "*sync*" && NAME =~  "*dout0*" }] -to [get_cells -hierarchical -filter { NAME =~  "*wr_data_fifo*" && NAME =~  "*sync*" && NAME =~  "*dout1*" }] 3.200
+set_max_delay -datapath_only -from [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*sync*" && NAME =~  "*dout0_reg*" }] -to [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*sync*" && NAME =~  "*dout1_reg*" }] 3.200
+
+
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

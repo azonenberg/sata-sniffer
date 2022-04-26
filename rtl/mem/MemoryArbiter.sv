@@ -101,7 +101,7 @@ module MemoryArbiter(
 	assign la1_wr_ack = wr_ack[1];
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Arbiter
+	// Arbiter and deserialization to 256 bits
 
 	//Round robin, then pick first available port if selected port is unavailable
 	logic			rr_source		= 0;
@@ -112,31 +112,40 @@ module MemoryArbiter(
 	wire[9:0]		fifo_wr_size;
 	logic			fifo_almost_full;
 
+	logic			fifo_wr_en_2x;
 	logic			fifo_wr_en;
-	logic[127:0]	fifo_wr_data;
+	logic[127:0]	fifo_wr_data_2x;
+	logic[127:0]	fifo_wr_data_2x_ff;
 
 	//Writes have top priority as those are hard realtime
+	logic			fifo_wr_en_2x_ff	= 0;
 	always_comb begin
 
 		fifo_almost_full		= (fifo_wr_size < 4);
-		fifo_wr_en				= 0;
+		fifo_wr_en_2x			= 0;
 
 		//Output mux to fifo
-		fifo_wr_data			= wr_data[current_source];
+		fifo_wr_data_2x			= wr_data[current_source];
 
 		//If starting a new burst, write to the FIFO
 		if(wr_ack)
-			fifo_wr_en			= 1;
+			fifo_wr_en_2x		= 1;
 
 		//If continuing a burst, write to the FIFO
 		if( (burst_count > 0) && wr_valid[current_source] )
-			fifo_wr_en			= 1;
+			fifo_wr_en_2x		= 1;
+
+		fifo_wr_en 				= fifo_wr_en_2x_ff && fifo_wr_en_2x;
 
 	end
 
 	always_ff @(posedge clk_ram_2x) begin
 
 		wr_ack 					= 0;
+
+		if(fifo_wr_en_2x)
+			fifo_wr_data_2x_ff	<= fifo_wr_data_2x;
+		fifo_wr_en_2x_ff		<= fifo_wr_en_2x;
 
 		//Burst already in progress, or data FIFO too full for a new burst? Do nothing
 		if( (burst_count != 0) || fifo_almost_full) begin
@@ -174,7 +183,7 @@ module MemoryArbiter(
 
 		end
 
-		if(fifo_wr_en) begin
+		if(fifo_wr_en_2x) begin
 			burst_count	<= burst_count + 1;
 			if(burst_count == 4)
 				burst_count	<= 0;
@@ -183,34 +192,134 @@ module MemoryArbiter(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// CDC FIFO from fast to slow clock domain
+	// CDC FIFOs from fast to slow clock domain
 	// TODO: we don't actually need synchronizers here as the domains are related
 
-	(* DONT_TOUCH *)
-	wire[127:0]		fifo_rd_data;
+	wire[255:0]		fifo_rd_data;
+	wire[9:0]		data_fifo_rd_size;
+	logic			data_fifo_rd_en	= 0;
 
 	CrossClockFifo #(
-		.WIDTH(128),
+		.WIDTH(256),
 		.DEPTH(512),
 		.USE_BLOCK(1),
 		.OUT_REG(1)
 	) wr_data_fifo (
 		.wr_clk(clk_ram_2x),
-		.wr_en(fifo_wr_en),
-		.wr_data(fifo_wr_data),
+		.wr_en(fifo_wr_en_2x),
+		.wr_data({fifo_wr_data_2x_ff, fifo_wr_data_2x}),
 		.wr_size(fifo_wr_size),
 		.wr_full(),
 		.wr_overflow(),
 		.wr_reset(1'b0),
 
 		.rd_clk(clk_ram),
-		.rd_en(1'b1),
+		.rd_en(data_fifo_rd_en),
 		.rd_data(fifo_rd_data),
-		.rd_size(),
+		.rd_size(data_fifo_rd_size),
 		.rd_empty(),
 		.rd_underflow(),
 		.rd_reset(1'b0)
 	);
+
+	enum logic
+	{
+		MIG_CMD_READ	= 1'b1,
+		MIG_CMD_WRITE	= 1'b0
+	} mig_cmd_t;
+
+	wire			fifo_rd_cmd;
+	wire[28:0]		fifo_rd_addr;
+
+	wire[8:0]		cmd_addr_fifo_rd_size;
+	wire			cmd_addr_fifo_empty;
+	logic			cmd_addr_fifo_rd_en	= 0;
+	CrossClockFifo #(
+		.WIDTH(29),
+		.DEPTH(256),
+		.USE_BLOCK(1),
+		.OUT_REG(1)
+	) cmd_addr_fifo (
+		.wr_clk(clk_ram_2x),
+		.wr_en( (wr_ack != 0)),
+		.wr_data({MIG_CMD_WRITE, wr_addr[current_source]}),
+		.wr_size(),
+		.wr_full(),
+		.wr_overflow(),
+		.wr_reset(1'b0),
+
+		.rd_clk(clk_ram),
+		.rd_en(cmd_addr_fifo_rd_en),
+		.rd_data({fifo_rd_cmd, fifo_rd_addr}),
+		.rd_size(cmd_addr_fifo_rd_size),
+		.rd_empty(cmd_addr_fifo_empty),
+		.rd_underflow(),
+		.rd_reset(1'b0)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Pop the FIFOs into the MIG core
+
+	logic	out_phase	 = 0;
+
+	logic	fifos_ready_to_start;
+
+	always_comb begin
+
+		cmd_addr_fifo_rd_en	= 0;
+		data_fifo_rd_en		= 0;
+
+		//Check if FIFOs are ready for us to begin (one command and two data words available)
+		fifos_ready_to_start	= (!cmd_addr_fifo_empty) && (data_fifo_rd_size >= 2);
+
+		//Idle? Pop data+command FIFO if they're ready
+		if(!out_phase && fifos_ready_to_start && app_rdy && app_wdf_rdy) begin
+			cmd_addr_fifo_rd_en		= 1;
+			data_fifo_rd_en			= 1;
+		end
+
+		//Read second half of a word
+		if(out_phase)
+			data_fifo_rd_en			= 1;
+
+	end
+
+	logic	cmd_addr_fifo_rd_valid	= 0;
+	logic	data_fifo_rd_valid		= 0;
+	always_ff @(posedge clk_ram) begin
+
+		//Clear single cycle flags
+		app_en			<= 0;
+		app_wdf_wren	<= 0;
+		app_wdf_end		<= 0;
+
+		//Now in second half of a word
+		if(cmd_addr_fifo_rd_en)
+			out_phase	<= 1;
+
+		//Done
+		if(out_phase)
+			out_phase	<= 0;
+
+		//Forward outputs to controller
+		//TODO: combinatorial if we can afford this?
+		cmd_addr_fifo_rd_valid	<= cmd_addr_fifo_rd_en;
+		data_fifo_rd_valid		<= data_fifo_rd_en;
+
+		if(cmd_addr_fifo_rd_valid) begin
+			app_cmd 	<= {2'b0, fifo_rd_cmd };
+			app_addr	<= fifo_rd_addr;
+			app_en		<= 1;
+		end
+
+		if(data_fifo_rd_valid) begin
+			app_wdf_wren	<= 1;
+			app_wdf_mask	<= 0;
+			app_wdf_data	<= data_fifo_rd_valid;
+			app_wdf_end		<= !cmd_addr_fifo_rd_valid;	//second half of burst?
+		end
+
+	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug logic analyzer
@@ -230,9 +339,34 @@ module MemoryArbiter(
 		.probe9(la0_wr_valid),
 		.probe10(fifo_wr_size),
 		.probe11(fifo_almost_full),
-		.probe12(fifo_wr_en),
-		.probe13(fifo_wr_data),
-		.probe14(burst_count)
+		.probe12(fifo_wr_en_2x),
+		.probe13(fifo_wr_data_2x),
+		.probe14(burst_count),
+		.probe15(1'b0),
+		.probe16(fifo_wr_data_2x_ff),
+		.probe17(fifo_wr_en)
+	);
+
+	ila_0 ila0(
+		.clk(clk_ram),
+		.probe0(data_fifo_rd_size),
+		.probe1(cmd_addr_fifo_rd_size),
+		.probe2(cmd_addr_fifo_empty),
+		.probe3(fifo_rd_cmd),
+		.probe4(fifo_rd_addr),
+		.probe5(fifo_rd_data),
+		.probe6(app_wdf_end),
+		.probe7(app_wdf_wren),
+		.probe8(app_wdf_rdy),
+		.probe9(app_addr),
+		.probe10(app_cmd),
+		.probe11(app_en),
+		.probe12(data_fifo_rd_en),
+		.probe13(cmd_addr_fifo_rd_en),
+		.probe14(out_phase),
+		.probe15(cmd_addr_fifo_rd_valid),
+		.probe16(data_fifo_rd_valid),
+		.probe17(app_rdy)
 	);
 
 endmodule

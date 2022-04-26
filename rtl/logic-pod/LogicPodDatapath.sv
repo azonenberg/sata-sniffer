@@ -366,7 +366,7 @@ module LogicPodDatapath #(
 			.WIDTH(128),
 			.DEPTH(512),
 			.USE_BLOCK(1),
-			.OUT_REG(1)
+			.OUT_REG(2)
 		) cdc_fifo (
 
 			//Write side: push in at full rate.
@@ -472,17 +472,22 @@ module LogicPodDatapath #(
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Main mux path
+	// Main pipelined mux path
 
 	//Each LA channel has 0x200000 (2^22) 256-bit storage locations
-	(* RAM_STYLE = "registers" *)
+	(* RAM_STYLE = "distributed" *)
 	logic[21:0] dram_wr_ptr[7:0];
 	initial begin
 		for(integer i=0; i<8; i=i+1)
 			dram_wr_ptr[i] <= 0;
 	end
 
-	logic	fifo_rd_valid	= 0;
+	logic			fifo_rd_valid	= 0;
+
+	logic			ram_wr_valid_adv	= 0;
+	logic[2:0]		write_channel_ff	= 0;
+
+	wire	DEBUG_EN;
 
 	always_ff @(posedge clk_ram_2x) begin
 
@@ -490,13 +495,17 @@ module LogicPodDatapath #(
 		if(ram_wr_ack)
 			ram_wr_en			<= 0;
 
-		//Mux write output
-		ram_wr_data				<= fifo_rd_data[write_channel];
+		//Pipeline write data (fifo read output has extra pipeline stage to improve timing)
 		fifo_rd_valid			<= fifo_rd_en[write_channel];
-		ram_wr_valid			<= fifo_rd_valid;
+		ram_wr_valid_adv		<= fifo_rd_valid;
+		write_channel_ff		<= write_channel;
+
+		//Mux write output (second stage)
+		ram_wr_valid			<= ram_wr_valid_adv;
+		ram_wr_data				<= fifo_rd_data[write_channel_ff];
 
 		//Start a new write cycle
-		if(write_start) begin
+		if(write_start && DEBUG_EN) begin
 			write_phase			<= 1;
 
 			ram_wr_en			<= 1;
@@ -564,5 +573,10 @@ module LogicPodDatapath #(
 		);
 	end
 	*/
+
+	vio_0 vio(
+		.clk(clk_ram_2x),
+		.probe_out0(DEBUG_EN)
+	);
 
 endmodule
