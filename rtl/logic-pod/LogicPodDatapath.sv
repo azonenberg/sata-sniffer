@@ -433,7 +433,7 @@ module LogicPodDatapath #(
 
 		//We can start a write if we're idle, or if on the last cycle of the previous one
 		//(and not starting a new write)
-		can_start_write = ((write_phase == 0) || (write_phase == 4)) && !write_start && DEBUG_START;
+		can_start_write = ((write_phase == 0) || (write_phase >= 3)) && !write_start && DEBUG_START;
 
 	end
 
@@ -508,7 +508,7 @@ module LogicPodDatapath #(
 		//Start a new write cycle
 		addr_fifo_wr_en			<= 0;
 		if(write_start) begin
-			write_phase			<= write_phase + 1;
+			write_phase			<= 1;
 
 			//address fifo todo
 			addr_fifo_wr_en		<= 1;
@@ -527,10 +527,12 @@ module LogicPodDatapath #(
 		end
 
 		//Continue existing write cycle
-		if(write_phase == 4)
-			write_phase <= 0;
-		else if(write_phase > 0)
-			write_phase	<= write_phase + 1;
+		else begin
+			if(write_phase == 4)
+				write_phase <= 0;
+			else if(write_phase > 0)
+				write_phase	<= write_phase + 1;
+		end
 
 	end
 
@@ -597,7 +599,8 @@ module LogicPodDatapath #(
 		.probe6(write_phase),
 		.probe7(can_start_write),
 		.probe8(data_fifo_wr_size),
-		.probe9(addr_fifo_wr_size)
+		.probe9(addr_fifo_wr_size),
+		.probe10(write_channel)
 	);
 
 	vio_0 vio(
