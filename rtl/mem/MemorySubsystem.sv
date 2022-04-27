@@ -116,17 +116,19 @@ module MemorySubsystem(
 	output wire			clk_ram_2x,
 
 	//Buses from client domains to arbiter
-	input wire			la0_wr_en,
-	input wire			la0_wr_valid,
-	input wire[28:0]	la0_wr_addr,
-	input wire[127:0]	la0_wr_data,
-	output wire			la0_wr_ack,
+	output wire			la0_ram_data_rd_en,
+	input wire[127:0]	la0_ram_data_rd_data,
+	input wire[9:0]		la0_ram_data_rd_size,
+	output wire			la0_ram_addr_rd_en,
+	input wire[28:0]	la0_ram_addr_rd_data,
+	input wire[7:0]		la0_ram_addr_rd_size,
 
-	input wire			la1_wr_en,
-	input wire			la1_wr_valid,
-	input wire[28:0]	la1_wr_addr,
-	input wire[127:0]	la1_wr_data,
-	output wire			la1_wr_ack
+	output wire			la1_ram_data_rd_en,
+	input wire[127:0]	la1_ram_data_rd_data,
+	input wire[9:0]		la1_ram_data_rd_size,
+	output wire			la1_ram_addr_rd_en,
+	input wire[28:0]	la1_ram_addr_rd_data,
+	input wire[7:0]		la1_ram_addr_rd_size
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -287,17 +289,19 @@ module MemorySubsystem(
 		.app_rdy(ddr3_app_rdy),
 
 		//Client domains
-		.la0_wr_en(la0_wr_en),
-		.la0_wr_valid(la0_wr_valid),
-		.la0_wr_addr(la0_wr_addr),
-		.la0_wr_data(la0_wr_data),
-		.la0_wr_ack(la0_wr_ack),
+		.la0_ram_data_rd_en(la0_ram_data_rd_en),
+		.la0_ram_data_rd_data(la0_ram_data_rd_data),
+		.la0_ram_data_rd_size(la0_ram_data_rd_size),
+		.la0_ram_addr_rd_en(la0_ram_addr_rd_en),
+		.la0_ram_addr_rd_data(la0_ram_addr_rd_data),
+		.la0_ram_addr_rd_size(la0_ram_addr_rd_size),
 
-		.la1_wr_en(la1_wr_en),
-		.la1_wr_valid(la1_wr_valid),
-		.la1_wr_addr(la1_wr_addr),
-		.la1_wr_data(la1_wr_data),
-		.la1_wr_ack(la1_wr_ack)
+		.la1_ram_data_rd_en(la1_ram_data_rd_en),
+		.la1_ram_data_rd_data(la1_ram_data_rd_data),
+		.la1_ram_data_rd_size(la1_ram_data_rd_size),
+		.la1_ram_addr_rd_en(la1_ram_addr_rd_en),
+		.la1_ram_addr_rd_data(la1_ram_addr_rd_data),
+		.la1_ram_addr_rd_size(la1_ram_addr_rd_size)
 	);
 
 endmodule

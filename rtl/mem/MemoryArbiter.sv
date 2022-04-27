@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
 `default_nettype none
-
 /***********************************************************************************************************************
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
@@ -60,144 +59,183 @@ module MemoryArbiter(
 	//Buses from client domains to arbiter
 	//128 bits at 2x controller clock
 	//TODO: we could simplify things a lot by running the entire controller at this rate??
-	input wire			la0_wr_en,
-	input wire			la0_wr_valid,
-	input wire[28:0]	la0_wr_addr,
-	input wire[127:0]	la0_wr_data,
-	output logic		la0_wr_ack,
 
-	input wire			la1_wr_en,
-	input wire			la1_wr_valid,
-	input wire[28:0]	la1_wr_addr,
-	input wire[127:0]	la1_wr_data,
-	output logic		la1_wr_ack
+	output wire			la0_ram_data_rd_en,
+	input wire[127:0]	la0_ram_data_rd_data,
+	input wire[9:0]		la0_ram_data_rd_size,
+	output wire			la0_ram_addr_rd_en,
+	input wire[28:0]	la0_ram_addr_rd_data,
+	input wire[7:0]		la0_ram_addr_rd_size,
+
+	output wire			la1_ram_data_rd_en,
+	input wire[127:0]	la1_ram_data_rd_data,
+	input wire[9:0]		la1_ram_data_rd_size,
+	output wire			la1_ram_addr_rd_en,
+	input wire[28:0]	la1_ram_addr_rd_data,
+	input wire[7:0]		la1_ram_addr_rd_size
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Remap inputs to numbered vectors for easier handling
+	// Remap I/Os to numbered vectors for easier handling
 
 	localparam NUM_PORTS = 2;
 
-	wire		wr_en[NUM_PORTS-1:0];
-	wire		wr_valid[NUM_PORTS-1:0];
-	wire[28:0]	wr_addr[NUM_PORTS-1:0];
-	wire[127:0]	wr_data[NUM_PORTS-1:0];
+	logic[NUM_PORTS-1:0]	idata_rd_en	= 0;
+	assign la0_ram_data_rd_en = idata_rd_en[0];
+	assign la1_ram_data_rd_en = idata_rd_en[1];
 
-	assign wr_en[0]		= la0_wr_en;
-	assign wr_valid[0]	= la0_wr_valid;
-	assign wr_addr[0]	= la0_wr_addr;
-	assign wr_data[0]	= la0_wr_data;
+	logic[127:0]			idata_rd_data[NUM_PORTS-1:0];
+	assign idata_rd_data[0] = la0_ram_data_rd_data;
+	assign idata_rd_data[1] = la1_ram_data_rd_data;
 
-	assign wr_en[1]		= la1_wr_en;
-	assign wr_valid[1]	= la1_wr_valid;
-	assign wr_addr[1]	= la1_wr_addr;
-	assign wr_data[1]	= la1_wr_data;
+	logic[9:0]				idata_rd_size[NUM_PORTS-1:0];
+	assign idata_rd_size[0] = la0_ram_data_rd_size;
+	assign idata_rd_size[1] = la1_ram_data_rd_size;
+
+	logic[NUM_PORTS-1:0]	iaddr_rd_en	= 0;
+	assign la0_ram_addr_rd_en = iaddr_rd_en[0];
+	assign la1_ram_addr_rd_en = iaddr_rd_en[1];
+
+	logic[28:0]				iaddr_rd_data[NUM_PORTS-1:0];
+	assign iaddr_rd_data[0] = la0_ram_addr_rd_data;
+	assign iaddr_rd_data[1] = la1_ram_addr_rd_data;
+
+	logic[7:0]				iaddr_rd_size[NUM_PORTS-1:0];
+	assign iaddr_rd_size[0] = la0_ram_addr_rd_size;
+	assign iaddr_rd_size[1] = la1_ram_addr_rd_size;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Remap outputs
-
-	logic[NUM_PORTS-1:0]	wr_ack	= 0;
-	assign la0_wr_ack = wr_ack[0];
-	assign la1_wr_ack = wr_ack[1];
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Arbiter and deserialization to 256 bits
+	// Arbitration and deserialization to a single 256 bit stream in the 2x clock domain
 
 	//Round robin, then pick first available port if selected port is unavailable
-	logic			rr_source		= 0;
+	logic					rr_source		= 0;
+	logic					current_source;
 
-	logic			current_source;
+	logic[2:0]				burst_count		= 0;
+	logic					rd_phase		= 0;
 
-	logic[2:0]		burst_count		= 0;
-	wire[9:0]		fifo_wr_size;
-	logic			fifo_almost_full;
+	wire[9:0]				data_fifo_wr_size;
+	wire[8:0]				addr_fifo_wr_size;
+	logic					output_almost_full;
 
-	logic			fifo_wr_en_2x;
-	logic			fifo_wr_en;
-	logic[127:0]	fifo_wr_data_2x;
-	logic[127:0]	fifo_wr_data_2x_ff;
+	logic[NUM_PORTS-1:0]	input_data_ready	= 0;
 
-	//Writes have top priority as those are hard realtime
-	logic			fifo_wr_en_2x_ff	= 0;
+	logic					iaddr_rd_valid_adv	= 0;
+	logic					iaddr_rd_valid		= 0;
+	logic					idata_rd_valid_adv	= 0;
+	logic					idata_rd_valid		= 0;
+
+	logic					data_fifo_wr_en		= 0;
+	logic					addr_fifo_wr_en		= 0;
+
+	logic[127:0]			idata_rd_muxed;
+	logic[28:0]				iaddr_rd_muxed;
+
+	logic[29:0]				addr_fifo_wr_data;
+	logic[255:0]			data_fifo_wr_data;
+
 	always_comb begin
 
-		fifo_almost_full		= (fifo_wr_size < 4);
-		fifo_wr_en_2x			= 0;
+		//Make sure we have room in the output
+		output_almost_full		= (data_fifo_wr_size < 4) || (addr_fifo_wr_size < 2);
 
-		//Output mux to fifo
-		fifo_wr_data_2x			= wr_data[current_source];
-
-		//If starting a new burst, write to the FIFO
-		if(wr_ack)
-			fifo_wr_en_2x		= 1;
-
-		//If continuing a burst, write to the FIFO
-		if( (burst_count > 0) && wr_valid[current_source] )
-			fifo_wr_en_2x		= 1;
-
-		fifo_wr_en 				= fifo_wr_en_2x_ff && fifo_wr_en_2x;
+		//Main read muxes
+		idata_rd_muxed			= idata_rd_data[current_source];
+		iaddr_rd_muxed			= iaddr_rd_data[current_source];
 
 	end
 
+	enum logic
+	{
+		MIG_CMD_READ	= 1'b1,
+		MIG_CMD_WRITE	= 1'b0
+	} mig_cmd_t;
+
 	always_ff @(posedge clk_ram_2x) begin
 
-		wr_ack 					= 0;
+		//Check if there's something to read on the input
+		for(integer i=0; i<NUM_PORTS; i=i+1)
+			input_data_ready[i]	<= (idata_rd_size[i] >= 4) && (iaddr_rd_size[i] >= 1);
 
-		if(fifo_wr_en_2x)
-			fifo_wr_data_2x_ff	<= fifo_wr_data_2x;
-		fifo_wr_en_2x_ff		<= fifo_wr_en_2x;
+		//Default flags to off
+		idata_rd_en				= 0;
+		iaddr_rd_en				<= 0;
+		data_fifo_wr_en			<= 0;
+		addr_fifo_wr_en			<= 0;
 
-		//Burst already in progress, or data FIFO too full for a new burst? Do nothing
-		if( (burst_count != 0) || fifo_almost_full) begin
-		end
+		//Pipeline valid flags
+		iaddr_rd_valid_adv		<= (iaddr_rd_en != 0);
+		iaddr_rd_valid			<= iaddr_rd_valid_adv;
+		idata_rd_valid_adv		<= (idata_rd_en != 0);
+		idata_rd_valid			<= idata_rd_valid_adv;
 
-		//Controller can accept a command. Is the RR winner interested in writing?
-		else if(wr_en[rr_source]) begin
-			wr_ack[rr_source]	= 1;
-			current_source		= rr_source;
-			burst_count			<= 1;
-		end
+		//Ready to start a new burst?
+		if( (burst_count == 0) && !output_almost_full) begin
 
-		//Does anyone else want to send?
-		else begin
-			for(integer i=0; i<NUM_PORTS; i=i+1) begin
-				if(!wr_ack) begin
-					if(wr_en[i]) begin
-						wr_ack[i]		= 1;
-						current_source	= i;
-						burst_count			<= 1;
+			//Check if the round robin winner wants to send
+			if(input_data_ready[rr_source]) begin
+				idata_rd_en[rr_source]	= 1;
+				iaddr_rd_en[rr_source]	<= 1;
+				burst_count				<= 1;
+				current_source			<= rr_source;
+			end
+
+			//Check if anyone else wants to send
+			else begin
+				for(integer i=0; i<NUM_PORTS; i=i+1) begin
+					if(idata_rd_en != 0) begin
 					end
+
+					else if(input_data_ready[i]) begin
+						idata_rd_en[i]			= 1;
+						iaddr_rd_en[i]			<= 1;
+						burst_count				<= 1;
+						current_source			<= i;
+					end
+
 				end
 			end
+
 		end
 
-		//else nobody wants to send, do nothing
-
-		//Bump round robin counter
-		if(wr_ack) begin
-
+		//Bump round robin counter if starting a burst
+		if(burst_count == 1) begin
+			rr_source		<= rr_source + 1;
 			if( (rr_source + 1) >= NUM_PORTS)
 				rr_source	<= 0;
-			else
-				rr_source	<= rr_source + 1;
-
 		end
 
-		if(fifo_wr_en_2x) begin
+		//Keep track of position in a burst
+		if(burst_count > 0) begin
 			burst_count	<= burst_count + 1;
 			if(burst_count == 4)
 				burst_count	<= 0;
+			else
+				idata_rd_en[current_source]	<= 1;
+		end
+
+		//Push address/command to the FIFO
+		if(iaddr_rd_valid) begin
+			addr_fifo_wr_en		<= 1;
+			addr_fifo_wr_data	<= { MIG_CMD_WRITE, iaddr_rd_muxed };
+		end
+
+		//Push data to the FIFO
+		if(idata_rd_valid) begin
+			rd_phase			<= !rd_phase;
+			data_fifo_wr_data	<= { data_fifo_wr_data[127:0], idata_rd_muxed };
+			if(rd_phase)
+				data_fifo_wr_en	<= 1;
 		end
 
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// CDC FIFOs from fast to slow clock domain
-	// TODO: we don't actually need synchronizers here as the domains are related
 
 	wire[255:0]		fifo_rd_data;
 	wire[9:0]		data_fifo_rd_size;
-	logic			data_fifo_rd_en	= 0;
+	logic			data_fifo_rd_en	= 1;
 
 	CrossClockFifo #(
 		.WIDTH(256),
@@ -206,9 +244,9 @@ module MemoryArbiter(
 		.OUT_REG(1)
 	) wr_data_fifo (
 		.wr_clk(clk_ram_2x),
-		.wr_en(fifo_wr_en_2x),
-		.wr_data({fifo_wr_data_2x_ff, fifo_wr_data_2x}),
-		.wr_size(fifo_wr_size),
+		.wr_en(data_fifo_wr_en),
+		.wr_data(data_fifo_wr_data),
+		.wr_size(data_fifo_wr_size),
 		.wr_full(),
 		.wr_overflow(),
 		.wr_reset(1'b0),
@@ -222,28 +260,21 @@ module MemoryArbiter(
 		.rd_reset(1'b0)
 	);
 
-	enum logic
-	{
-		MIG_CMD_READ	= 1'b1,
-		MIG_CMD_WRITE	= 1'b0
-	} mig_cmd_t;
-
 	wire			fifo_rd_cmd;
 	wire[28:0]		fifo_rd_addr;
 
 	wire[8:0]		cmd_addr_fifo_rd_size;
-	wire			cmd_addr_fifo_empty;
-	logic			cmd_addr_fifo_rd_en	= 0;
+	logic			cmd_addr_fifo_rd_en	= 1;
 	CrossClockFifo #(
-		.WIDTH(29),
+		.WIDTH(30),
 		.DEPTH(256),
 		.USE_BLOCK(1),
 		.OUT_REG(1)
 	) cmd_addr_fifo (
 		.wr_clk(clk_ram_2x),
-		.wr_en( (wr_ack != 0)),
-		.wr_data({MIG_CMD_WRITE, wr_addr[current_source]}),
-		.wr_size(),
+		.wr_en(addr_fifo_wr_en),
+		.wr_data(addr_fifo_wr_data),
+		.wr_size(addr_fifo_wr_size),
 		.wr_full(),
 		.wr_overflow(),
 		.wr_reset(1'b0),
@@ -252,11 +283,12 @@ module MemoryArbiter(
 		.rd_en(cmd_addr_fifo_rd_en),
 		.rd_data({fifo_rd_cmd, fifo_rd_addr}),
 		.rd_size(cmd_addr_fifo_rd_size),
-		.rd_empty(cmd_addr_fifo_empty),
+		.rd_empty(),
 		.rd_underflow(),
 		.rd_reset(1'b0)
 	);
 
+	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pop the FIFOs into the MIG core
 
@@ -323,35 +355,39 @@ module MemoryArbiter(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug logic analyzer
-
+	*/
 	ila_1 ila(
 		.clk(clk_ram_2x),
 
-		.probe0(la0_wr_en),
-		.probe1(la0_wr_addr),
-		.probe2(la0_wr_ack),
-		.probe3(la1_wr_en),
-		.probe4(la1_wr_addr),
-		.probe5(la1_wr_ack),
-		.probe6(current_source),
-		.probe7(rr_source),
-		.probe8(la1_wr_valid),
-		.probe9(la0_wr_valid),
-		.probe10(fifo_wr_size),
-		.probe11(fifo_almost_full),
-		.probe12(fifo_wr_en_2x),
-		.probe13(fifo_wr_data_2x),
-		.probe14(burst_count),
-		.probe15(1'b0),
-		.probe16(fifo_wr_data_2x_ff),
-		.probe17(fifo_wr_en)
+		.probe0(la0_ram_data_rd_en),
+		.probe1(la0_ram_data_rd_size),
+		.probe2(la0_ram_addr_rd_en),
+		.probe3(la0_ram_addr_rd_size),
+		.probe4(la1_ram_data_rd_en),
+		.probe5(la1_ram_data_rd_size),
+		.probe6(la1_ram_addr_rd_en),
+		.probe7(la1_ram_addr_rd_size),
+		.probe8(data_fifo_wr_en),
+		.probe9(data_fifo_wr_size),
+		.probe10(addr_fifo_wr_en),
+		.probe11(addr_fifo_wr_size),
+		.probe12(output_almost_full),
+		.probe13(input_data_ready),
+		.probe14(iaddr_rd_valid),
+		.probe15(idata_rd_valid),
+		.probe16(data_fifo_wr_data),
+		.probe17(addr_fifo_wr_data),
+		.probe18(rr_source),
+		.probe19(current_source),
+		.probe20(rd_phase),
+		.probe21(burst_count)
 	);
 
 	ila_0 ila0(
 		.clk(clk_ram),
 		.probe0(data_fifo_rd_size),
 		.probe1(cmd_addr_fifo_rd_size),
-		.probe2(cmd_addr_fifo_empty),
+		.probe2(app_rdy),
 		.probe3(fifo_rd_cmd),
 		.probe4(fifo_rd_addr),
 		.probe5(fifo_rd_data),
@@ -362,11 +398,7 @@ module MemoryArbiter(
 		.probe10(app_cmd),
 		.probe11(app_en),
 		.probe12(data_fifo_rd_en),
-		.probe13(cmd_addr_fifo_rd_en),
-		.probe14(out_phase),
-		.probe15(cmd_addr_fifo_rd_valid),
-		.probe16(data_fifo_rd_valid),
-		.probe17(app_rdy)
+		.probe13(cmd_addr_fifo_rd_en)
 	);
 
 endmodule

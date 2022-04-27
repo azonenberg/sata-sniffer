@@ -343,7 +343,7 @@ set_false_path -from [get_pins la/la1_clocks/phase_ctl/oserdes/CLK] -to [get_pin
 set_max_delay -from [get_pins -hierarchical -filter { NAME =~  "*la*" && NAME =~  "*la*_path*" && NAME =~  "*iserdes*" && NAME =~  "*Q*" }] -to [get_cells -hierarchical -filter { NAME =~  "*la*_path*" && NAME =~  "*fast_data_ff*" }] 0.600
 
 # Path through LUTRAM FIFO can take a little while as it's multicycle
-set_max_delay -from [get_clocks *625mhz_fabric*] -through [get_cells -hierarchical *fifomem*] -to [get_clocks *312p5mhz*] 3.200
+set_max_delay -datapath_only -from [get_clocks *625mhz_fabric*] -through [get_cells -hierarchical *fifomem*] -to [get_clocks *312p5mhz*] 3.200
 
 # Shove slow UART stuff off in the top left
 create_pblock pblock_slow_control
@@ -420,10 +420,13 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_cl
 set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_clocks la1_clk_312p5mhz]
 
 
-set_max_delay -datapath_only -from [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*fifo*" && NAME =~  "*sync*" && NAME =~  "*reg_a_ff*" }] -to [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*sync*" && NAME =~  "*reg_b_reg*" }] 3.200
 
-set_max_delay -datapath_only -from [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*sync*" && NAME =~  "*dout0_reg*" }] -to [get_cells -hierarchical -filter { NAME =~  "*mem*" && NAME =~  "*arbiter*" && NAME =~  "*sync*" && NAME =~  "*dout1_reg*" }] 3.200
 
+
+
+set _xlnx_shared_i0 [get_nets -hierarchical -filter { NAME =~  "*sync*" && NAME =~  "*reg_a_ff*" || NAME =~  "*dout0*" }]
+set_max_delay -datapath_only -from [get_clocks *clk_ram_2x_*] -through $_xlnx_shared_i0 -to [get_clocks clk_ram] 3.200
+set_max_delay -datapath_only -from [get_clocks clk_ram] -through $_xlnx_shared_i0 -to [get_clocks *clk_ram_2x_*] 3.200
 
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]

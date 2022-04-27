@@ -43,29 +43,30 @@ module LogicPodDatapath #(
 ) (
 
 	//Main clock
-	input wire				clk_312p5mhz,
+	input wire			clk_312p5mhz,
 
 	//Reference clock for IDELAYs
-	input wire				clk_400mhz,
+	input wire			clk_400mhz,
 
 	//Oversampling clocks
-	input wire				clk_625mhz_fabric,
-	input wire				clk_625mhz_io_0,
-	input wire				clk_625mhz_io_90,
+	input wire			clk_625mhz_fabric,
+	input wire			clk_625mhz_io_0,
+	input wire			clk_625mhz_io_90,
 
 	//LVDS input
-	input wire[7:0]			pod_data_p,
-	input wire[7:0]			pod_data_n,
+	input wire[7:0]		pod_data_p,
+	input wire[7:0]		pod_data_n,
 
 	//DDR interface
-	input wire				clk_ram,
-	input wire				clk_ram_2x,
-	input wire				ram_ready,
-	output logic			ram_wr_en		= 0,
-	output logic			ram_wr_valid	= 0,
-	output logic[28:0]		ram_wr_addr		= 0,
-	output logic[127:0]		ram_wr_data		= 0,
-	input wire				ram_wr_ack
+	input wire			clk_ram_2x,
+	input wire			ram_ready,
+
+	input wire			ram_data_rd_en,
+	output wire[127:0]	ram_data_rd_data,
+	output wire[9:0]	ram_data_rd_size,
+	input wire			ram_addr_rd_en,
+	output wire[28:0]	ram_addr_rd_data,
+	output wire[7:0]	ram_addr_rd_size
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,9 +146,9 @@ module LogicPodDatapath #(
 
 	ThreeStageSynchronizer #(
 		.INIT(0),
-		.IN_REG(1)
+		.IN_REG(0)
 	) sync_armed(
-		.clk_in(clk_ram),
+		.clk_in(clk_312p5mhz),
 		.din(armed),
 		.clk_out(clk_312p5mhz),
 		.dout(armed_sync)
@@ -294,7 +295,6 @@ module LogicPodDatapath #(
 	logic[7:0]		fifo_rd_en			= 0;
 	wire[127:0]		fifo_rd_data[7:0];
 	wire[9:0]		fifo_rd_size[7:0];
-	wire[7:0]		fifo_rd_empty;
 	logic[7:0]		fifo_half_full		 = 0;
 	logic[7:0]		fifo_burst_ready	 = 0;
 
@@ -386,7 +386,7 @@ module LogicPodDatapath #(
 			.rd_en(fifo_rd_en[g]),
 			.rd_data(fifo_rd_data[g]),
 			.rd_size(fifo_rd_size[g]),
-			.rd_empty(fifo_rd_empty),
+			.rd_empty(),
 			.rd_underflow(),
 			.rd_reset(1'b0)
 		);
@@ -399,18 +399,13 @@ module LogicPodDatapath #(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Arbitration for compressed blocks into DRAM
+	// First level of arbitration: 8 lanes down to 1
 
 	/*
 		RAM clock domain is 162.5 MHz, 256 bits native bus. Need to deliver bursts on two consecutive clocks.
 		So final FIFO to RAM should be 256b wide
 
-		Save mux area by doing 4-cycle 128-bit bursts at 325 MHz?
-
-		Each burst is 512 bits in size
-
-		Ultimately we have to deliver 512-bit blocks (two consecutive 256-bit words) to the RAM.
-		We can save area if we keep buses and FIFOs narrow and do a lot of the muxing in the fast clock domain.
+		Save mux area by doing 4-cycle 128-bit bursts at 325 MHz for this phase.
 	 */
 
 	//0		idle, nothing in flight
@@ -421,6 +416,11 @@ module LogicPodDatapath #(
 	logic		write_start		= 0;
 	logic[2:0]	write_channel	= 0;
 
+	logic		can_start_write;
+
+	wire[9:0]	data_fifo_wr_size;
+	wire[7:0]	addr_fifo_wr_size;
+
 	always_comb begin
 
 		fifo_rd_en	= 0;
@@ -428,36 +428,38 @@ module LogicPodDatapath #(
 		//Read first word as soon as we have something to send
 		if(write_start)
 			fifo_rd_en[write_channel]	= 1;
-
-		//Read next word when arbitration completes
-		if(ram_wr_ack)
+		if( (write_phase > 0) && (write_phase < 4) )
 			fifo_rd_en[write_channel]	= 1;
 
-		if( (write_phase == 2) || (write_phase == 3) )
-			fifo_rd_en[write_channel]	= 1;
+		//We can start a write if we're idle, or if on the last cycle of the previous one
+		//(and not starting a new write)
+		can_start_write = ((write_phase == 0) || (write_phase == 4)) && !write_start && DEBUG_START;
 
 	end
 
+	logic	hit = 0;
+
 	always_ff @(posedge clk_ram_2x) begin
 
-		if( (write_phase == 0) && !write_start) begin
+		hit = 0;
 
-			//Default to not forwarding anything
-			write_start	= 0;
+		//Think about starting a write if we're in the right phase, and have space
+		//(need 4 free slots for this burst, plus one more if a write is currently active)
+		if( can_start_write && (data_fifo_wr_size > 4) && (addr_fifo_wr_size > 1) ) begin
 
 			//Pass 1: read from highest numbered channel that's more than half full in the big fifo
 			for(integer i=0; i<8; i=i+1) begin
 				if(fifo_half_full[i]) begin
-					write_start	= 1;
+					hit	= 1;
 					write_channel = i;
 				end
 			end
 
 			//Pass 2: read from highest numbered channel with any data (note that a full burst is required)
-			if(!write_start) begin
+			if(!hit) begin
 				for(integer i=0; i<8; i=i+1) begin
 					if(fifo_burst_ready[i]) begin
-						write_start	= 1;
+						hit	= 1;
 						write_channel = i;
 					end
 				end
@@ -465,14 +467,12 @@ module LogicPodDatapath #(
 
 		end
 
-		else
-			write_start	= 0;
+		write_start	<= hit;
 
 	end
 
-
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Main pipelined mux path
+	// Pop the channel FIFOs into the output FIFO
 
 	//Each LA channel has 0x200000 (2^22) 256-bit storage locations
 	(* RAM_STYLE = "distributed" *)
@@ -482,34 +482,37 @@ module LogicPodDatapath #(
 			dram_wr_ptr[i] <= 0;
 	end
 
-	logic			fifo_rd_valid	= 0;
-
-	logic			ram_wr_valid_adv	= 0;
+	logic			fifo_rd_valid		= 0;
 	logic[2:0]		write_channel_ff	= 0;
 
-	wire	DEBUG_EN;
+	logic			data_fifo_wr_en_adv	= 0;
+	logic			data_fifo_wr_en		= 0;
+	logic[127:0]	data_fifo_wr_data	= 0;
+
+	logic			addr_fifo_wr_en		= 0;
+	logic[28:0]		addr_fifo_wr_data	= 0;
+
+	wire DEBUG_START;
 
 	always_ff @(posedge clk_ram_2x) begin
 
-		//Clear request once ack comes in
-		if(ram_wr_ack)
-			ram_wr_en			<= 0;
-
 		//Pipeline write data (fifo read output has extra pipeline stage to improve timing)
 		fifo_rd_valid			<= fifo_rd_en[write_channel];
-		ram_wr_valid_adv		<= fifo_rd_valid;
+		data_fifo_wr_en_adv		<= fifo_rd_valid;
 		write_channel_ff		<= write_channel;
 
 		//Mux write output (second stage)
-		ram_wr_valid			<= ram_wr_valid_adv;
-		ram_wr_data				<= fifo_rd_data[write_channel_ff];
+		data_fifo_wr_en			<= data_fifo_wr_en_adv;
+		data_fifo_wr_data		<= fifo_rd_data[write_channel_ff];
 
 		//Start a new write cycle
-		if(write_start && DEBUG_EN) begin
-			write_phase			<= 1;
+		addr_fifo_wr_en			<= 0;
+		if(write_start) begin
+			write_phase			<= write_phase + 1;
 
-			ram_wr_en			<= 1;
-			ram_wr_addr			<=
+			//address fifo todo
+			addr_fifo_wr_en		<= 1;
+			addr_fifo_wr_data	<=
 			{
 				1'b1,
 				POD_NUMBER[0],
@@ -520,63 +523,86 @@ module LogicPodDatapath #(
 
 			//Bump pointer
 			dram_wr_ptr[write_channel]	<= dram_wr_ptr[write_channel] + 1;
+
 		end
 
-
-		case(write_phase)
-
-			//Begin burst as soon as we get the ACK from the arbiter
-			1: begin
-				if(ram_wr_ack)
-					write_phase		<= 2;
-			end
-
-			//Continue existing burst
-			2:	write_phase		<= 3;
-			3:	write_phase		<= 4;
-
-			//Done with burst
-			4:	write_phase		<= 0;
-
-		endcase
+		//Continue existing write cycle
+		if(write_phase == 4)
+			write_phase <= 0;
+		else if(write_phase > 0)
+			write_phase	<= write_phase + 1;
 
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug ILA
+	// FIFOs on output of mux path
 
-	/*
-	if(POD_NUMBER == 0) begin
-		ila_0 ila(
-			.clk(clk_ram_2x),
-			.probe0(write_phase),
-			.probe1(write_start),
-			.probe2(write_channel),
-			.probe3(fifo_rd_en),
-			.probe4(fifo_half_full),
-			.probe5(fifo_rd_size[0]),
-			.probe6(fifo_rd_size[1]),
-			.probe7(fifo_rd_size[2]),
-			.probe8(fifo_rd_size[3]),
-			.probe9(fifo_rd_size[4]),
-			.probe10(fifo_rd_size[5]),
-			.probe11(fifo_rd_size[6]),
-			.probe12(fifo_rd_size[7]),
-			.probe13(ram_wr_en),
-			.probe14(ram_wr_addr),
-			.probe15(ram_wr_data),
-			.probe16(ram_wr_ack),
-			.probe17(fifo_burst_ready),
-			.probe18(fifo_rd_data[0][15:0]),
-			.probe19(ram_wr_valid),
-			.probe20(fifo_rd_valid)
-		);
-	end
-	*/
+	SingleClockFifo #(
+		.WIDTH(128),
+		.DEPTH(512),
+		.USE_BLOCK(1),
+		.OUT_REG(2)
+	) data_fifo (
+
+		.clk(clk_ram_2x),
+		.full(),
+		.overflow(),
+		.reset(1'b0),
+		.empty(),
+		.underflow(),
+
+		.wr(data_fifo_wr_en),
+		.din(data_fifo_wr_data),
+		.wsize(data_fifo_wr_size),
+
+		.rd(ram_data_rd_en),
+		.dout(ram_data_rd_data),
+		.rsize(ram_data_rd_size)
+	);
+
+	SingleClockFifo #(
+		.WIDTH(29),
+		.DEPTH(128),
+		.USE_BLOCK(1),
+		.OUT_REG(2)
+	) addr_fifo (
+
+		.clk(clk_ram_2x),
+		.full(),
+		.overflow(),
+		.reset(1'b0),
+		.empty(),
+		.underflow(),
+
+		.wr(addr_fifo_wr_en),
+		.din(addr_fifo_wr_data),
+		.wsize(addr_fifo_wr_size),
+
+		.rd(ram_addr_rd_en),
+		.dout(ram_addr_rd_data),
+		.rsize(ram_addr_rd_size)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug logic analyzer
+
+	ila_2 ila(
+		.clk(clk_ram_2x),
+		.probe0(data_fifo_wr_en),
+		.probe1(addr_fifo_wr_en),
+		.probe2(fifo_rd_valid),
+		.probe3(data_fifo_wr_en_adv),
+		.probe4(data_fifo_wr_en_adv),
+		.probe5(write_start),
+		.probe6(write_phase),
+		.probe7(can_start_write),
+		.probe8(data_fifo_wr_size),
+		.probe9(addr_fifo_wr_size)
+	);
 
 	vio_0 vio(
 		.clk(clk_ram_2x),
-		.probe_out0(DEBUG_EN)
+		.probe_out0(DEBUG_START)
 	);
 
 endmodule

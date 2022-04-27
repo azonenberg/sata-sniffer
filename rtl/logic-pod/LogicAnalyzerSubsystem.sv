@@ -32,7 +32,6 @@ module LogicAnalyzerSubsystem(
 	//Global clocks
 	input wire			clk_125mhz,
 	input wire			clk_400mhz,
-	input wire			clk_ram,
 	input wire			clk_ram_2x,
 
 	//Top level pins
@@ -60,17 +59,19 @@ module LogicAnalyzerSubsystem(
 	output wire			la1_align_done,
 
 	//Ports to top level DDR arbiter
-	output wire			la0_ram_wr_en,
-	output wire			la0_ram_wr_valid,
-	output wire[28:0]	la0_ram_wr_addr,
-	output wire[127:0]	la0_ram_wr_data,
-	input wire			la0_ram_wr_ack,
+	input wire			la0_ram_data_rd_en,
+	output wire[127:0]	la0_ram_data_rd_data,
+	output wire[9:0]	la0_ram_data_rd_size,
+	input wire			la0_ram_addr_rd_en,
+	output wire[28:0]	la0_ram_addr_rd_data,
+	output wire[7:0]	la0_ram_addr_rd_size,
 
-	output wire			la1_ram_wr_en,
-	output wire			la1_ram_wr_valid,
-	output wire[28:0]	la1_ram_wr_addr,
-	output wire[127:0]	la1_ram_wr_data,
-	input wire			la1_ram_wr_ack
+	input wire			la1_ram_data_rd_en,
+	output wire[127:0]	la1_ram_data_rd_data,
+	output wire[9:0]	la1_ram_data_rd_size,
+	input wire			la1_ram_addr_rd_en,
+	output wire[28:0]	la1_ram_addr_rd_data,
+	output wire[7:0]	la1_ram_addr_rd_size
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,14 +147,14 @@ module LogicAnalyzerSubsystem(
 		.pod_data_p(la0_p),
 		.pod_data_n(la0_n),
 
-		.clk_ram(clk_ram),
 		.clk_ram_2x(clk_ram_2x),
 		.ram_ready(ram_ready),
-		.ram_wr_en(la0_ram_wr_en),
-		.ram_wr_valid(la0_ram_wr_valid),
-		.ram_wr_addr(la0_ram_wr_addr),
-		.ram_wr_data(la0_ram_wr_data),
-		.ram_wr_ack(la0_ram_wr_ack)
+		.ram_data_rd_en(la0_ram_data_rd_en),
+		.ram_data_rd_data(la0_ram_data_rd_data),
+		.ram_data_rd_size(la0_ram_data_rd_size),
+		.ram_addr_rd_en(la0_ram_addr_rd_en),
+		.ram_addr_rd_data(la0_ram_addr_rd_data),
+		.ram_addr_rd_size(la0_ram_addr_rd_size)
 		);
 
 	LogicPodDatapath #(
@@ -168,14 +169,14 @@ module LogicAnalyzerSubsystem(
 		.pod_data_p(la1_p),
 		.pod_data_n(la1_n),
 
-		.clk_ram(clk_ram),
 		.clk_ram_2x(clk_ram_2x),
 		.ram_ready(ram_ready),
-		.ram_wr_en(la1_ram_wr_en),
-		.ram_wr_valid(la1_ram_wr_valid),
-		.ram_wr_addr(la1_ram_wr_addr),
-		.ram_wr_data(la1_ram_wr_data),
-		.ram_wr_ack(la1_ram_wr_ack)
+		.ram_data_rd_en(la1_ram_data_rd_en),
+		.ram_data_rd_data(la1_ram_data_rd_data),
+		.ram_data_rd_size(la1_ram_data_rd_size),
+		.ram_addr_rd_en(la1_ram_addr_rd_en),
+		.ram_addr_rd_data(la1_ram_addr_rd_data),
+		.ram_addr_rd_size(la1_ram_addr_rd_size)
 		);
 
 endmodule
