@@ -137,7 +137,7 @@ module MemoryArbiter(
 	always_comb begin
 
 		//Make sure we have room in the output
-		output_almost_full		= (data_fifo_wr_size < 4) || (addr_fifo_wr_size < 2);
+		output_almost_full		= (data_fifo_wr_size < 5) || (addr_fifo_wr_size < 2);
 
 		//Main read muxes
 		idata_rd_muxed			= idata_rd_data[current_source];
@@ -151,6 +151,25 @@ module MemoryArbiter(
 		MIG_CMD_WRITE	= 1'b0
 	} mig_cmd_t;
 
+	logic	can_start_burst;
+
+	always_comb begin
+
+		//Can't do anything if no space in output
+		if(output_almost_full)
+			 can_start_burst = 0;
+
+		//Can start a new burst if idle, or in the last cycle of an existing one
+		else if( (burst_count == 0) || (burst_count == 4) )
+			can_start_burst = 1;
+
+		//Nope, busy with an existing burst
+		else
+			can_start_burst = 0;
+
+	end
+
+	logic	hit = 0;
 	always_ff @(posedge clk_ram_2x) begin
 
 		//Check if there's something to read on the input
@@ -158,7 +177,7 @@ module MemoryArbiter(
 			input_data_ready[i]	<= (idata_rd_size[i] >= 4) && (iaddr_rd_size[i] >= 1);
 
 		//Default flags to off
-		idata_rd_en				= 0;
+		idata_rd_en				<= 0;
 		iaddr_rd_en				<= 0;
 		data_fifo_wr_en			<= 0;
 		addr_fifo_wr_en			<= 0;
@@ -168,35 +187,6 @@ module MemoryArbiter(
 		iaddr_rd_valid			<= iaddr_rd_valid_adv;
 		idata_rd_valid_adv		<= (idata_rd_en != 0);
 		idata_rd_valid			<= idata_rd_valid_adv;
-
-		//Ready to start a new burst?
-		if( (burst_count == 0) && !output_almost_full) begin
-
-			//Check if the round robin winner wants to send
-			if(input_data_ready[rr_source]) begin
-				idata_rd_en[rr_source]	= 1;
-				iaddr_rd_en[rr_source]	<= 1;
-				burst_count				<= 1;
-				current_source			<= rr_source;
-			end
-
-			//Check if anyone else wants to send
-			else begin
-				for(integer i=0; i<NUM_PORTS; i=i+1) begin
-					if(idata_rd_en != 0) begin
-					end
-
-					else if(input_data_ready[i]) begin
-						idata_rd_en[i]			= 1;
-						iaddr_rd_en[i]			<= 1;
-						burst_count				<= 1;
-						current_source			<= i;
-					end
-
-				end
-			end
-
-		end
 
 		//Bump round robin counter if starting a burst
 		if(burst_count == 1) begin
@@ -212,6 +202,37 @@ module MemoryArbiter(
 				burst_count	<= 0;
 			else
 				idata_rd_en[current_source]	<= 1;
+		end
+
+		//Ready to start a new burst?
+		if(can_start_burst) begin
+
+			hit = 0;
+
+			//Check if the round robin winner wants to send
+			if(input_data_ready[rr_source]) begin
+				hit 					= 1;
+				current_source			= rr_source;
+			end
+
+			//Check if anyone else wants to send
+			else begin
+				for(integer i=0; i<NUM_PORTS; i=i+1) begin
+					if(!hit && input_data_ready[i]) begin
+						hit 			= 1;
+						current_source	= i;
+					end
+
+				end
+			end
+
+			//If somebody wants to send, make it happen
+			if(hit) begin
+				idata_rd_en[current_source]	<= 1;
+				iaddr_rd_en[current_source]	<= 1;
+				burst_count					<= 1;
+			end
+
 		end
 
 		//Push address/command to the FIFO
@@ -380,7 +401,8 @@ module MemoryArbiter(
 		.probe18(rr_source),
 		.probe19(current_source),
 		.probe20(rd_phase),
-		.probe21(burst_count)
+		.probe21(burst_count),
+		.probe22(can_start_burst)
 	);
 
 	ila_0 ila0(

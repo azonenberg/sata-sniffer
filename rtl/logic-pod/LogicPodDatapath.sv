@@ -433,7 +433,7 @@ module LogicPodDatapath #(
 
 		//We can start a write if we're idle, or if on the last cycle of the previous one
 		//(and not starting a new write)
-		can_start_write = ((write_phase == 0) || (write_phase >= 3)) && !write_start && DEBUG_START;
+		can_start_write = ((write_phase == 0) || (write_phase >= 3)) && !write_start;
 
 	end
 
@@ -491,8 +491,6 @@ module LogicPodDatapath #(
 
 	logic			addr_fifo_wr_en		= 0;
 	logic[28:0]		addr_fifo_wr_data	= 0;
-
-	wire DEBUG_START;
 
 	always_ff @(posedge clk_ram_2x) begin
 
@@ -583,29 +581,6 @@ module LogicPodDatapath #(
 		.rd(ram_addr_rd_en),
 		.dout(ram_addr_rd_data),
 		.rsize(ram_addr_rd_size)
-	);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug logic analyzer
-
-	ila_2 ila(
-		.clk(clk_ram_2x),
-		.probe0(data_fifo_wr_en),
-		.probe1(addr_fifo_wr_en),
-		.probe2(fifo_rd_valid),
-		.probe3(data_fifo_wr_en_adv),
-		.probe4(data_fifo_wr_en_adv),
-		.probe5(write_start),
-		.probe6(write_phase),
-		.probe7(can_start_write),
-		.probe8(data_fifo_wr_size),
-		.probe9(addr_fifo_wr_size),
-		.probe10(write_channel)
-	);
-
-	vio_0 vio(
-		.clk(clk_ram_2x),
-		.probe_out0(DEBUG_START)
 	);
 
 endmodule
