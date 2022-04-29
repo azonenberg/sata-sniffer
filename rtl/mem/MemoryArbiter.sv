@@ -256,7 +256,7 @@ module MemoryArbiter(
 
 	wire[255:0]		fifo_rd_data;
 	wire[9:0]		data_fifo_rd_size;
-	logic			data_fifo_rd_en	= 1;
+	logic			data_fifo_rd_en	= 0;
 
 	CrossClockFifo #(
 		.WIDTH(256),
@@ -285,7 +285,8 @@ module MemoryArbiter(
 	wire[28:0]		fifo_rd_addr;
 
 	wire[8:0]		cmd_addr_fifo_rd_size;
-	logic			cmd_addr_fifo_rd_en	= 1;
+	logic			cmd_addr_fifo_rd_en	= 0;
+	wire			cmd_addr_fifo_empty;
 	CrossClockFifo #(
 		.WIDTH(30),
 		.DEPTH(256),
@@ -304,80 +305,97 @@ module MemoryArbiter(
 		.rd_en(cmd_addr_fifo_rd_en),
 		.rd_data({fifo_rd_cmd, fifo_rd_addr}),
 		.rd_size(cmd_addr_fifo_rd_size),
-		.rd_empty(),
+		.rd_empty(cmd_addr_fifo_empty),
 		.rd_underflow(),
 		.rd_reset(1'b0)
 	);
 
-	/*
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pop the FIFOs into the MIG core
 
 	logic	out_phase	 = 0;
 
 	logic	fifos_ready_to_start;
+	logic	outputs_ready;
+	logic	cmd_addr_fifo_rd_valid	= 0;
+	logic	out_phase_adv			= 0;
+
+	wire	VIO_RDY;
 
 	always_comb begin
 
 		cmd_addr_fifo_rd_en	= 0;
 		data_fifo_rd_en		= 0;
+		out_phase_adv		= 0;
 
 		//Check if FIFOs are ready for us to begin (one command and two data words available)
 		fifos_ready_to_start	= (!cmd_addr_fifo_empty) && (data_fifo_rd_size >= 2);
+		outputs_ready			= app_rdy && app_wdf_rdy;
 
 		//Idle? Pop data+command FIFO if they're ready
-		if(!out_phase && fifos_ready_to_start && app_rdy && app_wdf_rdy) begin
+		//(but only if we finished processing the previous command)
+		if(fifos_ready_to_start && outputs_ready && !cmd_addr_fifo_rd_valid) begin
 			cmd_addr_fifo_rd_en		= 1;
 			data_fifo_rd_en			= 1;
+			out_phase_adv			= 1;
 		end
 
-		//Read second half of a word
-		if(out_phase)
+		//Read second half of a word (but only if we're ready to accept the current one)
+		if(out_phase && data_fifo_rd_valid && !cmd_addr_fifo_rd_en && app_wdf_rdy)
 			data_fifo_rd_en			= 1;
 
 	end
 
-	logic	cmd_addr_fifo_rd_valid	= 0;
 	logic	data_fifo_rd_valid		= 0;
+	logic	out_phase_ff			= 0;
 	always_ff @(posedge clk_ram) begin
 
-		//Clear single cycle flags
-		app_en			<= 0;
-		app_wdf_wren	<= 0;
-		app_wdf_end		<= 0;
+		data_fifo_rd_valid	<= data_fifo_rd_en;
+		out_phase			<= out_phase_adv;
+		out_phase_ff		<= out_phase;
 
-		//Now in second half of a word
+		//Write FIFO ready? Can process write events
+		if(app_wdf_rdy) begin
+			app_wdf_wren	<= 0;
+			app_wdf_end		<= 0;
+
+			if(data_fifo_rd_valid) begin
+				app_wdf_wren	<= 1;
+				app_wdf_mask	<= 0;
+				app_wdf_data	<= data_fifo_rd_valid;
+				app_wdf_end		<= out_phase_ff;	//second half of burst?
+			end
+		end
+
+		//Write FIFO is not ready! Freeze and don't do anything
+		else begin
+		end
+
+		//Command FIFO ready? Can process commands
+		if(app_rdy) begin
+
+			//Clear single cycle flags
+			app_en			<= 0;
+
+			if(cmd_addr_fifo_rd_valid) begin
+				app_cmd 				<= {2'b0, fifo_rd_cmd };
+				app_addr				<= fifo_rd_addr;
+				app_en					<= 1;
+				cmd_addr_fifo_rd_valid	<= 0;
+			end
+
+		end
+
+		//This has to be at end to take precedence over clearing the valid flag when dispatching a new command
 		if(cmd_addr_fifo_rd_en)
-			out_phase	<= 1;
-
-		//Done
-		if(out_phase)
-			out_phase	<= 0;
-
-		//Forward outputs to controller
-		//TODO: combinatorial if we can afford this?
-		cmd_addr_fifo_rd_valid	<= cmd_addr_fifo_rd_en;
-		data_fifo_rd_valid		<= data_fifo_rd_en;
-
-		if(cmd_addr_fifo_rd_valid) begin
-			app_cmd 	<= {2'b0, fifo_rd_cmd };
-			app_addr	<= fifo_rd_addr;
-			app_en		<= 1;
-		end
-
-		if(data_fifo_rd_valid) begin
-			app_wdf_wren	<= 1;
-			app_wdf_mask	<= 0;
-			app_wdf_data	<= data_fifo_rd_valid;
-			app_wdf_end		<= !cmd_addr_fifo_rd_valid;	//second half of burst?
-		end
+			cmd_addr_fifo_rd_valid	<= 1;
 
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug logic analyzer
-	*/
-	ila_1 ila(
+
+	ila_1 ila1(
 		.clk(clk_ram_2x),
 
 		.probe0(la0_ram_data_rd_en),
@@ -395,15 +413,22 @@ module MemoryArbiter(
 		.probe12(output_almost_full),
 		.probe13(input_data_ready),
 		.probe14(iaddr_rd_valid),
-		.probe15(idata_rd_valid),
-		.probe16(data_fifo_wr_data),
-		.probe17(addr_fifo_wr_data),
-		.probe18(rr_source),
-		.probe19(current_source),
-		.probe20(rd_phase),
-		.probe21(burst_count),
-		.probe22(can_start_burst)
+		.probe15(idata_rd_valid)
 	);
+
+	//Performance counters for debug
+	logic[31:0] app_commands 		= 0;
+	logic[31:0] app_write_bursts	= 0;
+	logic[31:0]	app_write_words		= 0;
+
+	always_ff @(posedge clk_ram) begin
+		if(app_en && app_rdy)
+			app_commands		<= app_commands + 1;
+		if(app_wdf_wren && app_wdf_rdy)
+			app_write_words		<= app_write_words + 1;
+		if(app_wdf_wren && app_wdf_rdy && app_wdf_end)
+			app_write_bursts	<= app_write_bursts + 1;
+	end
 
 	ila_0 ila0(
 		.clk(clk_ram),
@@ -420,7 +445,17 @@ module MemoryArbiter(
 		.probe10(app_cmd),
 		.probe11(app_en),
 		.probe12(data_fifo_rd_en),
-		.probe13(cmd_addr_fifo_rd_en)
+		.probe13(cmd_addr_fifo_rd_en),
+		.probe14(out_phase),
+		.probe15(fifos_ready_to_start),
+		.probe16(app_commands),
+		.probe17(app_write_words),
+		.probe18(app_write_bursts),
+		.probe19(cmd_addr_fifo_rd_valid),
+		.probe20(outputs_ready),
+		.probe21(data_fifo_rd_valid),
+		.probe22(out_phase_adv),
+		.probe23(out_phase_ff)
 	);
 
 endmodule
