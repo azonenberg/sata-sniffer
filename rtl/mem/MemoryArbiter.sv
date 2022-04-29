@@ -362,7 +362,7 @@ module MemoryArbiter(
 			if(data_fifo_rd_valid) begin
 				app_wdf_wren	<= 1;
 				app_wdf_mask	<= 0;
-				app_wdf_data	<= data_fifo_rd_valid;
+				app_wdf_data	<= fifo_rd_data;
 				app_wdf_end		<= out_phase_ff;	//second half of burst?
 			end
 		end
@@ -394,7 +394,7 @@ module MemoryArbiter(
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug logic analyzer
-
+	/*
 	ila_1 ila1(
 		.clk(clk_ram_2x),
 
@@ -457,5 +457,6 @@ module MemoryArbiter(
 		.probe22(out_phase_adv),
 		.probe23(out_phase_ff)
 	);
+	*/
 
 endmodule
