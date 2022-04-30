@@ -393,7 +393,79 @@ module MemoryArbiter(
 	end
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Performance counters
+
+	localparam CLK_RAM_HZ = 162500000;
+
+	logic[31:0] count_1hz	= 0;
+	logic		pps			= 0;
+
+	logic[31:0]	running_app_cmds		= 0;
+	logic[31:0]	running_write_bursts	= 0;
+	logic[31:0]	running_write_words		= 0;
+	logic[31:0] running_app_unavail		= 0;
+	logic[31:0] running_write_unavail	= 0;
+	logic[31:0] running_app_unused		= 0;
+
+	logic[31:0]	ops_per_sec				= 0;
+	logic[31:0] write_mbps				= 0;
+	logic[31:0]	overhead_mbps			= 0;
+	logic[31:0] avail_mbps				= 0;
+
+	always_ff @(posedge clk_ram) begin
+
+		//1 Hz counter
+		count_1hz		<= count_1hz + 1;
+		pps				<= 0;
+
+		if(count_1hz == (CLK_RAM_HZ - 1) ) begin
+			pps			<= 1;
+			count_1hz	<= 0;
+		end
+
+		//Running counter of events
+		if(app_en && app_rdy)
+			running_app_cmds		<= running_app_cmds + 1;
+		if(app_wdf_wren && app_wdf_rdy)
+			running_write_words		<= running_write_words + 1;
+		if(app_wdf_wren && app_wdf_rdy && app_wdf_end)
+			running_write_bursts	<= running_write_bursts + 1;
+		if(!app_rdy)
+			running_app_unavail		<= running_app_unavail + 1;
+		if(app_rdy && !app_en)
+			running_app_unused		<= running_app_unused + 1;
+
+		//Process the last second's events
+		if(pps) begin
+
+			//Calculate values from counters
+			//Each word is 256 bits, so 4096 (2^12) words/sec is 1 Mbps
+			ops_per_sec				<= running_app_cmds;
+			write_mbps				<= running_write_words[31:12];
+			overhead_mbps			<= running_app_unavail[31:12];
+			avail_mbps				<= running_app_unused[31:12];
+
+			//Reset counters
+			running_app_cmds		<= 0;
+			running_write_words		<= 0;
+			running_write_bursts	<= 0;
+			running_app_unavail		<= 0;
+			running_write_unavail	<= 0;
+			running_app_unused		<= 0;
+		end
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug logic analyzer
+
+	vio_0 vio(
+		.clk(clk_ram),
+		.probe_in0(ops_per_sec),
+		.probe_in1(write_mbps),
+		.probe_in2(overhead_mbps),
+		.probe_in3(avail_mbps)
+		);
+
 	/*
 	ila_1 ila1(
 		.clk(clk_ram_2x),

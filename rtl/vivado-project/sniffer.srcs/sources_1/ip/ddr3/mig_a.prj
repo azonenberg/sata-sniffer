@@ -46,7 +46,7 @@
     <MemoryDevice>DDR3_SDRAM/SODIMMs/MT8KTF25664HZ-1G4</MemoryDevice>
     <TimePeriod>3076</TimePeriod>
     <VccAuxIO>1.8V</VccAuxIO>
-    <PHYRatio>4:1</PHYRatio>
+    <PHYRatio>2:1</PHYRatio>
     <InputClkFreq>200.06</InputClkFreq>
     <UIExtraClocks>0</UIExtraClocks>
     <MMCM_VCO>650</MMCM_VCO>
@@ -60,7 +60,7 @@
     <DataMask>1</DataMask>
     <ECC>Disabled</ECC>
     <Ordering>Normal</Ordering>
-    <BankMachineCnt>4</BankMachineCnt>
+    <BankMachineCnt>2</BankMachineCnt>
     <CustomPart>TRUE</CustomPart>
     <NewPartName>Kingston_KVR16LS11S6_2</NewPartName>
     <RowAddress>15</RowAddress>
