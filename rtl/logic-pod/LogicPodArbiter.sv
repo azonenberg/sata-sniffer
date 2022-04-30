@@ -70,6 +70,8 @@ module LogicPodArbiter #(
 
 	logic		can_start_write;
 
+	logic[2:0]	last_write_channel	= 0;
+
 	always_comb begin
 
 		fifo_rd_en	= 0;
@@ -97,6 +99,7 @@ module LogicPodArbiter #(
 		if( can_start_write && (data_fifo_wr_size > 4) && (addr_fifo_wr_size > 1) ) begin
 
 			//Pass 1: read from highest numbered channel that's more than half full in the big fifo
+			//(takes priority so nothing overflows)
 			for(integer i=0; i<8; i=i+1) begin
 				if(fifo_half_full[i]) begin
 					hit	= 1;
@@ -104,7 +107,15 @@ module LogicPodArbiter #(
 				end
 			end
 
-			//Pass 2: read from highest numbered channel with any data (note that a full burst is required)
+			//Pass 2: continue existing burst
+			if(!hit) begin
+				if(fifo_burst_ready[last_write_channel]) begin
+					hit	= 1;
+					write_channel = last_write_channel;
+				end
+			end
+
+			//Pass 3: read from highest numbered channel with any data (note that a full burst is required)
 			if(!hit) begin
 				for(integer i=0; i<8; i=i+1) begin
 					if(fifo_burst_ready[i]) begin
@@ -151,6 +162,7 @@ module LogicPodArbiter #(
 		addr_fifo_wr_en			<= 0;
 		if(write_start) begin
 			write_phase			<= 1;
+			last_write_channel	<= write_channel;
 
 			//address fifo todo
 			addr_fifo_wr_en		<= 1;

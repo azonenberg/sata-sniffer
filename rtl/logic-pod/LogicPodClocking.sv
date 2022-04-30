@@ -58,10 +58,9 @@ module LogicPodClocking(
 		.IN0_PERIOD(8),			//125 MHz input
 		.IN1_PERIOD(8),
 
-		.OUTPUT_BUF_GLOBAL(6'b001100),
-		//.OUTPUT_BUF_IO(		6'b000011),
-		.OUTPUT_BUF_IO(		6'b000001),		//remove the unused bufio for initial testing
-		.OUTPUT_GATE(		6'b001100),
+		.OUTPUT_BUF_GLOBAL( 6'b011100),
+		.OUTPUT_BUF_IO(		6'b000011),
+		.OUTPUT_GATE(		6'b011100),
 
 		.OUT0_MIN_PERIOD(1.6),	//625 MHz output to IO clock network
 		.OUT1_MIN_PERIOD(1.6),	//625 MHz output to IO clock network
