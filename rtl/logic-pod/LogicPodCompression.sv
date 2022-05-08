@@ -39,10 +39,10 @@
 	Chunk format:
 		1 bit	Format
 
-		Format 0 - incompressible
+		Format 1 - incompressible
 			16 bits of verbatim sample data
 
-		Format 1 - compressible
+		Format 0 - compressible
 			1 bit value A
 			7 bit repetition count A
 			1 bit value B
@@ -59,16 +59,23 @@ module LogicPodCompression(
 	//Input data (valid every clock)
 	input wire[15:0]	din,
 
+	//Control signals
+	input wire			en,
+	input wire			rst,
+	input wire			flush,
+	output logic		flush_done	= 0,
+
 	//Output data bus
 	output logic		out_valid	= 0,
 	output logic		out_format	= 0,
 	output logic[15:0]	out_data	= 0
 );
 
+	//Order of coding is important: an all zeroes compression block codes to an empty bit string.
 	typedef enum logic
 	{
-		INCOMPRESSIBLE	= 1'b0,
-		COMPRESSIBLE 	= 1'b1
+		INCOMPRESSIBLE	= 1'b1,
+		COMPRESSIBLE 	= 1'b0
 	} mode_t;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +112,7 @@ module LogicPodCompression(
 	always_ff @(posedge clk) begin
 
 		//Register input
-		stage3_din	<= stage2_din;
+		stage3_din				<= stage2_din;
 
 		//Default state: assume we have two runs
 		stage3_incompressible	<= 0;
@@ -164,13 +171,65 @@ module LogicPodCompression(
 	logic		active_block_valid	= 0;
 	logic[15:0]	active_block_data	= 0;
 
+	logic		flush_ff			= 0;
+
 	always_ff @(posedge clk) begin
 
 		out_valid	<= 0;
 		out_data	<= 0;
+		flush_ff	<= flush;
+		flush_done	<= flush_ff;
+
+		//Synchronous reset
+		if(rst) begin
+			active_run1_valid	<= 0;
+			active_run1_value	<= 0;
+			active_run1_count	<= 0;
+
+			active_run2_valid	<= 0;
+			active_run2_value	<= 0;
+			active_run2_count	<= 0;
+
+			active_block_valid	<= 0;
+			active_block_data	<= 0;
+		end
+
+		//Flush any partial blocks to the output
+		else if(flush) begin
+
+			//Output pending incompressible block, if any
+			out_valid			<= active_block_valid;
+			out_format			<= INCOMPRESSIBLE;
+			out_data			<= active_block_data;
+			active_block_valid	<= 0;
+
+		end
+
+		//Flushing continued
+		else if(flush_ff) begin
+
+			//Output pending compressible block, if any
+			out_valid			<= active_run1_valid;
+			out_format			<= COMPRESSIBLE;
+			out_data			<= { active_run1_value, active_run1_count, active_run2_value, active_run2_count };
+
+			//Clear pending
+			active_run1_valid	<= 0;
+			active_run1_value	<= 0;
+			active_run1_count	<= 0;
+
+			active_run2_valid	<= 0;
+			active_run2_value	<= 0;
+			active_run2_count	<= 0;
+
+		end
+
+		//If we're not capturing, do nothing
+		else if(!en) begin
+		end
 
 		//If we have a pending incompressible block, output that.
-		if(active_block_valid) begin
+		else if(active_block_valid) begin
 			active_block_valid	<= 0;
 
 			out_valid			<= 1;

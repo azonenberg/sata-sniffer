@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
@@ -32,6 +34,7 @@ module LogicAnalyzerSubsystem(
 	//Global clocks
 	input wire			clk_125mhz,
 	input wire			clk_400mhz,
+	input wire			clk_ram,
 	input wire			clk_ram_2x,
 
 	//Top level pins
@@ -71,7 +74,10 @@ module LogicAnalyzerSubsystem(
 	output wire[9:0]	la1_ram_data_rd_size,
 	input wire			la1_ram_addr_rd_en,
 	output wire[28:0]	la1_ram_addr_rd_data,
-	output wire[7:0]	la1_ram_addr_rd_size
+	output wire[7:0]	la1_ram_addr_rd_size,
+
+	//Trigger controls (clk_ram domain)
+	input wire			trigger_arm
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,6 +139,43 @@ module LogicAnalyzerSubsystem(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Trigger stuff
+
+	wire	arm_req;
+
+	wire	trig_rst_la0;
+	wire	capture_en_la0;
+	wire	capture_flush_la0;
+
+	wire	trig_rst_la1;
+	wire	capture_en_la1;
+	wire	capture_flush_la1;
+
+	wire	trig_rst_arbiter_2x;
+
+	LogicTriggering trig(
+		.clk_ram(clk_ram),
+		.clk_ram_2x(clk_ram_2x),
+		.la0_clk_312p5mhz(la0_clk_312p5mhz),
+		.la1_clk_312p5mhz(la1_clk_312p5mhz),
+		.arm_req(arm_req),
+
+		.trig_rst_la0(trig_rst_la0),
+		.capture_en_la0(capture_en_la0),
+		.capture_flush_la0(capture_flush_la0),
+
+		.trig_rst_la1(trig_rst_la1),
+		.capture_en_la1(capture_en_la1),
+		.capture_flush_la1(capture_flush_la1),
+
+		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
+		.capture_flush_arbiter_2x(),
+
+		.trig_rst_arbiter(),
+		.capture_flush_arbiter()
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// High speed capture/compression datapaths
 
 	LogicPodDatapath #(
@@ -154,7 +197,12 @@ module LogicAnalyzerSubsystem(
 		.ram_data_rd_size(la0_ram_data_rd_size),
 		.ram_addr_rd_en(la0_ram_addr_rd_en),
 		.ram_addr_rd_data(la0_ram_addr_rd_data),
-		.ram_addr_rd_size(la0_ram_addr_rd_size)
+		.ram_addr_rd_size(la0_ram_addr_rd_size),
+
+		.trig_rst(trig_rst_la0),
+		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
+		.capture_en(capture_en_la0),
+		.capture_flush(capture_flush_la0)
 		);
 
 	LogicPodDatapath #(
@@ -176,7 +224,20 @@ module LogicAnalyzerSubsystem(
 		.ram_data_rd_size(la1_ram_data_rd_size),
 		.ram_addr_rd_en(la1_ram_addr_rd_en),
 		.ram_addr_rd_data(la1_ram_addr_rd_data),
-		.ram_addr_rd_size(la1_ram_addr_rd_size)
+		.ram_addr_rd_size(la1_ram_addr_rd_size),
+
+		.trig_rst(trig_rst_la1),
+		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
+		.capture_en(capture_en_la1),
+		.capture_flush(capture_flush_la1)
 		);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug VIO
+
+	vio_2 vio(
+		.clk(clk_ram_2x),
+		.probe_out0(arm_req)
+	);
 
 endmodule

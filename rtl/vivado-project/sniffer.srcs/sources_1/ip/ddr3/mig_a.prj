@@ -60,7 +60,7 @@
     <DataMask>1</DataMask>
     <ECC>Disabled</ECC>
     <Ordering>Normal</Ordering>
-    <BankMachineCnt>2</BankMachineCnt>
+    <BankMachineCnt>8</BankMachineCnt>
     <CustomPart>TRUE</CustomPart>
     <NewPartName>Kingston_KVR16LS11S6_2</NewPartName>
     <RowAddress>15</RowAddress>

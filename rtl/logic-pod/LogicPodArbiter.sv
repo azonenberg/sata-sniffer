@@ -34,6 +34,9 @@ module LogicPodArbiter #(
 )(
 	input wire			clk_ram_2x,
 
+	input wire			rst,
+	input wire			flush,
+
 	output logic[7:0]	fifo_rd_en			= 0,
 	input wire[127:0]	fifo_rd_data[7:0],
 	input wire[9:0]		fifo_rd_size[7:0],

@@ -269,6 +269,7 @@ module SnifferTop(
 	LogicAnalyzerSubsystem la(
 		.clk_125mhz(clk_125mhz),
 		.clk_400mhz(clk_400mhz),
+		.clk_ram(clk_ram),
 		.clk_ram_2x(clk_ram_2x),
 
 		.la0_p(la0_p),

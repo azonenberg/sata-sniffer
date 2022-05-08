@@ -68,7 +68,13 @@ module LogicPodDatapath #(
 	output wire[9:0]	ram_data_rd_size,
 	input wire			ram_addr_rd_en,
 	output wire[28:0]	ram_addr_rd_data,
-	output wire[7:0]	ram_addr_rd_size
+	output wire[7:0]	ram_addr_rd_size,
+
+	//Trigger control (312.5 MHz domain)
+	input wire			trig_rst,
+	input wire			capture_en,
+	input wire			capture_flush,
+	input wire			trig_rst_arbiter_2x
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,6 +306,13 @@ module LogicPodDatapath #(
 	logic[7:0]		fifo_half_full		= 0;
 	logic[7:0]		fifo_burst_ready	= 0;
 
+	logic[31:0] 	count_1hz	= 0;
+	logic			pps			= 0;
+
+	logic[31:0]		overflows[7:0];
+
+	logic[7:0]		channel_flushed	= 0;
+
 	for(genvar g=0; g<8; g=g+1) begin
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -337,12 +350,16 @@ module LogicPodDatapath #(
 		wire		compress_out_valid;
 		wire		compress_out_format;
 		wire[15:0]	compress_out_data;
+		wire		deser_flush;
 
-		//TODO: start compression stream when we arm things
-		//TODO: figure out how to end compression stream (potentially only a few bits in) at a defined sync point
 		LogicPodCompression compressor(
 			.clk(clk_312p5mhz),
 			.din(samples.bits),
+
+			.en(capture_en),
+			.rst(trig_rst),
+			.flush(capture_flush),
+			.flush_done(deser_flush),
 
 			.out_valid(compress_out_valid),
 			.out_format(compress_out_format),
@@ -355,15 +372,35 @@ module LogicPodDatapath #(
 		wire		fifo_wr;
 		wire[127:0]	fifo_wdata;
 
+		wire		deser_flush_done;
+
 		LogicPodDeserialization deserialization(
 			.clk(clk_312p5mhz),
 			.compress_out_valid(compress_out_valid),
 			.compress_out_format(compress_out_format),
 			.compress_out_data(compress_out_data),
+			.flush(deser_flush),
+			.flush_done(deser_flush_done),
 			.fifo_wr(fifo_wr),
 			.fifo_wdata(fifo_wdata)
 		);
 
+		wire		deser_flush_done_sync;
+		PulseSynchronizer sync_deser_flush_done(
+			.clk_a(clk_312p5mhz),
+			.pulse_a(deser_flush_done),
+			.clk_b(clk_ram_2x),
+			.pulse_b(deser_flush_done_sync)
+		);
+
+		always_ff @(posedge clk_ram_2x) begin
+			if(trig_rst_arbiter_2x)
+				channel_flushed[g]		<= 0;
+			if(deser_flush_done_sync)
+				channel_flushed[g]		<= 1;
+		end
+
+		wire	overflow;
 		CrossClockFifo #(
 			.WIDTH(128),
 			.DEPTH(512),
@@ -380,7 +417,7 @@ module LogicPodDatapath #(
 			.wr_data(fifo_wdata),
 			.wr_size(),
 			.wr_full(),
-			.wr_overflow(),
+			.wr_overflow(overflow),
 			.wr_reset(1'b0),
 
 			//Read side
@@ -398,7 +435,50 @@ module LogicPodDatapath #(
 			fifo_burst_ready[g] <= (fifo_rd_size[g] >= 4);
 		end
 
+		//Performance counters
+		logic[31:0] running_overflows = 0;
+		always_ff @(posedge clk_312p5mhz) begin
+			if(overflow)
+				running_overflows	<= running_overflows + 1;
+
+			if(pps) begin
+				overflows[g]		<= running_overflows;
+				running_overflows	<= 0;
+			end
+
+			if(trig_rst)
+				running_overflows	<= 0;
+		end
+
 	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Performance counter stuff
+
+	localparam CLK_HZ = 312500000;
+
+	always_ff @(posedge clk_312p5mhz) begin
+		count_1hz		<= count_1hz + 1;
+		pps				<= 0;
+
+		if(count_1hz == (CLK_HZ - 1) ) begin
+			pps			<= 1;
+			count_1hz	<= 0;
+		end
+
+	end
+
+	vio_1 vio(
+		.clk(clk_312p5mhz),
+		.probe_in0(overflows[0]),
+		.probe_in1(overflows[1]),
+		.probe_in2(overflows[2]),
+		.probe_in3(overflows[3]),
+		.probe_in4(overflows[4]),
+		.probe_in5(overflows[5]),
+		.probe_in6(overflows[6]),
+		.probe_in7(overflows[7])
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Arbitration from all 8 channels to the output buffer
@@ -412,10 +492,15 @@ module LogicPodDatapath #(
 	wire[9:0]	data_fifo_wr_size;
 	wire[7:0]	addr_fifo_wr_size;
 
+	wire		channel_flushed_all;
+	assign channel_flushed_all = (channel_flushed == 8'hff);
+
 	LogicPodArbiter #(
 		.POD_NUMBER(POD_NUMBER)
 	) arbiter(
 		.clk_ram_2x(clk_ram_2x),
+		.rst(trig_rst_arbiter_2x),
+		.flush(channel_flushed_all),
 		.fifo_rd_en(fifo_rd_en),
 		.fifo_rd_data(fifo_rd_data),
 		.fifo_rd_size(fifo_rd_size),
@@ -477,5 +562,28 @@ module LogicPodDatapath #(
 		.dout(ram_addr_rd_data),
 		.rsize(ram_addr_rd_size)
 	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug ILAs
+
+	if(POD_NUMBER == 0) begin
+
+		ila_1 ila(
+			.clk(clk_ram_2x),
+			.probe0(trig_rst_arbiter_2x),
+			.probe1(channel_flushed),
+			.probe2(data_fifo_wr_en),
+			.probe3(data_fifo_wr_data),
+			.probe4(fifo_rd_size[0]),
+			.probe5(fifo_rd_size[1]),
+			.probe6(fifo_rd_size[2]),
+			.probe7(fifo_rd_size[3]),
+			.probe8(fifo_rd_size[4]),
+			.probe9(fifo_rd_size[5]),
+			.probe10(fifo_rd_size[6]),
+			.probe11(fifo_rd_size[7])
+		);
+
+	end
 
 endmodule

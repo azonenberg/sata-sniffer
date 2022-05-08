@@ -42,6 +42,9 @@ module LogicPodDeserialization(
 	input wire			compress_out_format,
 	input wire[15:0]	compress_out_data,
 
+	input wire			flush,
+	output logic		flush_done	= 0,
+
 	output logic		fifo_wr		= 0,
 	output logic[127:0]	fifo_wdata	= 0
 );
@@ -50,6 +53,7 @@ module LogicPodDeserialization(
 	// Deserialization
 
 	logic[2:0]		deser_words	= 0;
+	logic			flush_ff	= 0;
 
 	//Pop the CDC FIFO into the shift register
 	logic[2:0]	deser_words_fwd;
@@ -58,7 +62,7 @@ module LogicPodDeserialization(
 		fifo_wr				= 0;
 
 		//Done with block?
-		if(deser_words_fwd == 7) begin
+		if((deser_words_fwd == 7) || flush_ff) begin
 			fifo_wr			= 1;
 			deser_words_fwd	= 0;
 		end
@@ -67,9 +71,14 @@ module LogicPodDeserialization(
 
 	always_ff @(posedge clk) begin
 		deser_words		<= deser_words_fwd;
+		flush_ff		<= flush;
+		flush_done		<= flush_ff;
 
 		if(compress_out_valid)
-			fifo_wdata	<= {9'b0, fifo_wdata[101:0], compress_out_format, compress_out_data};
+			fifo_wdata	<= {8'd7, 1'b0, fifo_wdata[101:0], compress_out_format, compress_out_data};
+
+		else if(flush)
+			fifo_wdata[127:120]	<= {5'b0, deser_words};
 
 	end
 
