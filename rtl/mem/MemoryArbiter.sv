@@ -72,7 +72,16 @@ module MemoryArbiter(
 	input wire[9:0]		la1_ram_data_rd_size,
 	output wire			la1_ram_addr_rd_en,
 	input wire[28:0]	la1_ram_addr_rd_data,
-	input wire[7:0]		la1_ram_addr_rd_size
+	input wire[7:0]		la1_ram_addr_rd_size,
+
+	//Control signals
+	input wire			trig_rst_arbiter,			//clk_ram
+	input wire			capture_flush_arbiter,
+
+	input wire			trig_rst_arbiter_2x,		//clk_ram_2x
+	input wire			flush_arbiter_2x,
+	input wire			la0_flush_complete,
+	input wire			la1_flush_complete
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -258,9 +267,11 @@ module MemoryArbiter(
 	wire[9:0]		data_fifo_rd_size;
 	logic			data_fifo_rd_en	= 0;
 
+	localparam DATA_FIFO_DEPTH = 512;
+
 	CrossClockFifo #(
 		.WIDTH(256),
-		.DEPTH(512),
+		.DEPTH(DATA_FIFO_DEPTH),
 		.USE_BLOCK(1),
 		.OUT_REG(1)
 	) wr_data_fifo (
@@ -287,9 +298,10 @@ module MemoryArbiter(
 	wire[8:0]		cmd_addr_fifo_rd_size;
 	logic			cmd_addr_fifo_rd_en	= 0;
 	wire			cmd_addr_fifo_empty;
+	localparam ADDR_FIFO_DEPTH = DATA_FIFO_DEPTH / 2;
 	CrossClockFifo #(
 		.WIDTH(30),
-		.DEPTH(256),
+		.DEPTH(ADDR_FIFO_DEPTH),
 		.USE_BLOCK(1),
 		.OUT_REG(1)
 	) cmd_addr_fifo (
@@ -311,6 +323,71 @@ module MemoryArbiter(
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Keep track of what's been flushed
+
+	enum logic[2:0]
+	{
+		FLUSH_STATE_IDLE	 		= 0,
+		FLUSH_STATE_POD_WAIT		= 1,
+		FLUSH_STATE_POD_WAIT2		= 2,
+		FLUSH_STATE_ARBITER_WAIT	= 3,
+		FLUSH_STATE_DONE			= 4
+	} flush_state = FLUSH_STATE_IDLE;
+
+	logic	flushing	= 0;
+	logic	flush_done	= 0;
+
+	always_ff @(posedge clk_ram_2x) begin
+
+		flush_done	<= 0;
+
+		case(flush_state)
+
+			//IDLE: wait for flush request to come in
+			FLUSH_STATE_IDLE: begin
+				if(flush_arbiter_2x) begin
+					flush_state	<= FLUSH_STATE_POD_WAIT;
+					flushing	<= 1;
+				end
+			end	//end FLUSH_STATE_IDLE
+
+			//POD WAIT: wait for the pods to flush their per-channel FIFOs into the per-pod FIFO
+			FLUSH_STATE_POD_WAIT: begin
+				if(la0_flush_complete && la1_flush_complete)
+					flush_state	<= FLUSH_STATE_POD_WAIT2;
+			end	//end FLUSH_STATE_POD_WAIT
+
+			//POD WAIT 2: wait for the output FIFOs in both pods to empty
+			FLUSH_STATE_POD_WAIT2: begin
+				if( (la0_ram_data_rd_size == 0) && (la1_ram_data_rd_size == 0) )
+					flush_state	<= FLUSH_STATE_ARBITER_WAIT;
+			end	//end FLUSH_STATE_POD_WAIT2
+
+			//We're in the write side clock domain, so check for write size to be max.
+			FLUSH_STATE_ARBITER_WAIT: begin
+				if( (data_fifo_wr_size == DATA_FIFO_DEPTH) && (addr_fifo_wr_size == ADDR_FIFO_DEPTH) ) begin
+					flush_state	<= FLUSH_STATE_DONE;
+
+					flushing	<= 0;
+					flush_done	<= 1;
+				end
+			end	//end FLUSH_STATE_ARBITER_WAIT
+
+			//Done, wait for reset
+			FLUSH_STATE_DONE: begin
+
+			end	//end FLUSH_STATE_DONE
+
+		endcase
+
+
+		//Synchronous reset
+		if(trig_rst_arbiter_2x)
+			flush_state	<= FLUSH_STATE_IDLE;
+
+	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Pop the FIFOs into the MIG core
 
 	logic	out_phase	 = 0;
@@ -319,8 +396,6 @@ module MemoryArbiter(
 	logic	outputs_ready;
 	logic	cmd_addr_fifo_rd_valid	= 0;
 	logic	out_phase_adv			= 0;
-
-	wire	VIO_RDY;
 
 	always_comb begin
 
@@ -466,69 +541,21 @@ module MemoryArbiter(
 		.probe_in3(avail_mbps)
 		);
 
-	/*
 	ila_1 ila1(
 		.clk(clk_ram_2x),
 
-		.probe0(la0_ram_data_rd_en),
-		.probe1(la0_ram_data_rd_size),
-		.probe2(la0_ram_addr_rd_en),
-		.probe3(la0_ram_addr_rd_size),
-		.probe4(la1_ram_data_rd_en),
-		.probe5(la1_ram_data_rd_size),
-		.probe6(la1_ram_addr_rd_en),
-		.probe7(la1_ram_addr_rd_size),
-		.probe8(data_fifo_wr_en),
-		.probe9(data_fifo_wr_size),
-		.probe10(addr_fifo_wr_en),
-		.probe11(addr_fifo_wr_size),
-		.probe12(output_almost_full),
-		.probe13(input_data_ready),
-		.probe14(iaddr_rd_valid),
-		.probe15(idata_rd_valid)
+		.probe0(trig_rst_arbiter_2x),
+		.probe1(flush_arbiter_2x),
+		.probe2(la0_flush_complete),
+		.probe3(la1_flush_complete),
+		.probe4(data_fifo_wr_size),
+		.probe5(addr_fifo_wr_size),
+		.probe6(la0_ram_data_rd_size),
+		.probe7(la1_ram_data_rd_size),
+
+		.probe8(flush_state),
+		.probe9(flushing),
+		.probe10(flush_done)
 	);
-
-	//Performance counters for debug
-	logic[31:0] app_commands 		= 0;
-	logic[31:0] app_write_bursts	= 0;
-	logic[31:0]	app_write_words		= 0;
-
-	always_ff @(posedge clk_ram) begin
-		if(app_en && app_rdy)
-			app_commands		<= app_commands + 1;
-		if(app_wdf_wren && app_wdf_rdy)
-			app_write_words		<= app_write_words + 1;
-		if(app_wdf_wren && app_wdf_rdy && app_wdf_end)
-			app_write_bursts	<= app_write_bursts + 1;
-	end
-
-	ila_0 ila0(
-		.clk(clk_ram),
-		.probe0(data_fifo_rd_size),
-		.probe1(cmd_addr_fifo_rd_size),
-		.probe2(app_rdy),
-		.probe3(fifo_rd_cmd),
-		.probe4(fifo_rd_addr),
-		.probe5(fifo_rd_data),
-		.probe6(app_wdf_end),
-		.probe7(app_wdf_wren),
-		.probe8(app_wdf_rdy),
-		.probe9(app_addr),
-		.probe10(app_cmd),
-		.probe11(app_en),
-		.probe12(data_fifo_rd_en),
-		.probe13(cmd_addr_fifo_rd_en),
-		.probe14(out_phase),
-		.probe15(fifos_ready_to_start),
-		.probe16(app_commands),
-		.probe17(app_write_words),
-		.probe18(app_write_bursts),
-		.probe19(cmd_addr_fifo_rd_valid),
-		.probe20(outputs_ready),
-		.probe21(data_fifo_rd_valid),
-		.probe22(out_phase_adv),
-		.probe23(out_phase_ff)
-	);
-	*/
 
 endmodule

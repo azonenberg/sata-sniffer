@@ -228,17 +228,4 @@ module LogicTriggering(
 		.clk_b(clk_ram),
 		.pulse_b(capture_flush_arbiter));
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug ILA
-
-	ila_0 ila(
-		.clk(clk_ram_2x),
-		.probe0(arm_req),
-		.probe1(trig_state),
-		.probe2(count),
-		.probe3(trig_rst_internal),
-		.probe4(capture_en_internal),
-		.probe5(capture_flush_internal)
-	);
-
 endmodule

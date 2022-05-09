@@ -77,7 +77,16 @@ module LogicAnalyzerSubsystem(
 	output wire[7:0]	la1_ram_addr_rd_size,
 
 	//Trigger controls (clk_ram domain)
-	input wire			trigger_arm
+	input wire			trigger_arm,
+
+	//Status/control lines to top level memory arbiter
+	output wire			trig_rst_arbiter,			//clk_ram
+	output wire			capture_flush_arbiter,
+
+	output wire			trig_rst_arbiter_2x,		//clk_ram_2x
+	output wire			flush_arbiter_2x,
+	output wire			la0_flush_complete,
+	output wire			la1_flush_complete
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,8 +160,6 @@ module LogicAnalyzerSubsystem(
 	wire	capture_en_la1;
 	wire	capture_flush_la1;
 
-	wire	trig_rst_arbiter_2x;
-
 	LogicTriggering trig(
 		.clk_ram(clk_ram),
 		.clk_ram_2x(clk_ram_2x),
@@ -169,10 +176,10 @@ module LogicAnalyzerSubsystem(
 		.capture_flush_la1(capture_flush_la1),
 
 		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
-		.capture_flush_arbiter_2x(),
+		.capture_flush_arbiter_2x(flush_arbiter_2x),
 
-		.trig_rst_arbiter(),
-		.capture_flush_arbiter()
+		.trig_rst_arbiter(trig_rst_arbiter),
+		.capture_flush_arbiter(capture_flush_arbiter)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +209,9 @@ module LogicAnalyzerSubsystem(
 		.trig_rst(trig_rst_la0),
 		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
 		.capture_en(capture_en_la0),
-		.capture_flush(capture_flush_la0)
+		.capture_flush(capture_flush_la0),
+
+		.flush_complete(la0_flush_complete)
 		);
 
 	LogicPodDatapath #(
@@ -229,7 +238,9 @@ module LogicAnalyzerSubsystem(
 		.trig_rst(trig_rst_la1),
 		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
 		.capture_en(capture_en_la1),
-		.capture_flush(capture_flush_la1)
+		.capture_flush(capture_flush_la1),
+
+		.flush_complete(la1_flush_complete)
 		);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

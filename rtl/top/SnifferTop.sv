@@ -266,6 +266,13 @@ module SnifferTop(
 	wire[28:0]	la1_ram_addr_rd_data;
 	wire[7:0]	la1_ram_addr_rd_size;
 
+	wire		trig_rst_arbiter;
+	wire		capture_flush_arbiter;
+	wire		trig_rst_arbiter_2x;
+	wire		flush_arbiter_2x;
+	wire		la0_flush_complete;
+	wire		la1_flush_complete;
+
 	LogicAnalyzerSubsystem la(
 		.clk_125mhz(clk_125mhz),
 		.clk_400mhz(clk_400mhz),
@@ -304,7 +311,14 @@ module SnifferTop(
 		.la1_ram_data_rd_size(la1_ram_data_rd_size),
 		.la1_ram_addr_rd_en(la1_ram_addr_rd_en),
 		.la1_ram_addr_rd_data(la1_ram_addr_rd_data),
-		.la1_ram_addr_rd_size(la1_ram_addr_rd_size)
+		.la1_ram_addr_rd_size(la1_ram_addr_rd_size),
+
+		.trig_rst_arbiter(trig_rst_arbiter),
+		.capture_flush_arbiter(capture_flush_arbiter),
+		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
+		.flush_arbiter_2x(flush_arbiter_2x),
+		.la0_flush_complete(la0_flush_complete),
+		.la1_flush_complete(la1_flush_complete)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -348,7 +362,15 @@ module SnifferTop(
 		.la1_ram_data_rd_size(la1_ram_data_rd_size),
 		.la1_ram_addr_rd_en(la1_ram_addr_rd_en),
 		.la1_ram_addr_rd_data(la1_ram_addr_rd_data),
-		.la1_ram_addr_rd_size(la1_ram_addr_rd_size)
+		.la1_ram_addr_rd_size(la1_ram_addr_rd_size),
+
+		//Flush signals from logic analyzer subsystem
+		.trig_rst_arbiter(trig_rst_arbiter),
+		.capture_flush_arbiter(capture_flush_arbiter),
+		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
+		.flush_arbiter_2x(flush_arbiter_2x),
+		.la0_flush_complete(la0_flush_complete),
+		.la1_flush_complete(la1_flush_complete)
 	);
 
 	/*

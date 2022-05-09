@@ -74,7 +74,11 @@ module LogicPodDatapath #(
 	input wire			trig_rst,
 	input wire			capture_en,
 	input wire			capture_flush,
-	input wire			trig_rst_arbiter_2x
+	input wire			trig_rst_arbiter_2x,
+
+	//Trigger status (clk_ram_2x domain)
+	//Goes high when all of the per-port FIFOs have been flushed to the output FIFO
+	output wire			flush_complete
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,6 +305,7 @@ module LogicPodDatapath #(
 	// Capturing and processing
 
 	wire[7:0]		fifo_rd_en;
+	wire[7:0]		fifo_rd_underflow;
 	wire[127:0]		fifo_rd_data[7:0];
 	wire[9:0]		fifo_rd_size[7:0];
 	logic[7:0]		fifo_half_full		= 0;
@@ -418,7 +423,7 @@ module LogicPodDatapath #(
 			.wr_size(),
 			.wr_full(),
 			.wr_overflow(overflow),
-			.wr_reset(1'b0),
+			.wr_reset(trig_rst),
 
 			//Read side
 			.rd_clk(clk_ram_2x),
@@ -426,8 +431,8 @@ module LogicPodDatapath #(
 			.rd_data(fifo_rd_data[g]),
 			.rd_size(fifo_rd_size[g]),
 			.rd_empty(),
-			.rd_underflow(),
-			.rd_reset(1'b0)
+			.rd_underflow(fifo_rd_underflow[g]),
+			.rd_reset(trig_rst_arbiter_2x)
 		);
 
 		always_ff @(posedge clk_ram_2x) begin
@@ -492,8 +497,10 @@ module LogicPodDatapath #(
 	wire[9:0]	data_fifo_wr_size;
 	wire[7:0]	addr_fifo_wr_size;
 
-	wire		channel_flushed_all;
-	assign channel_flushed_all = (channel_flushed == 8'hff);
+	logic		channel_flushed_all = 0;
+	always_ff @(posedge clk_ram_2x) begin
+		channel_flushed_all <= (channel_flushed == 8'hff);
+	end
 
 	LogicPodArbiter #(
 		.POD_NUMBER(POD_NUMBER)
@@ -501,7 +508,9 @@ module LogicPodDatapath #(
 		.clk_ram_2x(clk_ram_2x),
 		.rst(trig_rst_arbiter_2x),
 		.flush(channel_flushed_all),
+		.flush_complete(flush_complete),
 		.fifo_rd_en(fifo_rd_en),
+		.fifo_rd_underflow(fifo_rd_underflow),
 		.fifo_rd_data(fifo_rd_data),
 		.fifo_rd_size(fifo_rd_size),
 		.fifo_half_full(fifo_half_full),
@@ -527,7 +536,7 @@ module LogicPodDatapath #(
 		.clk(clk_ram_2x),
 		.full(),
 		.overflow(),
-		.reset(1'b0),
+		.reset(trig_rst_arbiter_2x),
 		.empty(),
 		.underflow(),
 
@@ -550,7 +559,7 @@ module LogicPodDatapath #(
 		.clk(clk_ram_2x),
 		.full(),
 		.overflow(),
-		.reset(1'b0),
+		.reset(trig_rst_arbiter_2x),
 		.empty(),
 		.underflow(),
 
@@ -562,28 +571,5 @@ module LogicPodDatapath #(
 		.dout(ram_addr_rd_data),
 		.rsize(ram_addr_rd_size)
 	);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug ILAs
-
-	if(POD_NUMBER == 0) begin
-
-		ila_1 ila(
-			.clk(clk_ram_2x),
-			.probe0(trig_rst_arbiter_2x),
-			.probe1(channel_flushed),
-			.probe2(data_fifo_wr_en),
-			.probe3(data_fifo_wr_data),
-			.probe4(fifo_rd_size[0]),
-			.probe5(fifo_rd_size[1]),
-			.probe6(fifo_rd_size[2]),
-			.probe7(fifo_rd_size[3]),
-			.probe8(fifo_rd_size[4]),
-			.probe9(fifo_rd_size[5]),
-			.probe10(fifo_rd_size[6]),
-			.probe11(fifo_rd_size[7])
-		);
-
-	end
 
 endmodule

@@ -36,8 +36,10 @@ module LogicPodArbiter #(
 
 	input wire			rst,
 	input wire			flush,
+	output logic		flush_complete		= 0,
 
 	output logic[7:0]	fifo_rd_en			= 0,
+	input wire[7:0]		fifo_rd_underflow,
 	input wire[127:0]	fifo_rd_data[7:0],
 	input wire[9:0]		fifo_rd_size[7:0],
 	input wire[7:0]		fifo_half_full,
@@ -66,55 +68,61 @@ module LogicPodArbiter #(
 	//0		idle, nothing in flight
 	//1-4 	writing data
 	//5		waiting for memory
-	logic[2:0]	write_phase		= 0;
+	logic[2:0]	s0_write_phase				= 0;
 
-	logic		write_start		= 0;
-	logic[2:0]	write_channel	= 0;
+	logic		s0_write_start			= 0;
+	logic[2:0]	s0_write_channel		= 0;
 
-	logic		can_start_write;
+	logic		s0_can_start_write;
 
-	logic[2:0]	last_write_channel	= 0;
+	logic[2:0]	active_write_channel	= 0;
 
 	always_comb begin
 
 		fifo_rd_en	= 0;
 
 		//Read first word as soon as we have something to send
-		if(write_start)
-			fifo_rd_en[write_channel]	= 1;
-		if( (write_phase > 0) && (write_phase < 4) )
-			fifo_rd_en[write_channel]	= 1;
+		if(s0_write_start)
+			fifo_rd_en[s0_write_channel]	= 1;
+		if( (s0_write_phase > 0) && (s0_write_phase < 4) )
+			fifo_rd_en[s0_write_channel]	= 1;
 
 		//We can start a write if we're idle, or if on the last cycle of the previous one
 		//(and not starting a new write)
-		can_start_write = ((write_phase == 0) || (write_phase >= 3)) && !write_start;
+		s0_can_start_write = ((s0_write_phase == 0) || (s0_write_phase >= 3)) && !s0_write_start;
 
 	end
 
 	logic	hit = 0;
 
+	logic[7:0] fifo_not_empty = 0;
+
 	always_ff @(posedge clk_ram_2x) begin
 
 		hit = 0;
 
+		for(integer i=0; i<8; i=i+1) begin
+			fifo_not_empty[i] <= (fifo_rd_size[i] != 0);
+		end
+
 		//Think about starting a write if we're in the right phase, and have space
 		//(need 4 free slots for this burst, plus one more if a write is currently active)
-		if( can_start_write && (data_fifo_wr_size > 4) && (addr_fifo_wr_size > 1) ) begin
+		if( s0_can_start_write && (data_fifo_wr_size > 4) && (addr_fifo_wr_size > 1) ) begin
 
 			//Pass 1: read from highest numbered channel that's more than half full in the big fifo
 			//(takes priority so nothing overflows)
 			for(integer i=0; i<8; i=i+1) begin
 				if(fifo_half_full[i]) begin
 					hit	= 1;
-					write_channel = i;
+					s0_write_channel = i;
 				end
 			end
 
 			//Pass 2: continue existing burst
 			if(!hit) begin
-				if(fifo_burst_ready[last_write_channel]) begin
+				if(fifo_burst_ready[active_write_channel]) begin
 					hit	= 1;
-					write_channel = last_write_channel;
+					s0_write_channel = active_write_channel;
 				end
 			end
 
@@ -123,14 +131,24 @@ module LogicPodArbiter #(
 				for(integer i=0; i<8; i=i+1) begin
 					if(fifo_burst_ready[i]) begin
 						hit	= 1;
-						write_channel = i;
+						s0_write_channel = i;
+					end
+				end
+			end
+
+			//Pass 4: read from any channel with *any* data if we're flushing
+			if(!hit && flush) begin
+				for(integer i=0; i<8; i=i+1) begin
+					if(fifo_not_empty[i]) begin
+						hit	= 1;
+						s0_write_channel = i;
 					end
 				end
 			end
 
 		end
 
-		write_start	<= hit;
+		s0_write_start	<= hit;
 
 	end
 
@@ -145,50 +163,65 @@ module LogicPodArbiter #(
 			dram_wr_ptr[i] <= 0;
 	end
 
-	logic			fifo_rd_valid		= 0;
-	logic[2:0]		write_channel_ff	= 0;
+	logic			s1_rd_valid			= 0;
+	logic[2:0]		s1_write_channel	= 0;
 
-	logic			data_fifo_wr_en_adv	= 0;
+	logic			s2_rd_valid			= 0;
+	logic[2:0]		s2_write_channel	= 0;
+
+	logic			s2_underflow		= 0;
 
 	always_ff @(posedge clk_ram_2x) begin
 
+		if(!flush || rst)
+			flush_complete		<= 0;
+
+		if(flush && (fifo_not_empty == 8'h0) && !s1_rd_valid && !s2_rd_valid)
+			flush_complete		<= 1;
+
 		//Pipeline write data (fifo read output has extra pipeline stage to improve timing)
-		fifo_rd_valid			<= fifo_rd_en[write_channel];
-		data_fifo_wr_en_adv		<= fifo_rd_valid;
-		write_channel_ff		<= write_channel;
+		s1_rd_valid				<= fifo_rd_en[s0_write_channel];
+		s1_write_channel		<= s0_write_channel;
+
+		s2_rd_valid				<= s1_rd_valid;
+		s2_write_channel		<= s1_write_channel;
+		s2_underflow			<= fifo_rd_underflow[s1_write_channel];
 
 		//Mux write output (second stage)
-		data_fifo_wr_en			<= data_fifo_wr_en_adv;
-		data_fifo_wr_data		<= fifo_rd_data[write_channel_ff];
+		data_fifo_wr_en			<= s2_rd_valid;
+		if(s2_underflow)
+			data_fifo_wr_data	<= 128'h0;
+		else
+			data_fifo_wr_data	<= fifo_rd_data[s2_write_channel];
 
 		//Start a new write cycle
 		addr_fifo_wr_en			<= 0;
-		if(write_start) begin
-			write_phase			<= 1;
-			last_write_channel	<= write_channel;
+		if(s0_write_start) begin
+			s0_write_phase			<= 1;
+			active_write_channel	<= s0_write_channel;
 
 			//address fifo todo
-			addr_fifo_wr_en		<= 1;
-			addr_fifo_wr_data	<=
+			addr_fifo_wr_en			<= 1;
+			addr_fifo_wr_data		<=
 			{
 				1'b1,
 				POD_NUMBER[0],
-				write_channel,
-				dram_wr_ptr[write_channel],
+				s0_write_channel,
+				dram_wr_ptr[s0_write_channel],
 				2'b0
 			};
 
 			//Bump pointer
-			dram_wr_ptr[write_channel]	<= dram_wr_ptr[write_channel] + 1;
+			dram_wr_ptr[s0_write_channel]	<= dram_wr_ptr[s0_write_channel] + 1;
 
 		end
 
 		//Continue existing write cycle
 		else begin
-			if(write_phase == 4)
-				write_phase <= 0;
-			else if(write_phase > 0)
-				write_phase	<= write_phase + 1;
+			if(s0_write_phase == 4)
+				s0_write_phase	<= 0;
+			else if(s0_write_phase > 0)
+				s0_write_phase	<= s0_write_phase + 1;
 		end
 
 	end
