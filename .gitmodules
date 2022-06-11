@@ -1,3 +1,12 @@
 [submodule "rtl/antikernel-ipcores"]
 	path = rtl/antikernel-ipcores
 	url = ../antikernel-ipcores.git
+[submodule "firmware/stm32-cpp"]
+	path = firmware/stm32-cpp
+	url = ../stm32-cpp
+[submodule "firmware/staticnet"]
+	path = firmware/staticnet
+	url = ../staticnet
+[submodule "firmware/microkvs"]
+	path = firmware/microkvs
+	url = ../microkvs
