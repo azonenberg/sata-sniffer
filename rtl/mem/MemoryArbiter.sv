@@ -74,6 +74,10 @@ module MemoryArbiter(
 	input wire[28:0]	la1_ram_addr_rd_data,
 	input wire[7:0]		la1_ram_addr_rd_size,
 
+	output wire			la_readback_ram_addr_rd_en,
+	input wire[28:0]	la_readback_ram_addr_rd_data,
+	input wire[7:0]		la_readback_ram_addr_rd_size,
+
 	//Control signals
 	input wire			trig_rst_arbiter,			//clk_ram
 	input wire			capture_flush_arbiter,
@@ -81,44 +85,52 @@ module MemoryArbiter(
 	input wire			trig_rst_arbiter_2x,		//clk_ram_2x
 	input wire			flush_arbiter_2x,
 	input wire			la0_flush_complete,
-	input wire			la1_flush_complete
+	input wire			la1_flush_complete,
+	output logic		flush_done	= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Remap I/Os to numbered vectors for easier handling
 
-	localparam NUM_PORTS = 2;
+	localparam NUM_PORTS = 3;
 
 	logic[NUM_PORTS-1:0]	idata_rd_en	= 0;
 	assign la0_ram_data_rd_en = idata_rd_en[0];
 	assign la1_ram_data_rd_en = idata_rd_en[1];
+									//port 2 is read only
 
 	logic[127:0]			idata_rd_data[NUM_PORTS-1:0];
 	assign idata_rd_data[0] = la0_ram_data_rd_data;
 	assign idata_rd_data[1] = la1_ram_data_rd_data;
+	assign idata_rd_data[2] = 0;	//port 2 is read only
 
 	logic[9:0]				idata_rd_size[NUM_PORTS-1:0];
 	assign idata_rd_size[0] = la0_ram_data_rd_size;
 	assign idata_rd_size[1] = la1_ram_data_rd_size;
+	assign idata_rd_size[2] = 0;	//port 2 is read only
 
 	logic[NUM_PORTS-1:0]	iaddr_rd_en	= 0;
 	assign la0_ram_addr_rd_en = iaddr_rd_en[0];
 	assign la1_ram_addr_rd_en = iaddr_rd_en[1];
+	assign la_readback_ram_addr_rd_en = iaddr_rd_en[2];
 
 	logic[28:0]				iaddr_rd_data[NUM_PORTS-1:0];
 	assign iaddr_rd_data[0] = la0_ram_addr_rd_data;
 	assign iaddr_rd_data[1] = la1_ram_addr_rd_data;
+	assign iaddr_rd_data[2] = la_readback_ram_addr_rd_data;
 
 	logic[7:0]				iaddr_rd_size[NUM_PORTS-1:0];
 	assign iaddr_rd_size[0] = la0_ram_addr_rd_size;
 	assign iaddr_rd_size[1] = la1_ram_addr_rd_size;
+	assign iaddr_rd_size[2] = la_readback_ram_addr_rd_size;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Arbitration and deserialization to a single 256 bit stream in the 2x clock domain
 
 	//Round robin, then pick first available port if selected port is unavailable
-	logic					rr_source		= 0;
-	logic					current_source;
+	localparam PORT_BITS = $clog2(NUM_PORTS);
+	logic[PORT_BITS-1:0]	rr_source		= 0;
+	logic[PORT_BITS-1:0]	current_source;
 
 	logic[2:0]				burst_count		= 0;
 	logic					rd_phase		= 0;
@@ -182,8 +194,13 @@ module MemoryArbiter(
 	always_ff @(posedge clk_ram_2x) begin
 
 		//Check if there's something to read on the input
-		for(integer i=0; i<NUM_PORTS; i=i+1)
+		for(integer i=0; i<NUM_PORTS; i=i+1) begin
 			input_data_ready[i]	<= (idata_rd_size[i] >= 4) && (iaddr_rd_size[i] >= 1);
+
+			//port 2 is read only
+			if(i == 2)
+				input_data_ready[i]	<= (iaddr_rd_size[i] >= 1);
+		end
 
 		//Default flags to off
 		idata_rd_en				<= 0;
@@ -246,15 +263,18 @@ module MemoryArbiter(
 
 		//Push address/command to the FIFO
 		if(iaddr_rd_valid) begin
-			addr_fifo_wr_en		<= 1;
-			addr_fifo_wr_data	<= { MIG_CMD_WRITE, iaddr_rd_muxed };
+			addr_fifo_wr_en			<= 1;
+			if(current_source == 2)
+				addr_fifo_wr_data	<= { MIG_CMD_READ, iaddr_rd_muxed };
+			else
+				addr_fifo_wr_data	<= { MIG_CMD_WRITE, iaddr_rd_muxed };
 		end
 
 		//Push data to the FIFO
 		if(idata_rd_valid) begin
 			rd_phase			<= !rd_phase;
 			data_fifo_wr_data	<= { data_fifo_wr_data[127:0], idata_rd_muxed };
-			if(rd_phase)
+			if(rd_phase && (current_source != 2) )
 				data_fifo_wr_en	<= 1;
 		end
 
@@ -335,7 +355,6 @@ module MemoryArbiter(
 	} flush_state = FLUSH_STATE_IDLE;
 
 	logic	flushing	= 0;
-	logic	flush_done	= 0;
 
 	always_ff @(posedge clk_ram_2x) begin
 
@@ -379,7 +398,6 @@ module MemoryArbiter(
 			end	//end FLUSH_STATE_DONE
 
 		endcase
-
 
 		//Synchronous reset
 		if(trig_rst_arbiter_2x)
@@ -478,12 +496,15 @@ module MemoryArbiter(
 	logic[31:0]	running_app_cmds		= 0;
 	logic[31:0]	running_write_bursts	= 0;
 	logic[31:0]	running_write_words		= 0;
+	logic[31:0]	running_read_bursts		= 0;
+	logic[31:0]	running_read_words		= 0;
 	logic[31:0] running_app_unavail		= 0;
 	logic[31:0] running_write_unavail	= 0;
 	logic[31:0] running_app_unused		= 0;
 
 	logic[31:0]	ops_per_sec				= 0;
 	logic[31:0] write_mbps				= 0;
+	logic[31:0] read_mbps				= 0;
 	logic[31:0]	overhead_mbps			= 0;
 	logic[31:0] avail_mbps				= 0;
 
@@ -509,6 +530,10 @@ module MemoryArbiter(
 			running_app_unavail		<= running_app_unavail + 1;
 		if(app_rdy && !app_en)
 			running_app_unused		<= running_app_unused + 1;
+		if(app_rd_data_valid)
+			running_read_words		<= running_read_words + 1;
+		if(app_rd_data_valid && app_rd_data_end)
+			running_read_bursts		<= running_read_bursts + 1;
 
 		//Process the last second's events
 		if(pps) begin
@@ -517,6 +542,7 @@ module MemoryArbiter(
 			//Each word is 256 bits, so 4096 (2^12) words/sec is 1 Mbps
 			ops_per_sec				<= running_app_cmds;
 			write_mbps				<= running_write_words[31:12];
+			read_mbps				<= running_read_words[31:12];
 			overhead_mbps			<= running_app_unavail[31:12];
 			avail_mbps				<= running_app_unused[31:12];
 
@@ -524,6 +550,8 @@ module MemoryArbiter(
 			running_app_cmds		<= 0;
 			running_write_words		<= 0;
 			running_write_bursts	<= 0;
+			running_read_words		<= 0;
+			running_read_bursts		<= 0;
 			running_app_unavail		<= 0;
 			running_write_unavail	<= 0;
 			running_app_unused		<= 0;
@@ -538,24 +566,33 @@ module MemoryArbiter(
 		.probe_in0(ops_per_sec),
 		.probe_in1(write_mbps),
 		.probe_in2(overhead_mbps),
-		.probe_in3(avail_mbps)
+		.probe_in3(avail_mbps),
+		.probe_in4(read_mbps)
 		);
 
-	ila_1 ila1(
+	ila_1 ila(
 		.clk(clk_ram_2x),
-
-		.probe0(trig_rst_arbiter_2x),
-		.probe1(flush_arbiter_2x),
-		.probe2(la0_flush_complete),
-		.probe3(la1_flush_complete),
-		.probe4(data_fifo_wr_size),
-		.probe5(addr_fifo_wr_size),
-		.probe6(la0_ram_data_rd_size),
-		.probe7(la1_ram_data_rd_size),
-
-		.probe8(flush_state),
-		.probe9(flushing),
-		.probe10(flush_done)
+		.probe0(rr_source),
+		.probe1(current_source),
+		.probe2(input_data_ready),
+		.probe3(addr_fifo_wr_en),
+		.probe4(addr_fifo_wr_data),
+		.probe5(iaddr_rd_valid),
+		.probe6(idata_rd_valid),
+		.probe7(rd_phase),
+		.probe8(burst_count),
+		.probe9(data_fifo_wr_en)
 	);
+	/*
+	ila_2 ila2(
+		.clk(clk_ram),
+		.probe0(data_fifo_rd_size),
+		.probe1(data_fifo_rd_en),
+		.probe2(cmd_addr_fifo_rd_en),
+		.probe3(cmd_addr_fifo_rd_size),
+		.probe4(cmd_addr_fifo_empty)
+		//TODO
+	);
+	*/
 
 endmodule

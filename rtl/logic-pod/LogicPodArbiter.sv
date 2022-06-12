@@ -52,7 +52,12 @@ module LogicPodArbiter #(
 	output logic[28:0]	addr_fifo_wr_data	= 0,
 
 	input wire[9:0]		data_fifo_wr_size,
-	input wire[7:0]		addr_fifo_wr_size
+	input wire[7:0]		addr_fifo_wr_size,
+
+	//Pointer access for readback
+	input wire			ptr_rd_en,
+	input wire[2:0]		ptr_rd_addr,
+	output logic[28:0]	ptr_rd_data			= 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,5 +230,22 @@ module LogicPodArbiter #(
 		end
 
 	end
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Read pointer access by readback logic
+
+	always_ff @(posedge clk_ram_2x) begin
+		if(ptr_rd_en) begin
+			ptr_rd_data	<=
+			{
+				1'b1,
+				POD_NUMBER[0],
+				ptr_rd_addr,
+				dram_wr_ptr[ptr_rd_addr],
+				2'b0
+			};
+		end
+	end
+
 
 endmodule

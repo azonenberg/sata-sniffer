@@ -78,7 +78,12 @@ module LogicPodDatapath #(
 
 	//Trigger status (clk_ram_2x domain)
 	//Goes high when all of the per-port FIFOs have been flushed to the output FIFO
-	output wire			flush_complete
+	output wire			flush_complete,
+
+	//Read pointer access (clk_ram_2x domain)
+	input wire			ptr_rd_en,
+	input wire[2:0]		ptr_rd_addr,
+	output wire[28:0]	ptr_rd_data
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -520,7 +525,11 @@ module LogicPodDatapath #(
 		.addr_fifo_wr_en(addr_fifo_wr_en),
 		.addr_fifo_wr_data(addr_fifo_wr_data),
 		.data_fifo_wr_size(data_fifo_wr_size),
-		.addr_fifo_wr_size(addr_fifo_wr_size)
+		.addr_fifo_wr_size(addr_fifo_wr_size),
+
+		.ptr_rd_en(ptr_rd_en),
+		.ptr_rd_addr(ptr_rd_addr),
+		.ptr_rd_data(ptr_rd_data)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -76,6 +76,10 @@ module LogicAnalyzerSubsystem(
 	output wire[28:0]	la1_ram_addr_rd_data,
 	output wire[7:0]	la1_ram_addr_rd_size,
 
+	input wire			readback_ram_addr_rd_en,
+	output wire[28:0]	readback_ram_addr_rd_data,
+	output wire[7:0]	readback_ram_addr_rd_size,
+
 	//Trigger controls (clk_ram domain)
 	input wire			trigger_arm,
 
@@ -86,7 +90,8 @@ module LogicAnalyzerSubsystem(
 	output wire			trig_rst_arbiter_2x,		//clk_ram_2x
 	output wire			flush_arbiter_2x,
 	output wire			la0_flush_complete,
-	output wire			la1_flush_complete
+	output wire			la1_flush_complete,
+	input wire			flush_done
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,6 +190,10 @@ module LogicAnalyzerSubsystem(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// High speed capture/compression datapaths
 
+	wire		ptr_rd_en;
+	wire[3:0]	ptr_rd_addr;
+	wire[28:0]	ptr_rd_data[1:0];
+
 	LogicPodDatapath #(
 		.LANE_INVERT(8'b10011100),
 		.POD_NUMBER(0)
@@ -211,7 +220,11 @@ module LogicAnalyzerSubsystem(
 		.capture_en(capture_en_la0),
 		.capture_flush(capture_flush_la0),
 
-		.flush_complete(la0_flush_complete)
+		.flush_complete(la0_flush_complete),
+
+		.ptr_rd_en(ptr_rd_en & !ptr_rd_addr[3]),
+		.ptr_rd_addr(ptr_rd_addr[2:0]),
+		.ptr_rd_data(ptr_rd_data[0])
 		);
 
 	LogicPodDatapath #(
@@ -240,15 +253,63 @@ module LogicAnalyzerSubsystem(
 		.capture_en(capture_en_la1),
 		.capture_flush(capture_flush_la1),
 
-		.flush_complete(la1_flush_complete)
+		.flush_complete(la1_flush_complete),
+
+		.ptr_rd_en(ptr_rd_en & ptr_rd_addr[3]),
+		.ptr_rd_addr(ptr_rd_addr[2:0]),
+		.ptr_rd_data(ptr_rd_data[1])
 		);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Debug VIO
+	// Readback stuff
+
+	wire[28:0] ptr_rd_data_muxed;
+	assign ptr_rd_data_muxed = ptr_rd_data[ptr_rd_addr[3]];
+
+	LogicAnalyzerReadback readback(
+		.clk_ram_2x(clk_ram_2x),
+
+		.rst(trig_rst_arbiter_2x),
+		.flush_done(flush_done),
+
+		.ptr_rd_en(ptr_rd_en),
+		.ptr_rd_addr(ptr_rd_addr),
+		.ptr_rd_data(ptr_rd_data_muxed),
+
+		.ram_addr_rd_en(readback_ram_addr_rd_en),
+		.ram_addr_rd_data(readback_ram_addr_rd_data),
+		.ram_addr_rd_size(readback_ram_addr_rd_size),
+		.ram_rd_data_start(1'b0),
+		.ram_rd_data_valid(1'b0),
+		.ram_rd_data(128'b0)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Debug VIO and ILAs
 
 	vio_2 vio(
 		.clk(clk_ram_2x),
 		.probe_out0(arm_req)
+	);
+
+	ila_0 ila(
+		.clk(clk_ram_2x),
+		.probe0(trig_rst_arbiter_2x),
+		.probe1(flush_arbiter_2x),
+		.probe2(la0_flush_complete),
+		.probe3(la1_flush_complete),
+		.probe4(flush_done),
+
+		//new here
+		.probe5(ptr_rd_en),
+		.probe6(ptr_rd_addr),
+		.probe7(ptr_rd_data_muxed),
+		.probe8(readback.state),
+		.probe9(readback_ram_addr_rd_en),
+		.probe10(readback_ram_addr_rd_data),
+		.probe11(readback_ram_addr_rd_size),
+		.probe12(readback.dram_rd_en),
+		.probe13(readback.dram_rd_addr)
 	);
 
 endmodule

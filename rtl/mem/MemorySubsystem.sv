@@ -130,6 +130,10 @@ module MemorySubsystem(
 	input wire[28:0]	la1_ram_addr_rd_data,
 	input wire[7:0]		la1_ram_addr_rd_size,
 
+	output wire			la_readback_ram_addr_rd_en,
+	input wire[28:0]	la_readback_ram_addr_rd_data,
+	input wire[7:0]		la_readback_ram_addr_rd_size,
+
 	//Flush signals from logic analyzer subsystem
 	input wire			trig_rst_arbiter,			//clk_ram
 	input wire			capture_flush_arbiter,
@@ -137,7 +141,8 @@ module MemorySubsystem(
 	input wire			trig_rst_arbiter_2x,		//clk_ram_2x
 	input wire			flush_arbiter_2x,
 	input wire			la0_flush_complete,
-	input wire			la1_flush_complete
+	input wire			la1_flush_complete,
+	output wire			flush_done
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,13 +317,18 @@ module MemorySubsystem(
 		.la1_ram_addr_rd_data(la1_ram_addr_rd_data),
 		.la1_ram_addr_rd_size(la1_ram_addr_rd_size),
 
+		.la_readback_ram_addr_rd_en(la_readback_ram_addr_rd_en),
+		.la_readback_ram_addr_rd_data(la_readback_ram_addr_rd_data),
+		.la_readback_ram_addr_rd_size(la_readback_ram_addr_rd_size),
+
 		//Flush signals
 		.trig_rst_arbiter(trig_rst_arbiter),
 		.capture_flush_arbiter(capture_flush_arbiter),
 		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
 		.flush_arbiter_2x(flush_arbiter_2x),
 		.la0_flush_complete(la0_flush_complete),
-		.la1_flush_complete(la1_flush_complete)
+		.la1_flush_complete(la1_flush_complete),
+		.flush_done(flush_done)
 	);
 
 endmodule
