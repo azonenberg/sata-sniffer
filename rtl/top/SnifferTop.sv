@@ -161,6 +161,7 @@ module SnifferTop(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Top level clock generation
 
+	wire	clk_50mhz;
 	wire	clk_125mhz;
 	wire	clk_200mhz;
 	wire	clk_250mhz;
@@ -175,6 +176,7 @@ module SnifferTop(
 		.clk_200mhz_p(clk_200mhz_p),
 		.clk_200mhz_n(clk_200mhz_n),
 
+		.clk_50mhz(clk_50mhz),
 		.clk_125mhz(clk_125mhz),
 		.clk_200mhz(clk_200mhz),
 		.clk_250mhz(clk_250mhz),
@@ -201,6 +203,15 @@ module SnifferTop(
 		.qpll_refclk(qpll_refclk),
 		.qpll_lock(qpll_lock),
 		.qpll_refclk_lost(qpll_refclk_lost)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// External microcontroller
+
+	MicrocontrollerInterface mcu(
+		.clk_50mhz(clk_50mhz),
+
+		.mcu_refclk(pmod_dq[0])
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,6 +284,12 @@ module SnifferTop(
 	wire		la0_flush_complete;
 	wire		la1_flush_complete;
 
+	wire		flush_done;
+
+	wire		la_readback_ram_addr_rd_en;
+	wire[28:0]	la_readback_ram_addr_rd_data;
+	wire[7:0]	la_readback_ram_addr_rd_size;
+
 	LogicAnalyzerSubsystem la(
 		.clk_125mhz(clk_125mhz),
 		.clk_400mhz(clk_400mhz),
@@ -313,12 +330,17 @@ module SnifferTop(
 		.la1_ram_addr_rd_data(la1_ram_addr_rd_data),
 		.la1_ram_addr_rd_size(la1_ram_addr_rd_size),
 
+		.readback_ram_addr_rd_en(la_readback_ram_addr_rd_en),
+		.readback_ram_addr_rd_data(la_readback_ram_addr_rd_data),
+		.readback_ram_addr_rd_size(la_readback_ram_addr_rd_size),
+
 		.trig_rst_arbiter(trig_rst_arbiter),
 		.capture_flush_arbiter(capture_flush_arbiter),
 		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
 		.flush_arbiter_2x(flush_arbiter_2x),
 		.la0_flush_complete(la0_flush_complete),
-		.la1_flush_complete(la1_flush_complete)
+		.la1_flush_complete(la1_flush_complete),
+		.flush_done(flush_done)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,13 +386,18 @@ module SnifferTop(
 		.la1_ram_addr_rd_data(la1_ram_addr_rd_data),
 		.la1_ram_addr_rd_size(la1_ram_addr_rd_size),
 
+		.la_readback_ram_addr_rd_en(la_readback_ram_addr_rd_en),
+		.la_readback_ram_addr_rd_data(la_readback_ram_addr_rd_data),
+		.la_readback_ram_addr_rd_size(la_readback_ram_addr_rd_size),
+
 		//Flush signals from logic analyzer subsystem
 		.trig_rst_arbiter(trig_rst_arbiter),
 		.capture_flush_arbiter(capture_flush_arbiter),
 		.trig_rst_arbiter_2x(trig_rst_arbiter_2x),
 		.flush_arbiter_2x(flush_arbiter_2x),
 		.la0_flush_complete(la0_flush_complete),
-		.la1_flush_complete(la1_flush_complete)
+		.la1_flush_complete(la1_flush_complete),
+		.flush_done(flush_done)
 	);
 
 	/*

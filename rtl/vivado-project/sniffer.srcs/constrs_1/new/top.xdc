@@ -225,11 +225,11 @@ set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_cl
 set_clock_groups -asynchronous -group [get_clocks clk_ram_2x_raw] -group [get_clocks la1_clk_312p5mhz]
 
 # Location for the IOLOGIC blocks in the phase alignment system
-set_property LOC OLOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/oserdes]
 set_property LOC ILOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/iserdes]
+set_property LOC OLOGIC_X1Y0 [get_cells la/la0_clocks/phase_ctl/oserdes]
 
-set_property LOC OLOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/oserdes]
 set_property LOC ILOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/iserdes]
+set_property LOC OLOGIC_X1Y50 [get_cells la/la1_clocks/phase_ctl/oserdes]
 
 # Location for the IDELAYCTRL blocks for input phasing
 set_property LOC IDELAYCTRL_X1Y0 [get_cells la/la0_path/cal/delay_control_block]
@@ -428,6 +428,8 @@ set_property IS_SOFT FALSE [get_pblocks pblock_la0_sampling]
 
 
 
+
+set_property DRIVE 8 [get_ports {pmod_dq[0]}]
 set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]

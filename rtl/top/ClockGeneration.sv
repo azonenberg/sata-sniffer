@@ -40,6 +40,7 @@ module ClockGeneration(
 	input wire			clk_200mhz_n,
 
 	//Global clock outputs
+	output wire			clk_50mhz,
 	output wire			clk_125mhz,
 	output wire			clk_200mhz,
 	output wire			clk_250mhz,
@@ -177,6 +178,16 @@ module ClockGeneration(
 		.clkout(clk_400mhz)
 	);
 
+	wire	clk_50mhz_raw;
+	ClockBuffer #(
+		.TYPE("GLOBAL"),
+		.CE("YES")
+	) buf_clk_50mhz(
+		.clkin(clk_50mhz_raw),
+		.ce(pll_lock[1]),
+		.clkout(clk_50mhz)
+	);
+
 	wire	pll_200_fb;
 	PLLE2_BASE #(
 		.BANDWIDTH("OPTIMIZED"),
@@ -191,7 +202,7 @@ module ClockGeneration(
 		.CLKOUT0_DIVIDE(3),			//400 MHz output to IODELAYs
 		.CLKOUT1_DIVIDE(6),			//250 MHz output to TCP/IP stack
 									//This limits our max throughput to 250 * 32 = 8 Gbps
-		.CLKOUT2_DIVIDE(16),
+		.CLKOUT2_DIVIDE(24),		//50 MHz output to MCU
 		.CLKOUT3_DIVIDE(16),
 		.CLKOUT4_DIVIDE(16),
 		.CLKOUT5_DIVIDE(16),
@@ -220,7 +231,7 @@ module ClockGeneration(
 
 		.CLKOUT0(clk_400mhz_raw),
 		.CLKOUT1(clk_ipstack_raw),
-		.CLKOUT2(),
+		.CLKOUT2(clk_50mhz_raw),
 		.CLKOUT3(),
 		.CLKOUT4(),
 		.CLKOUT5()
