@@ -28,14 +28,13 @@
 ***********************************************************************************************************************/
 
 #include "mcupmod.h"
-/*
 #include <microkvs/driver/STM32StorageBank.h>
-*/
+
 //UART console
 UART* g_cliUART = NULL;
 Logger g_log;
-//UARTOutputStream g_uartStream;
-//DemoCLISessionContext g_uartCliContext;
+UARTOutputStream g_uartStream;
+SnifferCLISessionContext g_uartCliContext;
 Timer* g_logTimer;
 /*
 //SPI interface
@@ -47,18 +46,18 @@ STM32EthernetInterface* g_eth;
 MACAddress g_macAddress;
 IPv4Config g_ipconfig;
 EthernetProtocol* g_ethStack;
-
+*/
 //KVS
 KVS* g_kvs;
-*/
+
 void InitClocks();
 void InitUART();
 void InitLog();
 void DetectHardware();
-/*
-void InitCLI();
-void InitSPI();
 void InitKVS();
+void InitCLI();
+/*
+void InitSPI();
 void InitEthernet();
 bool TestEthernet(uint32_t num_frames);
 void InitSSH();
@@ -81,10 +80,10 @@ int main()
 	InitUART();
 	InitLog();
 	DetectHardware();
-	/*
-	InitCLI();
-	InitSPI();
 	InitKVS();
+	InitCLI();
+	/*
+	InitSPI();
 	InitEthernet();
 	InitSSH();
 	*/
@@ -99,19 +98,20 @@ int main()
 	led2_n = 0;
 	led3_n = 0;
 
-
 	//Enable interrupts only after all setup work is done
 	EnableInterrupts();
-	/*
+
 	//Show the initial prompt
 	g_uartCliContext.PrintPrompt();
 
+	/*
 	//Main event loop
 	int nextRxFrame = 0;
 	uint32_t numRxFrames = 0;
 	uint32_t numRxBad = 0;
-	uint32_t nextAgingTick = 0;
 	*/
+	uint32_t nextAgingTick = 0;
+
 	while(1)
 	{
 		/*
@@ -123,23 +123,17 @@ int main()
 		if(frame != NULL)
 			g_ethStack->OnRxFrame(frame);
 		*/
+
 		//Poll for UART input
 		if(g_cliUART->HasInput())
-		{
-			char c = g_cliUART->BlockingRead();
-			g_log("got: %c\n", c);
+			g_uartCliContext.OnKeystroke(g_cliUART->BlockingRead());
 
-			//g_uartCliContext.OnKeystroke(g_cliUART->BlockingRead());
-		}
-
-		/*
 		//Check for aging on stuff once a second
 		if(g_logTimer->GetCount() > nextAgingTick)
 		{
-			g_ethStack->OnAgingTick();
+			//g_ethStack->OnAgingTick();
 			nextAgingTick = g_logTimer->GetCount() + 10000;
 		}
-		*/
 	}
 
 	return 0;
@@ -149,7 +143,7 @@ void InitClocks()
 {
 	//Configure the flash with wait states and prefetching before making any changes to the clock setup.
 	//A bit of extra latency is fine, the CPU being faster than flash is not.
-	Flash::SetConfiguration(50, RANGE_VOS0);
+	Flash::SetConfiguration(275, RANGE_VOS0);
 
 	//Start the high speed external clock
 	RCCHelper::EnableHighSpeedExternalClock();
@@ -313,7 +307,35 @@ void DetectHardware()
 		g_log(Logger::WARNING, "Unknown device (0x%06x)\n", device);
 }
 
-/*
+void InitKVS()
+{
+	g_log("Initializing microkvs key-value store\n");
+	LogIndenter li(g_log);
+
+	/*
+		Use sectors 6 and 7 of main flash (in single bank mode) for a 128 kB microkvs
+
+		Each log entry is 32 bytes, and we want to allocate ~25% of storage to the log since our objects are pretty
+		small (SSH keys, IP addresses, etc). A 1024-entry log is a nice round number, and comes out to 32 kB or 25%,
+		leaving the remaining 96 kB or 75% for data.
+	 */
+	static STM32StorageBank left(reinterpret_cast<uint8_t*>(0x080c0000), 0x20000);
+	static STM32StorageBank right(reinterpret_cast<uint8_t*>(0x080e0000), 0x20000);
+	static KVS kvs(&left, &right, 1024);
+	g_kvs = &kvs;
+
+	g_log("Log area:  %d free entries\n", g_kvs->GetFreeLogEntries());
+	uint32_t space = g_kvs->GetFreeDataSpace();
+	g_log("Data area: %d.%02d kB free space\n", space/1024, (space % 1024) * 100 / 1024);
+
+	//Load hostname, if we have it
+	if(!g_kvs->ReadObject("hostname", (uint8_t*)g_hostname, sizeof(g_hostname)-1))
+	{
+		g_log("Hostname not configured, defaulting to \"demo\"\n");
+		strncpy(g_hostname, "demo", sizeof(g_hostname));
+	}
+}
+
 void InitCLI()
 {
 	g_log("Initializing CLI\n");
@@ -322,9 +344,10 @@ void InitCLI()
 	g_uartStream.Initialize(g_cliUART);
 	g_uartCliContext.Initialize(&g_uartStream, "admin");
 
-	g_log("IP address not configured, defaulting to 192.168.1.42\n");
+	//g_log("IP address not configured, defaulting to 192.168.1.42\n");
 }
 
+/*
 void InitSPI()
 {
 	g_log("Initializing SPI interface\n");
@@ -340,37 +363,7 @@ void InitSPI()
 	static SPI spi(&SPI5, true, 4);
 	g_spi = &spi;
 }
-*/
-void InitKVS()
-{
-	/*g_log("Initializing microkvs key-value store\n");
-	LogIndenter li(g_log);*/
 
-	/*
-		Use sectors 10 and 11 of main flash (in single bank mode) for a 256 kB microkvs
-
-		Each log entry is 28 bytes, and we want to allocate ~25% of storage to the log since our objects are pretty
-		small (SSH keys, IP addresses, etc). A 2048-entry log is a nice round number, and comes out to 56 kB or 21%,
-		leaving the remaining 200 kB or 79% for data.
-	 */
-	/*static STM32StorageBank left(reinterpret_cast<uint8_t*>(0x08180000), 0x40000);
-	static STM32StorageBank right(reinterpret_cast<uint8_t*>(0x081c0000), 0x40000);
-	static KVS kvs(&left, &right, 2048);
-	g_kvs = &kvs;
-
-	g_log("Log area:  %d free entries\n", g_kvs->GetFreeLogEntries());
-	uint32_t space = g_kvs->GetFreeDataSpace();
-	g_log("Data area: %d.%02d kB free space\n", space/1024, (space % 1024) * 100 / 1024);
-
-	//Load hostname, if we have it
-	if(!g_kvs->ReadObject("hostname", (uint8_t*)g_hostname, sizeof(g_hostname)-1))
-	{
-		g_log("Hostname not configured, defaulting to \"demo\"\n");
-		strncpy(g_hostname, "demo", sizeof(g_hostname));
-	}*/
-}
-
-/*
 uint8_t GetFPGAStatus()
 {
 	//Get the status register

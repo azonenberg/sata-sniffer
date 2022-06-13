@@ -10,3 +10,6 @@
 [submodule "firmware/microkvs"]
 	path = firmware/microkvs
 	url = ../microkvs
+[submodule "firmware/embedded-cli"]
+	path = firmware/embedded-cli
+	url = ../embedded-cli.git

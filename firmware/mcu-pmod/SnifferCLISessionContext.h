@@ -27,64 +27,54 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef sshcli_h
-#define sshcli_h
+/**
+	@file
+	@brief Declaration of SnifferCLISessionContext
+ */
+#ifndef SnifferCLISessionContext_h
+#define SnifferCLISessionContext_h
 
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
-#include <stm32.h>
+#include <embedded-cli/CLIOutputStream.h>
+#include <embedded-cli/CLISessionContext.h>
 
-#include <peripheral/Flash.h>
-#include <peripheral/GPIO.h>
-#include <peripheral/Power.h>
-/*
-#include <peripheral/RCC.h>
-#include <peripheral/SPI.h>
-*/
-#include <peripheral/Timer.h>
-#include <peripheral/UART.h>
-#include <util/Logger.h>
-#include <util/FIFO.h>
-#include <cli/UARTOutputStream.h>
-/*
-#include <staticnet-config.h>
-#include <staticnet/stack/staticnet.h>
-#include <staticnet/drivers/stm32/STM32EthernetInterface.h>
-#include <staticnet/drivers/stm32/STM32CryptoEngine.h>
-*/
-#include <microkvs/kvs/KVS.h>
-#include "SnifferCLISessionContext.h"
-/*
-#include "DemoTCPProtocol.h"
-#include "DemoSSHTransportServer.h"
-*/
-extern UART* g_cliUART;
-extern Logger g_log;
-/*
-extern UARTOutputStream g_uartStream;
-extern DemoCLISessionContext g_uartCliContext;
-extern GPIOPin* g_spiCS;
-extern SPI* g_spi;
-*/
-extern KVS* g_kvs;
-
-extern char g_hostname[33];
-/*
-extern MACAddress g_macAddress;
-extern IPv4Config g_ipconfig;
-extern EthernetProtocol* g_ethStack;
-
-//Register IDs for the FPGA
-enum regids
+class SnifferCLISessionContext : public CLISessionContext
 {
-	REG_STATUS			= 0x00,
-	REG_MAC_ADDR		= 0x01,
-	REG_EEPROM_SERIAL	= 0x02,
-	REG_SEND_TEST		= 0x03,
-	REG_RX_DISABLE		= 0x04,
-	REG_RX_ENABLE		= 0x05
+public:
+	SnifferCLISessionContext();
+
+	void Initialize(CLIOutputStream* stream, const char* username)
+	{
+		m_stream = stream;
+		CLISessionContext::Initialize(m_stream, username);
+	}
+
+	virtual ~SnifferCLISessionContext()
+	{}
+
+	virtual void PrintPrompt();
+
+protected:
+	virtual void OnExecute();
+
+	/*
+	void SetHostName(const char* name);
+
+	void OnIPAddress(const char* ipstring);
+
+	void OnDefaultGateway(const char* ipstring);
+	void OnShowCommand();
+	void ShowARPCache();
+	void ShowFlash();
+	void ShowHardware();
+	void ShowIPAddr();
+	void ShowIPRoute();
+	void ShowSSHFingerprint();
+
+	void OnReload();
+
+	void OnZeroize();
+	*/
+	CLIOutputStream* m_stream;
 };
-*/
 
 #endif
