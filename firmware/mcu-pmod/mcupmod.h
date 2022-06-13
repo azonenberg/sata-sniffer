@@ -37,12 +37,15 @@
 
 #include <peripheral/Flash.h>
 #include <peripheral/GPIO.h>
+#include <peripheral/Power.h>
 /*
 #include <peripheral/RCC.h>
 #include <peripheral/SPI.h>
+*/
 #include <peripheral/Timer.h>
 #include <peripheral/UART.h>
 #include <util/Logger.h>
+/*
 #include <util/FIFO.h>
 #include <cli/UARTOutputStream.h>
 #include <staticnet-config.h>
@@ -54,9 +57,10 @@
 #include "DemoCLISessionContext.h"
 #include "DemoTCPProtocol.h"
 #include "DemoSSHTransportServer.h"
-
+*/
 extern UART* g_cliUART;
 extern Logger g_log;
+/*
 extern UARTOutputStream g_uartStream;
 extern DemoCLISessionContext g_uartCliContext;
 extern GPIOPin* g_spiCS;
@@ -78,8 +82,6 @@ enum regids
 	REG_RX_DISABLE		= 0x04,
 	REG_RX_ENABLE		= 0x05
 };
-
-extern bool g_hasRmiiErrata;
 */
 
 #endif

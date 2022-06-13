@@ -43,7 +43,7 @@ void BusFault_Handler();
 void HardFault_Handler();
 void NMI_Handler();
 
-void USART2_Handler();
+void UART4_Handler();
 
 void defaultISR();
 
@@ -106,7 +106,7 @@ fnptr __attribute__((section(".vector"))) vectorTable[] =
 	defaultISR,				//irq35 SPI1
 	defaultISR,				//irq36 SPI2
 	defaultISR,				//irq37 USART1
-	USART2_Handler,			//irq38 USART2
+	defaultISR,				//irq38 USART2
 	defaultISR,				//irq39 USART3
 	defaultISR,				//irq40 EXTI15_10
 	defaultISR,				//irq41 RTC_Alarm
@@ -120,7 +120,7 @@ fnptr __attribute__((section(".vector"))) vectorTable[] =
 	defaultISR,				//irq49 SDMMC1
 	defaultISR,				//irq50 TIM5
 	defaultISR,				//irq51 SPI3
-	defaultISR,				//irq52 UART4
+	UART4_Handler,			//irq52 UART4
 	defaultISR,				//irq53 UART5
 	defaultISR,				//irq54 TIM6_DAC
 	defaultISR,				//irq55 TIM7
@@ -238,7 +238,7 @@ fnptr __attribute__((section(".vector"))) vectorTable[] =
 
 void defaultISR()
 {
-	//g_cliUART->PrintString("Unused interrupt vector called\n");
+	g_cliUART->PrintString("Unused interrupt vector called\n");
 	while(1)
 	{}
 }
@@ -248,14 +248,13 @@ void defaultISR()
 
 void NMI_Handler()
 {
-	//g_cliUART->PrintString("NMI\n");
+	g_cliUART->PrintString("NMI\n");
 	while(1)
 	{}
 }
 
 void HardFault_Handler()
 {
-	/*
 	uint32_t* msp;
 	asm volatile("mrs %[result], MSP" : [result]"=r"(msp));
 	msp += 12;	//locals/alignment
@@ -291,39 +290,36 @@ void HardFault_Handler()
 
 	while(1)
 	{}
-	*/
 }
 
 void BusFault_Handler()
 {
-	//g_cliUART->PrintString("Bus fault\n");
+	g_cliUART->PrintString("Bus fault\n");
 	while(1)
 	{}
 }
 
 void UsageFault_Handler()
 {
-	//g_cliUART->PrintString("Usage fault\n");
+	g_cliUART->PrintString("Usage fault\n");
 	while(1)
 	{}
 }
 
 void MMUFault_Handler()
 {
-	//g_cliUART->PrintString("MMU fault\n");
+	g_cliUART->PrintString("MMU fault\n");
 	while(1)
 	{}
 }
 
-void __attribute__((isr)) USART2_Handler()
+void __attribute__((isr)) UART4_Handler()
 {
-	/*
 	//Check why we got the IRQ.
 	//For now, ignore anything other than "data ready"
-	if(0 == (USART2.ISR & USART_ISR_RXNE))
+	if(0 == (UART4.ISR & USART_ISR_RXNE))
 		return;
 
 	//rx data? Shove it in the fifo
-	g_cliUART->OnIRQRxData(USART2.RDR);
-	*/
+	g_cliUART->OnIRQRxData(UART4.RDR);
 }

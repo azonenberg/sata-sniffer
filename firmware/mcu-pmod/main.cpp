@@ -30,33 +30,33 @@
 #include "mcupmod.h"
 /*
 #include <microkvs/driver/STM32StorageBank.h>
-
+*/
 //UART console
 UART* g_cliUART = NULL;
 Logger g_log;
-UARTOutputStream g_uartStream;
-DemoCLISessionContext g_uartCliContext;
+//UARTOutputStream g_uartStream;
+//DemoCLISessionContext g_uartCliContext;
 Timer* g_logTimer;
-
+/*
 //SPI interface
 GPIOPin* g_spiCS = NULL;
 SPI* g_spi = NULL;
 
 //Ethernet interface
 STM32EthernetInterface* g_eth;
-bool g_hasRmiiErrata = false;
 MACAddress g_macAddress;
 IPv4Config g_ipconfig;
 EthernetProtocol* g_ethStack;
 
 //KVS
 KVS* g_kvs;
-
+*/
 void InitClocks();
 void InitUART();
-void InitCLI();
 void InitLog();
 void DetectHardware();
+/*
+void InitCLI();
 void InitSPI();
 void InitKVS();
 void InitEthernet();
@@ -67,35 +67,42 @@ uint8_t GetFPGAStatus();
 */
 int main()
 {
+	//Initialize power (must be the very first thing done after reset)
+	Power::ConfigureSMPSToLDOCascade(Power::VOLTAGE_1V8, RANGE_VOS0);
+
 	//Copy .data from flash to SRAM (for some reason the default newlib startup won't do this??)
 	memcpy(&__data_start, &__data_romstart, &__data_end - &__data_start + 1);
 
+	//Enable SYSCFG before changing any settings on it
+	RCCHelper::EnableSyscfg();
+
+	//Hardware setup
+	InitClocks();
+	InitUART();
+	InitLog();
+	DetectHardware();
+	/*
+	InitCLI();
+	InitSPI();
+	InitKVS();
+	InitEthernet();
+	InitSSH();
+	*/
+
+	//Set up the GPIO LEDs and turn them on
 	GPIOPin led0_n(&GPIOB, 12, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin led1_n(&GPIOB, 13, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin led2_n(&GPIOG, 5, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
 	GPIOPin led3_n(&GPIOG, 2, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_SLOW);
-
-	//LEDs are inverted, so bring them low to turn on
 	led0_n = 0;
 	led1_n = 0;
 	led2_n = 0;
 	led3_n = 0;
 
-	/*
-	//Hardware setup
-	InitClocks();
-	InitUART();
-	InitCLI();
-	InitLog();
-	DetectHardware();
-	InitSPI();
-	InitKVS();
-	InitEthernet();
-	InitSSH();
 
 	//Enable interrupts only after all setup work is done
 	EnableInterrupts();
-
+	/*
 	//Show the initial prompt
 	g_uartCliContext.PrintPrompt();
 
@@ -115,11 +122,17 @@ int main()
 		auto frame = g_eth->GetRxFrame();
 		if(frame != NULL)
 			g_ethStack->OnRxFrame(frame);
-
+		*/
 		//Poll for UART input
 		if(g_cliUART->HasInput())
-			g_uartCliContext.OnKeystroke(g_cliUART->BlockingRead());
+		{
+			char c = g_cliUART->BlockingRead();
+			g_log("got: %c\n", c);
 
+			//g_uartCliContext.OnKeystroke(g_cliUART->BlockingRead());
+		}
+
+		/*
 		//Check for aging on stuff once a second
 		if(g_logTimer->GetCount() > nextAgingTick)
 		{
@@ -132,32 +145,68 @@ int main()
 	return 0;
 }
 
-/*
 void InitClocks()
 {
 	//Configure the flash with wait states and prefetching before making any changes to the clock setup.
 	//A bit of extra latency is fine, the CPU being faster than flash is not.
-	Flash::SetConfiguration(true, true, 175, Flash::RANGE_2V7);
+	Flash::SetConfiguration(50, RANGE_VOS0);
 
-	//Set up the main system PLL. Input from HSI clock (16 MHz RC)
-	RCCHelper::InitializePLLFromInternalOscillator(
-		8,		//Pre-divider of 8 = 2 MHz input to PLL
-		175,	//Multiply by 175 = 350 MHz VCO
-		2,		//Divide VCO by 2 for CPU clock (175 MHz)
-		10,		//Divide VCO by 10 for RNG (35 MHz)
-		5,		//Divide VCO by 4 for MIPI DSI clock (70 MHz, but ignored since we don't have MIPI hardware)
-		1,		//Divide CPU clock by 1 to get AHB clock (175 MHz)
-		4,		//Divide AHB clock by 4 to get APB1 clock (43.75 MHz)
-		2);		//Divide AHB clock by 2 to get APB2 clock (87.5 MHz)
+	//Start the high speed external clock
+	RCCHelper::EnableHighSpeedExternalClock();
 
-	//TODO: Debug clock output on MCO1 (PA8) pmod, see 5.2.10?
+	//See fmax in table 56 for various peripherals TODO
+
+	//Set up PLL1
+	RCCHelper::InitializePLL(
+		1,		//PLL1
+		50,		//input is 50 MHz
+		4,		//50/4 = 12.5 MHz at the PFD
+		44,		//12.5 * 44 = 550 MHz at the VCO
+		1,		//div P (primary output 550 MHz)
+		32,		//div Q (not used for now)
+		32		//div R (not used for now)
+	);
+
+	//Set up main system clock tree
+	RCCHelper::InitializeSystemClocks(
+		1,		//sysclk = 550 MHz
+		2,		//AHB = 275 MHz
+		4,		//APB1 = 68.75 MHz
+		4,		//APB2 = 68.75 MHz
+		4,		//APB3 = 68.75 MHz
+		4		//APB4 = 68.75 MHz
+	);
+
+	//Select PLL1 as system clock source
+	RCCHelper::SelectSystemClockFromPLL1();
+}
+
+void InitUART()
+{
+	//Initialize the UART for local console: 115.2 Kbps using PA12 for UART4 transmit and PA11 for UART2 receive
+	//TODO: nice interface for enabling UART interrupts
+	GPIOPin uart_tx(&GPIOA, 12, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 6);
+	GPIOPin uart_rx(&GPIOA, 11, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 6);
+
+	//Default after reset is for UART4 to be clocked by PCLK1 (APB1 clock) which is 68.75 MHz
+	//So we need a divisor of 596.78
+	static UART uart(&UART4, 597);
+	g_cliUART = &uart;
+
+	//Enable the UART RX interrupt
+	//TODO: Make an RCC method for this
+	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
+	*NVIC_ISER1 = 0x100000;
+
+	//Clear screen and move cursor to X0Y0
+	uart.Printf("\x1b[2J\x1b[0;0H");
 }
 
 void InitLog()
 {
-	//APB1 is 43.75 MHz but TIMxCLK = 2x that so 87.5 MHz.
+	//APB1 is 68.75 MHz
 	//Divide down to get 10 kHz ticks
-	static Timer logtim(&TIM2, Timer::FEATURE_GENERAL_PURPOSE, 8750);
+	static Timer logtim(&TIM2, Timer::FEATURE_GENERAL_PURPOSE, 6875);
 	g_logTimer = &logtim;
 
 	g_log.Initialize(g_cliUART, &logtim);
@@ -172,7 +221,7 @@ void DetectHardware()
 	uint16_t rev = DBGMCU.IDCODE >> 16;
 	uint16_t device = DBGMCU.IDCODE & 0xfff;
 
-	if(device == 0x451)
+	if(device == 0x483)
 	{
 		//Look up the stepping number
 		const char* srev = NULL;
@@ -180,7 +229,6 @@ void DetectHardware()
 		{
 			case 0x1000:
 				srev = "A";
-				g_hasRmiiErrata = true;
 				break;
 
 			case 0x1001:
@@ -191,35 +239,57 @@ void DetectHardware()
 				srev = "(unknown)";
 		}
 
-		uint8_t pkg = (PKG_ID >> 8) & 0x7;
+		uint8_t pkg = SYSCFG.PKGR;
+		const char* package = "";
 		switch(pkg)
 		{
-			case 7:
-				g_log("STM32F767 / 777 LQFP208/TFBGA216 rev %s (0x%04x)\n", srev, rev);
-				break;
-			case 6:
-				g_log("STM32F769 / 779 LQFP208/TFBGA216 rev %s (0x%04x)\n", srev, rev);
-				break;
-			case 5:
-				g_log("STM32F767 / 777 LQFP176 rev %s (0x%04x)\n", srev, rev);
-				break;
-			case 4:
-				g_log("STM32F769 / 779 LQFP176 rev %s (0x%04x)\n", srev, rev);
-				break;
-			case 3:
-				g_log("STM32F778 / 779 WLCSP180 rev %s (0x%04x)\n", srev, rev);
-				break;
-			case 2:
-				g_log("STM32F767 / 777 LQFP144 rev %s (0x%04x)\n", srev, rev);
+			case 0:
+				package = "VQFPN68 (industrial)";
 				break;
 			case 1:
-				g_log("STM32F767 / 777 LQFP100 rev %s (0x%04x)\n", srev, rev);
+				package = "LQFP100/TFBGA100 (legacy)";
+				break;
+			case 2:
+				package = "LQFP100 (industrial)";
+				break;
+			case 3:
+				package = "TFBGA100 (industrial)";
+				break;
+			case 4:
+				package = "WLCSP115 (industrial)";
+				break;
+			case 5:
+				package = "LQFP144 (legacy)";
+				break;
+			case 6:
+				package = "UFBGA144 (legacy)";
+				break;
+			case 7:
+				package = "LQFP144 (industrial)";
+				break;
+			case 8:
+				package = "UFBGA169 (industrial)";
+				break;
+			case 9:
+				package = "UFBGA176+25 (industrial)";
+				break;
+			case 10:
+				package = "LQFP176 (industrial)";
 				break;
 			default:
-				g_log("Unknown/reserved STM32F76x/F77x rev %s (0x%04x)\n", srev, rev);
+				package = "unknown package";
 				break;
 		}
-		g_log("512 kB total SRAM, 128 kB DTCM, 16 kB ITCM, 4 kB backup SRAM\n");
+
+		g_log("STM32%c%c%c%c stepping %s, %s\n",
+			(L_ID >> 24) & 0xff,
+			(L_ID >> 16) & 0xff,
+			(L_ID >> 8) & 0xff,
+			(L_ID >> 0) & 0xff,
+			srev,
+			package
+			);
+		g_log("564 kB total SRAM, 128 kB DTCM, up to 256 kB ITCM, 4 kB backup SRAM\n");
 		g_log("%d kB Flash\n", F_ID);
 
 		//U_ID fields documented in 45.1 of STM32 programming manual
@@ -233,34 +303,17 @@ void DetectHardware()
 			static_cast<char>((U_ID[1] >> 8) & 0xff),
 			static_cast<char>((U_ID[2] >> 24) & 0xff),
 			static_cast<char>((U_ID[2] >> 16) & 0xff),
-			static_cast<char>((U_ID[2] >> 8) & 0xff),GPIOPin spi_sck(&GPIOH, 6, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_FAST, 5);
+			static_cast<char>((U_ID[2] >> 8) & 0xff),
 			static_cast<char>((U_ID[2] >> 0) & 0xff),
 			'\0'
 		};
 		g_log("Lot %s, wafer %d, die (%d, %d)\n", waferLot, waferNum, waferX, waferY);
-
-		if(g_hasRmiiErrata)
-			g_log(Logger::WARNING, "RMII RXD0 errata present\n");
 	}
 	else
 		g_log(Logger::WARNING, "Unknown device (0x%06x)\n", device);
 }
 
-void InitUART()
-{
-	//Initialize the UART for local console: 115.2 Kbps using PA0 for UART4 transmit and PA3 for USART2 RX
-	//TODO: nice interface for enabling UART interrupts
-	GPIOPin uart_tx(&GPIOA, 0, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 8);
-	GPIOPin uart_rx(&GPIOA, 3, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 7);
-	static UART uart(&UART4, &USART2, 380);
-	volatile uint32_t* NVIC_ISER1 = (volatile uint32_t*)(0xe000e104);
-	*NVIC_ISER1 = 0x40;
-	g_cliUART = &uart;
-
-	//Clear screen and move cursor to X0Y0
-	uart.Printf("\x1b[2J\x1b[0;0H");
-}
-
+/*
 void InitCLI()
 {
 	g_log("Initializing CLI\n");
