@@ -36,6 +36,10 @@ Logger g_log;
 UARTOutputStream g_uartStream;
 SnifferCLISessionContext g_uartCliContext;
 Timer* g_logTimer;
+
+//I2C bus to EEPROM
+I2C* g_i2c;
+
 /*
 //SPI interface
 GPIOPin* g_spiCS = NULL;
@@ -55,6 +59,8 @@ void InitUART();
 void InitLog();
 void DetectHardware();
 void InitKVS();
+void InitI2C();
+void InitEEPROM();
 void InitCLI();
 /*
 void InitSPI();
@@ -81,6 +87,8 @@ int main()
 	InitLog();
 	DetectHardware();
 	InitKVS();
+	InitI2C();
+	InitEEPROM();
 	InitCLI();
 	/*
 	InitSPI();
@@ -315,9 +323,9 @@ void InitKVS()
 	/*
 		Use sectors 6 and 7 of main flash (in single bank mode) for a 128 kB microkvs
 
-		Each log entry is 32 bytes, and we want to allocate ~25% of storage to the log since our objects are pretty
-		small (SSH keys, IP addresses, etc). A 1024-entry log is a nice round number, and comes out to 32 kB or 25%,
-		leaving the remaining 96 kB or 75% for data.
+		Each log entry is 64 bytes, and we want to allocate ~50% of storage to the log since our objects are pretty
+		small (SSH keys, IP addresses, etc). A 1024-entry log is a nice round number, and comes out to 64 kB or 50%,
+		leaving the remaining 64 kB or 50% for data.
 	 */
 	static STM32StorageBank left(reinterpret_cast<uint8_t*>(0x080c0000), 0x20000);
 	static STM32StorageBank right(reinterpret_cast<uint8_t*>(0x080e0000), 0x20000);
@@ -331,8 +339,8 @@ void InitKVS()
 	//Load hostname, if we have it
 	if(!g_kvs->ReadObject("hostname", (uint8_t*)g_hostname, sizeof(g_hostname)-1))
 	{
-		g_log("Hostname not configured, defaulting to \"demo\"\n");
-		strncpy(g_hostname, "demo", sizeof(g_hostname));
+		g_log("Hostname not configured, defaulting to \"sniffer\"\n");
+		strncpy(g_hostname, "sniffer", sizeof(g_hostname));
 	}
 }
 
@@ -345,6 +353,55 @@ void InitCLI()
 	g_uartCliContext.Initialize(&g_uartStream, "admin");
 
 	//g_log("IP address not configured, defaulting to 192.168.1.42\n");
+}
+
+void InitI2C()
+{
+	g_log("Initializing I2C interface\n");
+
+	static GPIOPin i2c_scl(&GPIOD, 12, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 4, true);
+	static GPIOPin i2c_sda(&GPIOD, 13, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_SLOW, 4, true);
+
+	//Default kernel clock for I2C4 is pclk4 (68.75 MHz for our current config)
+	//Prescale by 16 to get 4.29 MHz
+	//Divide by 24 after that to get 179 kHz
+	static I2C i2c(&I2C4, 16, 12);
+	g_i2c = &i2c;
+}
+
+void InitEEPROM()
+{
+	g_log("Initializing MAC address EEPROM\n");
+
+	//Extended memory block for MAC address data isn't in the normal 0xa* memory address space
+	//uint8_t main_addr = 0xa0;
+	uint8_t ext_addr = 0xb0;
+
+	//Pointers within extended memory block
+	uint8_t serial_offset = 0x80;
+	uint8_t mac_offset = 0x9a;
+
+	//Read MAC address
+	const int mac_len = 6;
+	uint8_t mac[mac_len] = {0};
+	g_i2c->BlockingWrite8(ext_addr, mac_offset);
+	g_i2c->BlockingRead(ext_addr, mac, mac_len);
+
+	//Read serial number
+	const int serial_len = 16;
+	uint8_t serial[serial_len] = {0};
+	g_i2c->BlockingWrite8(ext_addr, serial_offset);
+	g_i2c->BlockingRead(ext_addr, serial, serial_len);
+
+	{
+		LogIndenter li(g_log);
+		g_log("MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
+			mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+		g_log("Serial number: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n",
+			serial[0], serial[1], serial[2], serial[3], serial[4], serial[5], serial[6], serial[7],
+			serial[8], serial[9], serial[10], serial[11], serial[12], serial[13], serial[14], serial[15]);
+	}
 }
 
 /*

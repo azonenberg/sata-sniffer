@@ -37,6 +37,7 @@
 
 #include <peripheral/Flash.h>
 #include <peripheral/GPIO.h>
+#include <peripheral/I2C.h>
 #include <peripheral/Power.h>
 /*
 #include <peripheral/RCC.h>
