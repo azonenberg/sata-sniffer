@@ -61,9 +61,9 @@ void DetectHardware();
 void InitKVS();
 void InitI2C();
 void InitEEPROM();
+void InitQSPI();
 void InitCLI();
 /*
-void InitSPI();
 void InitEthernet();
 bool TestEthernet(uint32_t num_frames);
 void InitSSH();
@@ -89,9 +89,9 @@ int main()
 	InitKVS();
 	InitI2C();
 	InitEEPROM();
+	InitQSPI();
 	InitCLI();
 	/*
-	InitSPI();
 	InitEthernet();
 	InitSSH();
 	*/
@@ -404,23 +404,61 @@ void InitEEPROM()
 	}
 }
 
-/*
-void InitSPI()
+void InitQSPI()
 {
-	g_log("Initializing SPI interface\n");
+	g_log("Initializing QSPI interface\n");
+	LogIndenter li(g_log);
 
-	static GPIOPin spi_cs_n(&GPIOH, 5, GPIOPin::MODE_OUTPUT, GPIOPin::SLEW_FAST);
-	GPIOPin spi_sck(&GPIOH, 6, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_FAST, 5);
-	GPIOPin spi_miso(&GPIOH, 7, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_FAST, 5);
-	GPIOPin spi_mosi(&GPIOF, 11, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_FAST, 5);
-	g_spiCS = &spi_cs_n;
-	spi_cs_n = 1;
+	//Configure the I/O manager
+	OctoSPIManager::ConfigureMux(false);
+	OctoSPIManager::ConfigurePort(
+		1,							//Configuring port 1
+		false,						//DQ[7:4] disabled
+		OctoSPIManager::C1_HIGH,
+		true,						//DQ[3:0] enabled
+		OctoSPIManager::C1_LOW,		//DQ[3:0] from OCTOSPI1 DQ[3:0]
+		true,						//CS# enabled
+		OctoSPIManager::PORT_1,		//CS# from OCTOSPI1
+		false,						//DQS disabled
+		OctoSPIManager::PORT_1,
+		true,						//Clock enabled
+		OctoSPIManager::PORT_1);	//Clock from OCTOSPI1
 
-	//APB2 is 87.5 MHz, /4 is 21.875 MHz
-	static SPI spi(&SPI5, true, 4);
-	g_spi = &spi;
+	//Configure the I/O pins
+	static GPIOPin qspi_cs_n(&GPIOE, 11, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 11);
+	static GPIOPin qspi_sck(&GPIOB, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
+	static GPIOPin qspi_dq0(&GPIOA, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 6);
+	static GPIOPin qspi_dq1(&GPIOB, 0, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 4);
+	static GPIOPin qspi_dq2(&GPIOC, 2, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
+	static GPIOPin qspi_dq3(&GPIOA, 1, GPIOPin::MODE_PERIPHERAL, GPIOPin::SLEW_VERYFAST, 9);
+
+	//Clock divider value
+	//Default is for AHB3 bus clock to be used as kernel clock (275 MHz for us)
+	//With 3.3V Vdd, we can go up to 140 MHz.
+	//Dividing by 6 gives 45.8 MHz and a transfer rate of 183.3 Mbps.
+	uint8_t prescale = 6;
+
+	//Configure the OCTOSPI itself
+	static OctoSPI qspi(&OCTOSPI1, 0x02000000, prescale);
+	qspi.SetDoubleRateMode(false);
+	qspi.SetInstructionMode(OctoSPI::MODE_QUAD, 1);
+	qspi.SetAddressMode(OctoSPI::MODE_NONE);
+	qspi.SetAltBytesMode(OctoSPI::MODE_NONE);
+	qspi.SetDataMode(OctoSPI::MODE_QUAD);
+	qspi.SetDummyCycleCount(1);
+	qspi.SetDQSEnable(false);
+	qspi.SetDeselectTime(1);
+
+	//Test
+	uint8_t buf[] = {0xde, 0xad, 0xbe, 0xef};
+	qspi.BlockingWrite(0x55, 0, buf, sizeof(buf));
+
+	//Read stuff
+	qspi.BlockingRead(0xaa, 0, buf, sizeof(buf));
+	g_log("Got: %02x %02x %02x %02x\n", buf[0], buf[1], buf[2], buf[3]);
 }
 
+/*
 uint8_t GetFPGAStatus()
 {
 	//Get the status register

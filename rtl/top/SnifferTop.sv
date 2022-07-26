@@ -210,8 +210,13 @@ module SnifferTop(
 
 	MicrocontrollerInterface mcu(
 		.clk_50mhz(clk_50mhz),
+		.clk_250mhz(clk_250mhz),
 
-		.mcu_refclk(pmod_dq[0])
+		.mcu_refclk(pmod_dq[0]),
+		.qspi_sck(pmod_dq[2]),
+		.qspi_cs_n(pmod_dq[1]),
+		.qspi_dq(pmod_dq[6:3]),
+		.irq(pmod_dq[7])
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

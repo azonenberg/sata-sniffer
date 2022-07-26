@@ -31,9 +31,15 @@
 ***********************************************************************************************************************/
 
 module MicrocontrollerInterface(
-	input wire	clk_50mhz,
+	input wire		clk_50mhz,
+	input wire		clk_250mhz,
 
-	output wire	mcu_refclk
+	output wire		mcu_refclk,
+
+	input wire		qspi_sck,
+	input wire		qspi_cs_n,
+	inout wire[3:0]	qspi_dq,
+	output logic	irq = 0
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,5 +54,73 @@ module MicrocontrollerInterface(
 		.din0(1'b0),
 		.din1(1'b1)
 	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// QSPI interface
+
+	wire		start;
+	wire		insn_valid;
+	wire[7:0]	insn;
+	wire		wr_valid;
+	wire[7:0]	wr_data;
+	logic		rd_mode		= 0;
+	wire		rd_ready;
+	logic		rd_valid	= 0;
+	logic[7:0]	rd_data;
+
+	QSPIDeviceInterface #(
+		.INSN_BYTES(1)
+	) qspi (
+		.clk(clk_250mhz),
+		.sck(qspi_sck),
+		.cs_n(qspi_cs_n),
+		.dq(qspi_dq),
+
+		.start(start),
+		.insn_valid(insn_valid),
+		.insn(insn),
+		.wr_valid(wr_valid),
+		.wr_data(wr_data),
+		.rd_mode(rd_mode),
+		.rd_ready(rd_ready),
+		.rd_valid(rd_valid),
+		.rd_data(rd_data)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Main QSPI state machine
+
+	logic[1:0] count = 0;
+
+	always_ff @(posedge clk_250mhz) begin
+
+		rd_valid	<= 0;
+
+		if(start)
+			count		<= 0;
+
+		//0xaa is an output (read) instruction
+		//anything else is input (write)
+		if(insn_valid) begin
+			if(insn == 8'haa)
+				rd_mode	<= 1;
+			else
+				rd_mode	<= 0;
+		end
+
+		if(rd_ready) begin
+			count		<= count + 1;
+
+			rd_valid	<= 1;
+
+			case(count)
+				0:	rd_data <= 8'hfe;
+				1:	rd_data <= 8'hed;
+				2:	rd_data <= 8'hfa;
+				3:	rd_data <= 8'hce;
+			endcase
+		end
+
+	end
 
 endmodule
