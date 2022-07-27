@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
@@ -30,6 +32,7 @@
 `include "EthernetBus.svh"
 `include "GmiiBus.svh"
 `include "IPv4Bus.svh"
+`include "MicrocontrollerInterface.svh"
 
 /**
 	@brief All of the Ethernet stuff
@@ -76,21 +79,39 @@ module EthernetSubsystem(
 	input wire[3:0]		rgmii_rxd,
 	output wire			rgmii_txc,
 	output wire			rgmii_tx_en,
-	output wire[3:0]	rgmii_txd
+	output wire[3:0]	rgmii_txd,
+
+	//Configuration registers (clk_250mhz domain)
+	input wire cfgregs_t	cfgregs
 );
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// MAC address and IP configuration (TODO: make configurable)
+	// Clock domain crossing for configuration registers
 
-	logic[47:0]		our_mac_addr				= 48'h02_ff_deadbeef;
-	wire[47:0]		our_mac_addr_baser_txclk	= our_mac_addr;
-	wire[47:0]		our_mac_addr_baset_txclk	= our_mac_addr;
+	wire			baser_mac_tx_clk;
+	wire			baset_mac_tx_clk;
+	assign			baset_mac_tx_clk = clk_125mhz;
 
-	IPv4Config		ip_config;
-	assign ip_config.address	= {  8'd10,   8'd2,   8'd6,  8'd11 };
-	assign ip_config.mask		= { 8'd255, 8'd255, 8'd255,   8'd0 };
-	assign ip_config.broadcast	= {  8'd10,   8'd2,   8'd6, 8'd255 };
-	assign ip_config.gateway	= {  8'd10,   8'd2,   8'd6, 8'd252 };
+	wire[47:0]		our_mac_addr_baser_txclk;
+	wire[47:0]		our_mac_addr_baset_txclk;
+	wire[47:0]		our_mac_addr_clk_ipstack;
+
+	IPv4Config		ip_config_clk_ipstack;
+
+	EthernetRegisterCDC cdc(
+		.clk_ipstack(clk_ipstack),
+		.clk_250mhz(clk_250mhz),
+		.baser_mac_tx_clk(baser_mac_tx_clk),
+		.baset_mac_tx_clk(baset_mac_tx_clk),
+
+		.cfgregs(cfgregs),
+
+		.our_mac_addr_baser_txclk(our_mac_addr_baser_txclk),
+		.our_mac_addr_baset_txclk(our_mac_addr_baset_txclk),
+		.our_mac_addr_clk_ipstack(our_mac_addr_clk_ipstack),
+
+		.ip_config_clk_ipstack(ip_config_clk_ipstack)
+	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 1G RGMII interface
@@ -101,8 +122,6 @@ module EthernetSubsystem(
 	wire			baset_mac_rx_clk;
 	EthernetRxBus	baset_mac_rx_bus;
 
-	wire			baset_mac_tx_clk;
-	assign			baset_mac_tx_clk = clk_125mhz;
 	EthernetTxBus	baset_mac_tx_bus;
 	wire			baset_mac_tx_ready;
 
@@ -138,7 +157,6 @@ module EthernetSubsystem(
 	wire			baser_link_up;
 	wire			baser_mac_rx_clk;
 	EthernetRxBus	baser_mac_rx_bus;
-	wire			baser_mac_tx_clk;
 	EthernetTxBus	baser_mac_tx_bus;
 
 	SFPInterface sfp(
@@ -238,7 +256,7 @@ module EthernetSubsystem(
 	Ethernet2TypeDecoder rx_eth_decoder(
 		.rx_clk(clk_ipstack),
 
-		.our_mac_address(our_mac_addr),
+		.our_mac_address(our_mac_addr_clk_ipstack),
 		.promisc_mode(1'b0),
 
 		.mac_rx_bus(muxed_rx_bus),
@@ -350,8 +368,8 @@ module EthernetSubsystem(
 	ARPProtocol arp(
 		.clk(clk_ipstack),
 
-		.our_mac_address(our_mac_addr),
-		.our_ip_address(ip_config.address),
+		.our_mac_address(our_mac_addr_clk_ipstack),
+		.our_ip_address(ip_config_clk_ipstack.address),
 
 		.rx_l2_bus(rx_l2_bus),
 		.tx_l2_bus(arp_tx_l2_bus),
@@ -376,7 +394,7 @@ module EthernetSubsystem(
 
 		.link_up(link_up_ipstack),
 		.config_update(1'b0),
-		.ip_config(ip_config),
+		.ip_config(ip_config_clk_ipstack),
 
 		.ipv4_tx_l2_bus(ipv4_tx_l2_bus),
 		.ipv4_tx_arp_bus(ipv4_tx_arp_bus),
@@ -400,7 +418,7 @@ module EthernetSubsystem(
 	IPv4Protocol ipv4(
 		.clk(clk_ipstack),
 
-		.ip_config(ip_config),
+		.ip_config(ip_config_clk_ipstack),
 
 		.rx_l2_bus(rx_l2_bus),
 		.tx_l2_bus(ipv4_tx_l2_bus),

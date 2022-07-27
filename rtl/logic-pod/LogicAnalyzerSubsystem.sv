@@ -292,6 +292,7 @@ module LogicAnalyzerSubsystem(
 		.probe_out0(arm_req)
 	);
 
+	/*
 	ila_0 ila(
 		.clk(clk_ram_2x),
 		.probe0(trig_rst_arbiter_2x),
@@ -311,5 +312,6 @@ module LogicAnalyzerSubsystem(
 		.probe12(readback.dram_rd_en),
 		.probe13(readback.dram_rd_addr)
 	);
+	*/
 
 endmodule

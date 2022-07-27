@@ -35,25 +35,25 @@ char g_hostname[33] = {0};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Command table
-/*
+
 //List of all valid commands
 enum cmdid_t
 {
 	CMD_ADDRESS,
 	CMD_ALL,
-	CMD_ARP,
-	CMD_CACHE,
+	//CMD_ARP,
+	//CMD_CACHE,
 	CMD_DEFAULT_GATEWAY,
 	CMD_EXIT,
-	CMD_FINGERPRINT,
+	//CMD_FINGERPRINT,
 	CMD_FLASH,
-	CMD_HARDWARE,
+	//CMD_HARDWARE,
 	CMD_HOSTNAME,
 	CMD_IP,
 	CMD_RELOAD,
 	CMD_ROUTE,
 	CMD_SHOW,
-	CMD_SSH,
+	//CMD_SSH,
 	CMD_ZEROIZE,
 };
 
@@ -91,14 +91,14 @@ static const clikeyword_t g_ipCommands[] =
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "show"
-
+/*
 static const clikeyword_t g_showArpCommands[] =
 {
 	{"cache",			CMD_CACHE,				NULL,						"Show contents of the ARP cache"},
 
 	{NULL,				INVALID_COMMAND,		NULL,						NULL}
 };
-
+*/
 static const clikeyword_t g_showIpCommands[] =
 {
 	{"address",			CMD_ADDRESS,			NULL,						"Show the IPv4 address and subnet mask"},
@@ -106,21 +106,21 @@ static const clikeyword_t g_showIpCommands[] =
 
 	{NULL,				INVALID_COMMAND,		NULL,						NULL}
 };
-
+/*
 static const clikeyword_t g_showSshCommands[] =
 {
 	{"fingerprint",		CMD_FINGERPRINT,		NULL,						"Show the SSH host key fingerprint (in OpenSSH base64 SHA256 format)"},
 
 	{NULL,				INVALID_COMMAND,		NULL,						NULL}
 };
-
+*/
 static const clikeyword_t g_showCommands[] =
 {
-	{"arp",				CMD_ARP,				g_showArpCommands,			"Print ARP information"},
+	//{"arp",				CMD_ARP,				g_showArpCommands,			"Print ARP information"},
 	{"flash",			CMD_FLASH,				NULL,						"Print contents and size of config storage"},
-	{"hardware",		CMD_HARDWARE,			NULL,						"Print hardware information"},
+	//{"hardware",		CMD_HARDWARE,			NULL,						"Print hardware information"},
 	{"ip",				CMD_IP,					g_showIpCommands,			"Print IPv4 information"},
-	{"ssh",				CMD_SSH,				g_showSshCommands,			"Print SSH information"},
+	//{"ssh",				CMD_SSH,				g_showSshCommands,			"Print SSH information"},
 
 	{NULL,				INVALID_COMMAND,		NULL,	NULL}
 };
@@ -136,17 +136,15 @@ static const clikeyword_t g_zeroizeCommands[] =
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Top level command list
-*/
+
 static const clikeyword_t g_rootCommands[] =
 {
-	/*
 	{"exit",			CMD_EXIT,				NULL,						"Log out"},
 	{"hostname",		CMD_HOSTNAME,			g_hostnameCommands,			"Change the host name"},
 	{"ip",				CMD_IP,					g_ipCommands,				"Configure IP addresses"},
 	{"reload",			CMD_RELOAD,				NULL,						"Restart the system"},
 	{"show",			CMD_SHOW,				g_showCommands,				"Print information"},
 	{"zeroize",			CMD_ZEROIZE,			g_zeroizeCommands,			"Erase all configuration data and reset"},
-	*/
 
 	{NULL,				INVALID_COMMAND,		NULL,						NULL}
 };
@@ -174,7 +172,6 @@ void SnifferCLISessionContext::PrintPrompt()
 
 void SnifferCLISessionContext::OnExecute()
 {
-	/*
 	switch(m_command[0].m_commandID)
 	{
 		case CMD_EXIT:
@@ -218,12 +215,10 @@ void SnifferCLISessionContext::OnExecute()
 		default:
 			break;
 	}
-	*/
 
 	m_stream->Flush();
 }
 
-/*
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "hostname"
 
@@ -281,11 +276,14 @@ void SnifferCLISessionContext::OnDefaultGateway(const char* ipstring)
 
 	//Set the IP
 	for(int i=0; i<4; i++)
-		g_ipconfig.m_gateway.m_octets[i] = fields[i];
+		g_ipConfig.m_gateway.m_octets[i] = fields[i];
 
 	//Write the new configuration to flash
-	if(!g_kvs->StoreObject("ip.gateway", g_ipconfig.m_gateway.m_octets, 4))
+	if(!g_kvs->StoreObject("ip.gateway", g_ipConfig.m_gateway.m_octets, 4))
 		g_log(Logger::ERROR, "Failed to write gateway to flash\n");
+
+	//Push it to the FPGA
+	g_qspi->BlockingWrite(REG_GATEWAY, 0, g_ipConfig.m_gateway.m_octets, sizeof(IPv4Address));
 }
 
 void SnifferCLISessionContext::OnIPAddress(const char* ipstring)
@@ -339,24 +337,29 @@ void SnifferCLISessionContext::OnIPAddress(const char* ipstring)
 
 	//Set the IP
 	for(int i=0; i<4; i++)
-		g_ipconfig.m_address.m_octets[i] = fields[i];
+		g_ipConfig.m_address.m_octets[i] = fields[i];
 
 	//Calculate the netmask
 	uint32_t mask = 0xffffffff << (32 - fields[4]);
-	g_ipconfig.m_netmask.m_octets[0] = (mask >> 24) & 0xff;
-	g_ipconfig.m_netmask.m_octets[1] = (mask >> 16) & 0xff;
-	g_ipconfig.m_netmask.m_octets[2] = (mask >> 8) & 0xff;
-	g_ipconfig.m_netmask.m_octets[3] = (mask >> 0) & 0xff;
+	g_ipConfig.m_netmask.m_octets[0] = (mask >> 24) & 0xff;
+	g_ipConfig.m_netmask.m_octets[1] = (mask >> 16) & 0xff;
+	g_ipConfig.m_netmask.m_octets[2] = (mask >> 8) & 0xff;
+	g_ipConfig.m_netmask.m_octets[3] = (mask >> 0) & 0xff;
 
 	//Calculate the broadcast address
 	for(int i=0; i<4; i++)
-		g_ipconfig.m_broadcast.m_octets[i] = g_ipconfig.m_address.m_octets[i] | ~g_ipconfig.m_netmask.m_octets[i];
+		g_ipConfig.m_broadcast.m_octets[i] = g_ipConfig.m_address.m_octets[i] | ~g_ipConfig.m_netmask.m_octets[i];
 
 	//Write the new IP configuration to flash
-	if(!g_kvs->StoreObject("ip.addr", g_ipconfig.m_address.m_octets, 4))
+	if(!g_kvs->StoreObject("ip.addr", g_ipConfig.m_address.m_octets, 4))
 		g_log(Logger::ERROR, "Failed to write IP address to flash\n");
-	if(!g_kvs->StoreObject("ip.netmask", g_ipconfig.m_netmask.m_octets, 4))
+	if(!g_kvs->StoreObject("ip.netmask", g_ipConfig.m_netmask.m_octets, 4))
 		g_log(Logger::ERROR, "Failed to write IP address to flash\n");
+
+	//Push it to the FPGA
+	g_qspi->BlockingWrite(REG_IP_ADDRESS, 0, g_ipConfig.m_address.m_octets, sizeof(IPv4Address));
+	g_qspi->BlockingWrite(REG_SUBNET_MASK, 0, g_ipConfig.m_netmask.m_octets, sizeof(IPv4Address));
+	g_qspi->BlockingWrite(REG_BROADCAST, 0, g_ipConfig.m_broadcast.m_octets, sizeof(IPv4Address));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -377,7 +380,7 @@ void SnifferCLISessionContext::OnShowCommand()
 {
 	switch(m_command[1].m_commandID)
 	{
-		case CMD_ARP:
+		/*case CMD_ARP:
 			switch(m_command[2].m_commandID)
 			{
 				case CMD_CACHE:
@@ -387,15 +390,15 @@ void SnifferCLISessionContext::OnShowCommand()
 				default:
 					break;
 			}
-			break;
+			break;*/
 
 		case CMD_FLASH:
 			ShowFlash();
 			break;
 
-		case CMD_HARDWARE:
+		/*case CMD_HARDWARE:
 			ShowHardware();
-			break;
+			break;*/
 
 		case CMD_IP:
 			switch(m_command[2].m_commandID)
@@ -413,7 +416,7 @@ void SnifferCLISessionContext::OnShowCommand()
 			}
 			break;
 
-		case CMD_SSH:
+		/*case CMD_SSH:
 			switch(m_command[2].m_commandID)
 			{
 				case CMD_FINGERPRINT:
@@ -423,10 +426,10 @@ void SnifferCLISessionContext::OnShowCommand()
 				default:
 					break;
 			}
-			break;
+			break;*/
 	}
 }
-
+/*
 void SnifferCLISessionContext::ShowARPCache()
 {
 	auto cache = g_ethStack->GetARP()->GetCache();
@@ -454,7 +457,7 @@ void SnifferCLISessionContext::ShowARPCache()
 		}
 	}
 }
-
+*/
 void SnifferCLISessionContext::ShowFlash()
 {
 	//Print info about the flash memory in general
@@ -488,7 +491,7 @@ void SnifferCLISessionContext::ShowFlash()
 		nfound,
 		size/1024, (size % 1024) * 100 / 1024);
 }
-
+/*
 void SnifferCLISessionContext::ShowHardware()
 {
 	uint16_t rev = DBGMCU.IDCODE >> 16;
@@ -602,28 +605,28 @@ void SnifferCLISessionContext::ShowHardware()
 	m_stream->Printf("Ethernet MAC address is %02x:%02x:%02x:%02x:%02x:%02x\n",
 		g_macAddress[0], g_macAddress[1], g_macAddress[2], g_macAddress[3], g_macAddress[4], g_macAddress[5]);
 }
-
+*/
 void SnifferCLISessionContext::ShowIPAddr()
 {
 	m_stream->Printf("IPv4 address: %d.%d.%d.%d\n",
-		g_ipconfig.m_address.m_octets[0],
-		g_ipconfig.m_address.m_octets[1],
-		g_ipconfig.m_address.m_octets[2],
-		g_ipconfig.m_address.m_octets[3]
+		g_ipConfig.m_address.m_octets[0],
+		g_ipConfig.m_address.m_octets[1],
+		g_ipConfig.m_address.m_octets[2],
+		g_ipConfig.m_address.m_octets[3]
 	);
 
 	m_stream->Printf("Subnet mask:  %d.%d.%d.%d\n",
-		g_ipconfig.m_netmask.m_octets[0],
-		g_ipconfig.m_netmask.m_octets[1],
-		g_ipconfig.m_netmask.m_octets[2],
-		g_ipconfig.m_netmask.m_octets[3]
+		g_ipConfig.m_netmask.m_octets[0],
+		g_ipConfig.m_netmask.m_octets[1],
+		g_ipConfig.m_netmask.m_octets[2],
+		g_ipConfig.m_netmask.m_octets[3]
 	);
 
 	m_stream->Printf("Broadcast:    %d.%d.%d.%d\n",
-		g_ipconfig.m_broadcast.m_octets[0],
-		g_ipconfig.m_broadcast.m_octets[1],
-		g_ipconfig.m_broadcast.m_octets[2],
-		g_ipconfig.m_broadcast.m_octets[3]
+		g_ipConfig.m_broadcast.m_octets[0],
+		g_ipConfig.m_broadcast.m_octets[1],
+		g_ipConfig.m_broadcast.m_octets[2],
+		g_ipConfig.m_broadcast.m_octets[3]
 	);
 }
 
@@ -632,12 +635,12 @@ void SnifferCLISessionContext::ShowIPRoute()
 	m_stream->Printf("IPv4 routing table\n");
 	m_stream->Printf("Destination     Gateway\n");
 	m_stream->Printf("0.0.0.0         %d.%d.%d.%d\n",
-		g_ipconfig.m_gateway.m_octets[0],
-		g_ipconfig.m_gateway.m_octets[1],
-		g_ipconfig.m_gateway.m_octets[2],
-		g_ipconfig.m_gateway.m_octets[3]);
+		g_ipConfig.m_gateway.m_octets[0],
+		g_ipConfig.m_gateway.m_octets[1],
+		g_ipConfig.m_gateway.m_octets[2],
+		g_ipConfig.m_gateway.m_octets[3]);
 }
-
+/*
 void SnifferCLISessionContext::ShowSSHFingerprint()
 {
 	char buf[64] = {0};
@@ -645,7 +648,7 @@ void SnifferCLISessionContext::ShowSSHFingerprint()
 	tmp.GetHostKeyFingerprint(buf, sizeof(buf));
 	m_stream->Printf("ED25519 key fingerprint is SHA256:%s.\n", buf);
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // "zeroize"
 
@@ -654,4 +657,3 @@ void SnifferCLISessionContext::OnZeroize()
 	g_kvs->WipeAll();
 	OnReload();
 }
-*/

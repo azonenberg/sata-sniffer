@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2022 Andrew D. Zonenberg and contributors                                                              *
+* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,49 +27,22 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`ifndef MicrocontrollerInterface_h
+`define MicrocontrollerInterface_h
+
+`include "IPv4Bus.svh"
+
 /**
-	@file
-	@brief Declaration of SnifferCLISessionContext
+	@brief Config register plus update flags to push CDC updates
  */
-#ifndef SnifferCLISessionContext_h
-#define SnifferCLISessionContext_h
-
-#include <embedded-cli/CLIOutputStream.h>
-#include <embedded-cli/CLISessionContext.h>
-
-class SnifferCLISessionContext : public CLISessionContext
+typedef struct packed
 {
-public:
-	SnifferCLISessionContext();
+	logic[47:0]		mac_address;
+	logic			mac_address_updated;
 
-	void Initialize(CLIOutputStream* stream, const char* username)
-	{
-		m_stream = stream;
-		CLISessionContext::Initialize(m_stream, username);
-	}
+	IPv4Config		ip_config;
+	logic			ip_config_updated;
 
-	virtual ~SnifferCLISessionContext()
-	{}
+} cfgregs_t;
 
-	virtual void PrintPrompt();
-
-protected:
-	virtual void OnExecute();
-
-	void SetHostName(const char* name);
-	void OnIPAddress(const char* ipstring);
-	void OnDefaultGateway(const char* ipstring);
-	void OnShowCommand();
-	//void ShowARPCache();
-	void ShowFlash();
-	//void ShowHardware();
-	void ShowIPAddr();
-	void ShowIPRoute();
-	//void ShowSSHFingerprint();
-	void OnReload();
-	void OnZeroize();
-
-	CLIOutputStream* m_stream;
-};
-
-#endif
+`endif

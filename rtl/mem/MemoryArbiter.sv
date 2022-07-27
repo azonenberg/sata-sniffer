@@ -561,6 +561,7 @@ module MemoryArbiter(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Debug logic analyzer
 
+	/*
 	vio_0 vio(
 		.clk(clk_ram),
 		.probe_in0(ops_per_sec),
@@ -583,6 +584,7 @@ module MemoryArbiter(
 		.probe8(burst_count),
 		.probe9(data_fifo_wr_en)
 	);
+	*/
 	/*
 	ila_2 ila2(
 		.clk(clk_ram),

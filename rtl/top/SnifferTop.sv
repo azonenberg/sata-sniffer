@@ -208,6 +208,10 @@ module SnifferTop(
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// External microcontroller
 
+	`include "MicrocontrollerInterface.svh";
+
+	cfgregs_t	cfgregs;
+
 	MicrocontrollerInterface mcu(
 		.clk_50mhz(clk_50mhz),
 		.clk_250mhz(clk_250mhz),
@@ -216,7 +220,9 @@ module SnifferTop(
 		.qspi_sck(pmod_dq[2]),
 		.qspi_cs_n(pmod_dq[1]),
 		.qspi_dq(pmod_dq[6:3]),
-		.irq(pmod_dq[7])
+		.irq(pmod_dq[7]),
+
+		.cfgregs(cfgregs)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,7 +261,9 @@ module SnifferTop(
 		.rgmii_rxd(rgmii_rxd),
 		.rgmii_txc(rgmii_txc),
 		.rgmii_tx_en(rgmii_tx_en),
-		.rgmii_txd(rgmii_txd)
+		.rgmii_txd(rgmii_txd),
+
+		.cfgregs(cfgregs)
 	);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

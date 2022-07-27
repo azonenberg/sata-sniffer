@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* sata-sniffer v0.1                                                                                                    *
+* staticnet v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2022 Andrew D. Zonenberg and contributors                                                              *
+* Copyright (c) 2021 Andrew D. Zonenberg and contributors                                                              *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -29,47 +29,52 @@
 
 /**
 	@file
-	@brief Declaration of SnifferCLISessionContext
+	@brief Configuration file for staticnet test platform
  */
-#ifndef SnifferCLISessionContext_h
-#define SnifferCLISessionContext_h
 
-#include <embedded-cli/CLIOutputStream.h>
-#include <embedded-cli/CLISessionContext.h>
+#ifndef staticnet_config_h
+#define staticnet_config_h
 
-class SnifferCLISessionContext : public CLISessionContext
-{
-public:
-	SnifferCLISessionContext();
+///@brief Maximum size of an Ethernet frame (payload only, headers not included)
+#define ETHERNET_PAYLOAD_MTU 1500
 
-	void Initialize(CLIOutputStream* stream, const char* username)
-	{
-		m_stream = stream;
-		CLISessionContext::Initialize(m_stream, username);
-	}
+///@brief Define this to zeroize all frame buffers between uses
+#define ZEROIZE_BUFFERS_BEFORE_USE
 
-	virtual ~SnifferCLISessionContext()
-	{}
+///@brief Define this to enable performance counters
+#define STATICNET_PERFORMANCE_COUNTERS
 
-	virtual void PrintPrompt();
+///@brief Number of ways of associativity for the ARP cache
+#define ARP_CACHE_WAYS 4
 
-protected:
-	virtual void OnExecute();
+///@brief Number of lines per set in the ARP cache
+#define ARP_CACHE_LINES 256
 
-	void SetHostName(const char* name);
-	void OnIPAddress(const char* ipstring);
-	void OnDefaultGateway(const char* ipstring);
-	void OnShowCommand();
-	//void ShowARPCache();
-	void ShowFlash();
-	//void ShowHardware();
-	void ShowIPAddr();
-	void ShowIPRoute();
-	//void ShowSSHFingerprint();
-	void OnReload();
-	void OnZeroize();
+///@brief Number of entries in the TCP socket table
+#define TCP_TABLE_WAYS 2
 
-	CLIOutputStream* m_stream;
-};
+///@brief Number of lines per set in the TCP socket table
+#define TCP_TABLE_LINES 16
+
+///@brief Maximum number of SSH connections supported
+#define SSH_TABLE_SIZE 2
+
+///@brief SSH socket RX buffer size
+#define SSH_RX_BUFFER_SIZE 2048
+
+///@brief CLI TX buffer size
+#define CLI_TX_BUFFER_SIZE 1024
+
+///@brief Maximum length of a SSH username
+#define SSH_MAX_USERNAME	32
+
+///@brief Max length of a CLI username
+#define CLI_USERNAME_MAX SSH_MAX_USERNAME
+
+///@brief Maximum length of a SSH password
+#define SSH_MAX_PASSWORD	128
+
+///@brief Number of frames of buffer space to allocate for transmit data
+#define TX_BUFFER_FRAMES	8
 
 #endif

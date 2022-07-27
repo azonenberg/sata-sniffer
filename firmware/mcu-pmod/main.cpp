@@ -40,17 +40,19 @@ Timer* g_logTimer;
 //I2C bus to EEPROM
 I2C* g_i2c;
 
-/*
-//SPI interface
-GPIOPin* g_spiCS = NULL;
-SPI* g_spi = NULL;
+//QSPI interface to FPGA
+OctoSPI* g_qspi;
 
+//Ethernet stuff
+MACAddress g_macAddress;
+IPv4Config g_ipConfig;
+
+/*
 //Ethernet interface
 STM32EthernetInterface* g_eth;
-MACAddress g_macAddress;
-IPv4Config g_ipconfig;
 EthernetProtocol* g_ethStack;
 */
+
 //KVS
 KVS* g_kvs;
 
@@ -63,12 +65,11 @@ void InitI2C();
 void InitEEPROM();
 void InitQSPI();
 void InitCLI();
+void InitFPGA();
 /*
 void InitEthernet();
 bool TestEthernet(uint32_t num_frames);
 void InitSSH();
-
-uint8_t GetFPGAStatus();
 */
 int main()
 {
@@ -90,6 +91,7 @@ int main()
 	InitI2C();
 	InitEEPROM();
 	InitQSPI();
+	InitFPGA();
 	InitCLI();
 	/*
 	InitEthernet();
@@ -382,10 +384,8 @@ void InitEEPROM()
 	uint8_t mac_offset = 0x9a;
 
 	//Read MAC address
-	const int mac_len = 6;
-	uint8_t mac[mac_len] = {0};
 	g_i2c->BlockingWrite8(ext_addr, mac_offset);
-	g_i2c->BlockingRead(ext_addr, mac, mac_len);
+	g_i2c->BlockingRead(ext_addr, &g_macAddress[0], sizeof(g_macAddress));
 
 	//Read serial number
 	const int serial_len = 16;
@@ -396,7 +396,7 @@ void InitEEPROM()
 	{
 		LogIndenter li(g_log);
 		g_log("MAC address: %02x:%02x:%02x:%02x:%02x:%02x\n",
-			mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+			g_macAddress[0], g_macAddress[1], g_macAddress[2], g_macAddress[3], g_macAddress[4], g_macAddress[5]);
 
 		g_log("Serial number: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x\n",
 			serial[0], serial[1], serial[2], serial[3], serial[4], serial[5], serial[6], serial[7],
@@ -407,7 +407,6 @@ void InitEEPROM()
 void InitQSPI()
 {
 	g_log("Initializing QSPI interface\n");
-	LogIndenter li(g_log);
 
 	//Configure the I/O manager
 	OctoSPIManager::ConfigureMux(false);
@@ -435,41 +434,102 @@ void InitQSPI()
 	//Clock divider value
 	//Default is for AHB3 bus clock to be used as kernel clock (275 MHz for us)
 	//With 3.3V Vdd, we can go up to 140 MHz.
-	//Dividing by 6 gives 45.8 MHz and a transfer rate of 183.3 Mbps.
-	uint8_t prescale = 6;
+	//Dividing by 4 gives 68.75 MHz and a transfer rate of 275 Mbps.
+	uint8_t prescale = 4;
 
 	//Configure the OCTOSPI itself
 	static OctoSPI qspi(&OCTOSPI1, 0x02000000, prescale);
 	qspi.SetDoubleRateMode(false);
-	qspi.SetInstructionMode(OctoSPI::MODE_QUAD, 1);
+	qspi.SetInstructionMode(OctoSPI::MODE_QUAD, 2);
 	qspi.SetAddressMode(OctoSPI::MODE_NONE);
 	qspi.SetAltBytesMode(OctoSPI::MODE_NONE);
 	qspi.SetDataMode(OctoSPI::MODE_QUAD);
 	qspi.SetDummyCycleCount(1);
 	qspi.SetDQSEnable(false);
 	qspi.SetDeselectTime(1);
+	qspi.SetSampleDelay(true);
 
-	//Test
-	uint8_t buf[] = {0xde, 0xad, 0xbe, 0xef};
-	qspi.BlockingWrite(0x55, 0, buf, sizeof(buf));
+	g_qspi = &qspi;
+}
 
-	//Read stuff
-	qspi.BlockingRead(0xaa, 0, buf, sizeof(buf));
-	g_log("Got: %02x %02x %02x %02x\n", buf[0], buf[1], buf[2], buf[3]);
+void InitFPGA()
+{
+	g_log("Initializing FPGA\n");
+	LogIndenter li(g_log);
+
+	//Read IP address configuration
+	//Default to 192.168.1.42 if not configured
+	//This is so much nicer looking with C++ 20 but Debian's arm-none-eabi-gcc cross compiler is currently stuck at
+	//C++ 17 even though the host compiler does 20 just fine...
+	if(!g_kvs->ReadObject("ip.addr", g_ipConfig.m_address.m_octets, 4))
+	{
+		g_log("IP address not configured, defaulting to 192.168.1.42\n");
+		g_ipConfig.m_address.m_octets[0] = 192;
+		g_ipConfig.m_address.m_octets[1] = 168;
+		g_ipConfig.m_address.m_octets[2] = 1;
+		g_ipConfig.m_address.m_octets[3] = 42;
+	}
+
+	//Read subnet mask
+	//Default to /24 if not configured
+	if(!g_kvs->ReadObject("ip.netmask", g_ipConfig.m_netmask.m_octets, 4))
+	{
+		g_log("Subnet mask not configured, defaulting to 255.255.255.0\n");
+		g_ipConfig.m_netmask.m_octets[0] = 255;
+		g_ipConfig.m_netmask.m_octets[1] = 255;
+		g_ipConfig.m_netmask.m_octets[2] = 255;
+		g_ipConfig.m_netmask.m_octets[3] = 0;
+	}
+
+	//Read gateway address mask
+	//Default to 192.168.1.1 if not configured
+	if(!g_kvs->ReadObject("ip.gateway", g_ipConfig.m_gateway.m_octets, 4))
+	{
+		g_log("Default gateway not configured, defaulting to 192.168.1.1\n");
+		g_ipConfig.m_gateway.m_octets[0] = 192;
+		g_ipConfig.m_gateway.m_octets[1] = 168;
+		g_ipConfig.m_gateway.m_octets[2] = 1;
+		g_ipConfig.m_gateway.m_octets[3] = 1;
+	}
+
+	//Calculate broadcast address
+	for(int i=0; i<4; i++)
+		g_ipConfig.m_broadcast.m_octets[i] = g_ipConfig.m_address.m_octets[i] | ~g_ipConfig.m_netmask.m_octets[i];
+
+	//Read the FPGA IDCODE and serial number
+	uint8_t buf[8];
+	g_qspi->BlockingRead(REG_FPGA_IDCODE, 0, buf, 4);
+	uint32_t idcode = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+	g_qspi->BlockingRead(REG_FPGA_SERIAL, 0, buf, 8);
+
+	//Push MAC address to FPGA
+	g_qspi->BlockingWrite(REG_MAC_ADDRESS, 0, &g_macAddress[0], sizeof(g_macAddress));
+
+	//Push IP config to FPGA
+	g_qspi->BlockingWrite(REG_IP_ADDRESS, 0, g_ipConfig.m_address.m_octets, sizeof(IPv4Address));
+	g_qspi->BlockingWrite(REG_SUBNET_MASK, 0, g_ipConfig.m_netmask.m_octets, sizeof(IPv4Address));
+	g_qspi->BlockingWrite(REG_BROADCAST, 0, g_ipConfig.m_broadcast.m_octets, sizeof(IPv4Address));
+	g_qspi->BlockingWrite(REG_GATEWAY, 0, g_ipConfig.m_gateway.m_octets, sizeof(IPv4Address));
+
+	//Print status
+	switch(idcode & 0x0fffffff)
+	{
+		case 0x03647093:
+			g_log("IDCODE: %08x (XC7K70T rev %d)\n", idcode, idcode >> 28);
+			break;
+
+		case 0x0364c093:
+			g_log("IDCODE: %08x (XC7K160T rev %d)\n", idcode, idcode >> 28);
+			break;
+
+		default:
+			g_log("IDCODE: %08x (unknown device, rev %d)\n", idcode, idcode >> 28);
+			break;
+	}
+	g_log("Serial: %02x%02x%02x%02x%02x%02x%02x%02x\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
 }
 
 /*
-uint8_t GetFPGAStatus()
-{
-	//Get the status register
-	*g_spiCS = 0;
-	g_spi->BlockingWrite(REG_STATUS);
-	uint8_t sr = g_spi->BlockingRead();
-	*g_spiCS = 1;
-
-	return sr;
-}
-
 void InitEthernet()
 {
 	g_log("Initializing Ethernet\n");
@@ -524,40 +584,40 @@ void InitEthernet()
 	//Default to 192.168.1.42 if not configured
 	//This is so much nicer looking with C++ 20 but Debian's arm-none-eabi-gcc cross compiler is currently stuck at
 	//C++ 17 even though the host compiler does 20 just fine...
-	if(!g_kvs->ReadObject("ip.addr", g_ipconfig.m_address.m_octets, 4))
+	if(!g_kvs->ReadObject("ip.addr", g_ipConfig.m_address.m_octets, 4))
 	{
 		g_log("IP address not configured, defaulting to 192.168.1.42\n");
-		g_ipconfig.m_address.m_octets[0] = 192;
-		g_ipconfig.m_address.m_octets[1] = 168;
-		g_ipconfig.m_address.m_octets[2] = 1;
-		g_ipconfig.m_address.m_octets[3] = 42;
+		g_ipConfig.m_address.m_octets[0] = 192;
+		g_ipConfig.m_address.m_octets[1] = 168;
+		g_ipConfig.m_address.m_octets[2] = 1;
+		g_ipConfig.m_address.m_octets[3] = 42;
 	}
 
 	//Read subnet mask
 	//Default to /24 if not configured
-	if(!g_kvs->ReadObject("ip.netmask", g_ipconfig.m_netmask.m_octets, 4))
+	if(!g_kvs->ReadObject("ip.netmask", g_ipConfig.m_netmask.m_octets, 4))
 	{
 		g_log("Subnet mask not configured, defaulting to 255.255.255.0\n");
-		g_ipconfig.m_netmask.m_octets[0] = 255;
-		g_ipconfig.m_netmask.m_octets[1] = 255;
-		g_ipconfig.m_netmask.m_octets[2] = 255;
-		g_ipconfig.m_netmask.m_octets[3] = 0;
+		g_ipConfig.m_netmask.m_octets[0] = 255;
+		g_ipConfig.m_netmask.m_octets[1] = 255;
+		g_ipConfig.m_netmask.m_octets[2] = 255;
+		g_ipConfig.m_netmask.m_octets[3] = 0;
 	}
 
 	//Read gateway address mask
 	//Default to 192.168.1.1 if not configured
-	if(!g_kvs->ReadObject("ip.gateway", g_ipconfig.m_gateway.m_octets, 4))
+	if(!g_kvs->ReadObject("ip.gateway", g_ipConfig.m_gateway.m_octets, 4))
 	{
 		g_log("Default gateway not configured, defaulting to 192.168.1.1\n");
-		g_ipconfig.m_gateway.m_octets[0] = 192;
-		g_ipconfig.m_gateway.m_octets[1] = 168;
-		g_ipconfig.m_gateway.m_octets[2] = 1;
-		g_ipconfig.m_gateway.m_octets[3] = 1;
+		g_ipConfig.m_gateway.m_octets[0] = 192;
+		g_ipConfig.m_gateway.m_octets[1] = 168;
+		g_ipConfig.m_gateway.m_octets[2] = 1;
+		g_ipConfig.m_gateway.m_octets[3] = 1;
 	}
 
 	//Calculate broadcast address
 	for(int i=0; i<4; i++)
-		g_ipconfig.m_broadcast.m_octets[i] = g_ipconfig.m_address.m_octets[i] | ~g_ipconfig.m_netmask.m_octets[i];
+		g_ipConfig.m_broadcast.m_octets[i] = g_ipConfig.m_address.m_octets[i] | ~g_ipConfig.m_netmask.m_octets[i];
 
 	//Set up all of the SFRs for the Ethernet IP itself
 	g_log("Initializing MAC and DMA\n");
@@ -572,8 +632,8 @@ void InitEthernet()
 
 	//Protocol stacks
 	static EthernetProtocol eth(*g_eth, g_macAddress);
-	static ARPProtocol arp(eth, g_ipconfig.m_address, arpCache);
-	static IPv4Protocol ipv4(eth, g_ipconfig, arpCache);
+	static ARPProtocol arp(eth, g_ipConfig.m_address, arpCache);
+	static IPv4Protocol ipv4(eth, g_ipConfig, arpCache);
 	static ICMPv4Protocol icmpv4(ipv4);
 	static DemoTCPProtocol tcp(&ipv4);
 

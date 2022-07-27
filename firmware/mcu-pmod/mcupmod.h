@@ -50,9 +50,10 @@
 #include <util/Logger.h>
 #include <util/FIFO.h>
 #include <cli/UARTOutputStream.h>
-/*
+
 #include <staticnet-config.h>
 #include <staticnet/stack/staticnet.h>
+/*
 #include <staticnet/drivers/stm32/STM32EthernetInterface.h>
 #include <staticnet/drivers/stm32/STM32CryptoEngine.h>
 */
@@ -66,28 +67,29 @@ extern UART* g_cliUART;
 extern Logger g_log;
 /*
 extern UARTOutputStream g_uartStream;
-extern DemoCLISessionContext g_uartCliContext;
 extern GPIOPin* g_spiCS;
-extern SPI* g_spi;
 */
+extern OctoSPI* g_qspi;
 extern KVS* g_kvs;
 
 extern char g_hostname[33];
-/*
 extern MACAddress g_macAddress;
-extern IPv4Config g_ipconfig;
-extern EthernetProtocol* g_ethStack;
+extern IPv4Config g_ipConfig;
+
+extern SnifferCLISessionContext g_uartCliContext;
+
+//extern EthernetProtocol* g_ethStack;
 
 //Register IDs for the FPGA
 enum regids
 {
-	REG_STATUS			= 0x00,
-	REG_MAC_ADDR		= 0x01,
-	REG_EEPROM_SERIAL	= 0x02,
-	REG_SEND_TEST		= 0x03,
-	REG_RX_DISABLE		= 0x04,
-	REG_RX_ENABLE		= 0x05
+	REG_FPGA_IDCODE	= 0x0000,
+	REG_FPGA_SERIAL	= 0x0001,
+	REG_MAC_ADDRESS	= 0x0002,
+	REG_IP_ADDRESS	= 0x0003,
+	REG_SUBNET_MASK	= 0x0004,
+	REG_BROADCAST	= 0x0005,
+	REG_GATEWAY		= 0x0006
 };
-*/
 
 #endif

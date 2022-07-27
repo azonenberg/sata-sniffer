@@ -1,8 +1,10 @@
+`timescale 1ns / 1ps
+`default_nettype none
 /***********************************************************************************************************************
 *                                                                                                                      *
 * sata-sniffer v0.1                                                                                                    *
 *                                                                                                                      *
-* Copyright (c) 2022 Andrew D. Zonenberg and contributors                                                              *
+* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,49 +29,86 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
+`include "MicrocontrollerInterface.svh"
+
 /**
-	@file
-	@brief Declaration of SnifferCLISessionContext
+	@brief Clock domain crossing for Ethernet SFRs from management domain to the respective destination domains
  */
-#ifndef SnifferCLISessionContext_h
-#define SnifferCLISessionContext_h
+module EthernetRegisterCDC(
+	input wire				clk_ipstack,
+	input wire				clk_250mhz,
+	input wire				baser_mac_tx_clk,
+	input wire				baset_mac_tx_clk,
 
-#include <embedded-cli/CLIOutputStream.h>
-#include <embedded-cli/CLISessionContext.h>
+	input wire cfgregs_t	cfgregs,
 
-class SnifferCLISessionContext : public CLISessionContext
-{
-public:
-	SnifferCLISessionContext();
+	output wire[47:0]		our_mac_addr_baser_txclk,
+	output wire[47:0]		our_mac_addr_baset_txclk,
+	output wire[47:0]		our_mac_addr_clk_ipstack,
 
-	void Initialize(CLIOutputStream* stream, const char* username)
-	{
-		m_stream = stream;
-		CLISessionContext::Initialize(m_stream, username);
-	}
+	output IPv4Config		ip_config_clk_ipstack
+);
 
-	virtual ~SnifferCLISessionContext()
-	{}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAC address
 
-	virtual void PrintPrompt();
+	RegisterSynchronizer #(
+		.WIDTH(48)
+	) sync_our_mac_addr_baser_txclk(
+		.clk_a(clk_250mhz),
+		.en_a(cfgregs.mac_address_updated),
+		.ack_a(),
+		.reg_a(cfgregs.mac_address),
 
-protected:
-	virtual void OnExecute();
+		.clk_b(baser_mac_tx_clk),
+		.updated_b(),
+		.reset_b(1'b0),
+		.reg_b(our_mac_addr_baser_txclk)
+	);
 
-	void SetHostName(const char* name);
-	void OnIPAddress(const char* ipstring);
-	void OnDefaultGateway(const char* ipstring);
-	void OnShowCommand();
-	//void ShowARPCache();
-	void ShowFlash();
-	//void ShowHardware();
-	void ShowIPAddr();
-	void ShowIPRoute();
-	//void ShowSSHFingerprint();
-	void OnReload();
-	void OnZeroize();
+	RegisterSynchronizer #(
+		.WIDTH(48)
+	) sync_our_mac_addr_baset_txclk(
+		.clk_a(clk_250mhz),
+		.en_a(cfgregs.mac_address_updated),
+		.ack_a(),
+		.reg_a(cfgregs.mac_address),
 
-	CLIOutputStream* m_stream;
-};
+		.clk_b(baset_mac_tx_clk),
+		.updated_b(),
+		.reset_b(1'b0),
+		.reg_b(our_mac_addr_baset_txclk)
+	);
 
-#endif
+	RegisterSynchronizer #(
+		.WIDTH(48)
+	) sync_our_mac_addr_clk_ipstack(
+		.clk_a(clk_250mhz),
+		.en_a(cfgregs.mac_address_updated),
+		.ack_a(),
+		.reg_a(cfgregs.mac_address),
+
+		.clk_b(clk_ipstack),
+		.updated_b(),
+		.reset_b(1'b0),
+		.reg_b(our_mac_addr_clk_ipstack)
+	);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// IP address
+
+	RegisterSynchronizer #(
+		.WIDTH($bits(IPv4Config))
+	) sync_ip_config_clk_ipstack(
+		.clk_a(clk_250mhz),
+		.en_a(cfgregs.ip_config_updated),
+		.ack_a(),
+		.reg_a(cfgregs.ip_config),
+
+		.clk_b(clk_ipstack),
+		.updated_b(),
+		.reset_b(1'b0),
+		.reg_b(ip_config_clk_ipstack)
+	);
+
+endmodule
