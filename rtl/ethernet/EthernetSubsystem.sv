@@ -272,10 +272,14 @@ module EthernetSubsystem(
 	EthernetTxL2Bus	tx_baser_l2_bus;
 	EthernetTxL2Bus	tx_baset_l2_bus;
 
+	//Transmit buffer for 10GbE doesn't have to be very big.
+	//IP stack is running at 250 MHz x32, baseR clock is 312.5 MHz. So we can pop faster than we push.
+	//
 	EthernetTransmitElasticBuffer #(
 		.LINK_SPEED_IS_10G(1'b1),
 		.HEADER_DEPTH(16),
-		.PACKET_DEPTH(2048)
+		.HEADER_USE_BLOCK(0),
+		.PACKET_DEPTH(1024)
 	) tx_baser_buf (
 		.our_mac_address(our_mac_addr_baser_txclk),
 
@@ -340,9 +344,11 @@ module EthernetSubsystem(
 
 	EthernetTransmitArbiter #(
 		.PACKET_DEPTH(2048),
-		.ARP_PACKET_DEPTH(512),
-		.HEADER_DEPTH(512),
-		.ARP_HEADER_DEPTH(32),
+		.ARP_PACKET_DEPTH(256),
+		.HEADER_DEPTH(32),
+		.HEADER_USE_BLOCK(0),
+		.ARP_HEADER_DEPTH(16),
+		.ARP_HEADER_USE_BLOCK(0),
 		.JUMBO_FRAME_SUPPORT(0)
 	) tx_arbiter(
 		.clk(clk_ipstack),
